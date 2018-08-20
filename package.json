@@ -1,20 +1,55 @@
 {
   "name": "wd_dnl",
   "version": "0.0.1",
-  "private": true,
+  "description": "dnl App Write In React-Native",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wudyman/wd_dnl.git"
+  },
+  "engines": {
+    "node": ">=4"
+  },
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint app --fix",
+    "format": "find app -name '*.js' | xargs prettier --write --single-quote"
   },
   "dependencies": {
     "react": "16.4.1",
-    "react-native": "0.55.3"
+    "react-native": "0.55.3",
+    "leancloud-storage": "3.6.7",
+    "lodash": "^4.17.5",
+    "moment": "^2.22.1",
+    "prop-types": "^15.6.1",
+    "react-native-code-push": "^5.3.2",
+    "react-native-device-info": "^0.21.5",
+    "react-native-exceptions-manager": "^0.2.0",
+    "react-native-scrollable-tab-view": "0.8.0",
+    "react-native-simple-store": "^1.3.0",
+    "react-native-splash-screen": "^3.0.6",
+    "react-native-vector-icons": "^4.6.0",
+    "react-native-wechat": "^1.9.9",
+    "react-navigation": "^1.5.11",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-saga": "^0.16.0"
   },
   "devDependencies": {
     "babel-jest": "23.4.2",
     "babel-preset-react-native": "4.0.0",
     "jest": "23.5.0",
-    "react-test-renderer": "16.4.1"
+    "react-test-renderer": "16.4.1",
+    "babel-eslint": "^8.2.3",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0",
+    "prettier": "^1.12.1",
+    "redux-devtools": "^3.4.0"
   },
   "jest": {
     "preset": "react-native"
