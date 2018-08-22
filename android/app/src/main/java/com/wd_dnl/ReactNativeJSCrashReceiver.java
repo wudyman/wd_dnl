@@ -9,7 +9,7 @@ import com.tencent.bugly.crashreport.CrashReport;
 public class ReactNativeJSCrashReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("com.richardcao.android.REACT_NATIVE_CRASH_REPORT_ACTION")) {
+        if (intent.getAction().equals("com.wd_dnl.android.REACT_NATIVE_CRASH_REPORT_ACTION")) {
             Throwable js = (Throwable) intent.getSerializableExtra("JavascriptException");
             Throwable e = (Throwable) intent.getSerializableExtra("Exception");
             if (js != null) {
