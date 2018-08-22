@@ -3,6 +3,11 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="actionMenuTextColor">#228b22</item>
+        <item name="colorPrimaryDark">#fcfcfc</item>
+        <!--设置透明背景-->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
 </resources>
