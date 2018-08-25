@@ -72,11 +72,25 @@ export default class SignUpPage extends React.Component {
 
 
         const { signInUpActions } = this.props;
-        //signInUpActions.requestSignUp(this.state.phoneNo,this.state.smsCode,this.state.nickName,this.state.password);
+        signInUpActions.requestSignUp(this.state.phoneNo,this.state.smsCode,this.state.nickName,this.state.password);
     }
 
     _handleBack() {
         return true;
+    }
+
+    _checkGetSmsCode(ret){
+
+        if('registered'==ret){
+            ToastUtil.showShort("该手机号已被注册");
+        }
+        else if('success'==ret){
+            ToastUtil.showShort("验证码已发送到您的手机上，请注意查收");
+        }
+        else{
+            ToastUtil.showShort("获取验证码失败，请稍候再重试");
+        }
+    
     }
 
     _getSmsCode(){
@@ -98,12 +112,15 @@ export default class SignUpPage extends React.Component {
           .then((responseData) => {
             if (isOk) {
                 console.log(responseData);
+                this._checkGetSmsCode(responseData);
             } else {
                 console.log(responseData);
+                this._checkGetSmsCode('fail');
             }
           })
           .catch((error) => {
             console.error(error);
+            this._checkGetSmsCode('fail');
           });
 
         this.setState({smsGetDisable:true,countDownValue:60});

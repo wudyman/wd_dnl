@@ -152,7 +152,11 @@ export function* signUp(phoneNo,smsCode,nickName,password) {
     yield put(startSignUp());
     const ret = yield call(RequestUtil.request, SIGN_UP_URL, 'post',formData);
     yield put(endSignUp(ret));
-    if(ret == 'success')
+    if(ret == 'registered')
+    {
+      yield ToastUtil.showLong("该手机号已注册");
+    }
+    else if(ret == 'success')
     {
       yield ToastUtil.showLong("注册成功,请登录");
     }
