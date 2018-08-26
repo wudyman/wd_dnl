@@ -185,12 +185,7 @@ class Category extends React.Component {
           tempFollowTopics.map((topic)=>{tempFollowTopicsIds.push(topic.id);});
           let followTopicsIds=[];
           followTopics.map((topic)=>{followTopicsIds.push(topic.id);});
-          if (
-            followTopicsIds.sort().toString() ===
-            Array.from(tempFollowTopicsIds)
-              .sort()
-              .toString()
-          ) {
+          if (followTopicsIds.toString() ===Array.from(tempFollowTopicsIds).toString()) {
             navigate('Main');
             return;
           }

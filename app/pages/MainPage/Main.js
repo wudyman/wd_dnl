@@ -232,14 +232,13 @@ class Main extends React.Component {
             />
           )}
           initialPage={0}
-          locked={true}
-          scrollWithoutAnimation={true}
+          locked={false}
+          scrollWithoutAnimation={false}
           onChangeTab={(obj) => {
               console.log('**************MainPage onChangeTab*********');
               currentTabIndex=obj.i;
               this.setState({tabIndex:currentTabIndex});
               const { read } = this.props;
-              console.log(read);
               currentTopicId=myTopics[currentTabIndex].id;
               dataIndex=myTopics[currentTabIndex].dataIndex;
               if(0==dataIndex)
