@@ -25,6 +25,7 @@ import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
 import ArrowButton from '../../components/ArrowButton';
 import UserInfoPage from '../../pages/WebViewPage/UserInfoPageByWebView';
+import WebViewPage from '../../pages/WebViewPage/WebViewPage';
 
 
 const propTypes = {
@@ -47,7 +48,9 @@ class HomePage extends React.Component {
   }
 
   _openUserInfoPage(){
-    this.setState({userInfoPageModal:true});
+    //this.setState({userInfoPageModal:true});
+    let itemData={'url':this.state.userInfo.url,'title':this.state.userInfo.name,'content':this.state.userInfo.mood,'thumbImage':this.state.userInfo.avatar};
+    this.props.navigation.navigate('Web',{itemData});
   }
 
   _closeUserInfoPage(){

@@ -5,29 +5,34 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
-      android:name=".MainApplication"
-      android:label="@string/app_name"
-      android:icon="@mipmap/ic_launcher"
-      android:allowBackup="false"
-      android:theme="@style/AppTheme">
-      <activity
-        android:name=".MainActivity"
+        android:name=".MainApplication"
         android:label="@string/app_name"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-        android:windowSoftInputMode="adjustResize">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-      </activity>
-      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-      <!--react-native异常捕捉
-      <receiver android:name=".ReactNativeJSCrashReceiver">
-          <intent-filter>
-              <action android:name="com.wd_dnl.android.REACT_NATIVE_CRASH_REPORT_ACTION" />
-          </intent-filter>
-      </receiver>
-      -->
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- wechat Activity -->
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:exported="true"
+            android:label="@string/app_name" />
+        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+        <!--react-native crash capture
+        <receiver android:name=".ReactNativeJSCrashReceiver">
+            <intent-filter>
+                <action android:name="com.wd_dnl.android.REACT_NATIVE_CRASH_REPORT_ACTION" />
+            </intent-filter>
+        </receiver>
+        -->
     </application>
 
 </manifest>

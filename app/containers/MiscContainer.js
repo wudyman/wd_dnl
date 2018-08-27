@@ -24,6 +24,7 @@ import SignPage from '../pages/MiscPage/SignPage';
 import WritePage from '../pages/WebViewPage/WritePageByWebView';
 import AskPage from '../pages/WebViewPage/AskPageByWebView';
 import SearchPage from '../pages/MiscPage/SearchPage';
+import UserInfoPage from '../pages/WebViewPage/UserInfoPageByWebView';
 
 import ToastUtil from '../utils/ToastUtil';
 import { WRITE_URL,ASK_URL} from '../constants/Urls';
@@ -49,6 +50,8 @@ class MiscContainer extends React.Component {
     const { params } = this.props.navigation.state;
     if(params.pageType=='search')
       return <SearchPage closePage={()=>this._closePage()} {...this.props}/>;
+    else if(params.pageType=='er')
+      return <UserInfoPage closePage={()=>this._closePage()} userInfoUrl={params.itemData.erUrl} {...this.props}/>;
     else if(params.isSignIn=='false')
       return <SignPage closePage={()=>this._closePage()} {...this.props} />;
     else if(params.pageType=='ask')

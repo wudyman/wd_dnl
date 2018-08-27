@@ -59,13 +59,24 @@ class WebViewPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isShareModal: false
+      isShareModal: false,
+      url:'',
+      title:'',
+      content:'',
+      thumbImage:''
     };
   }
 
   componentDidMount() {
     this.props.navigation.setParams({ handleShare: this.onActionSelected });
     BackHandler.addEventListener('hardwareBackPress', this.goBack);
+    const { params } = this.props.navigation.state;
+    this.setState({
+      url:params.itemData.url,
+      title:params.itemData.title,
+      content:params.itemData.format_content,
+      thumbImage:params.itemData.contentImg
+    });
   }
 
   componentWillUnmount() {
@@ -99,7 +110,7 @@ class WebViewPage extends React.Component {
   renderLoading = () => <LoadingView />;
 
   renderSpinner = () => {
-    const { params } = this.props.navigation.state;
+    //const { params } = this.props.navigation.state;
     return (
       <TouchableWithoutFeedback
         onPress={() => {
@@ -122,11 +133,11 @@ class WebViewPage extends React.Component {
                   WeChat.isWXAppInstalled().then((isInstalled) => {
                     if (isInstalled) {
                       WeChat.shareToSession({
-                        title: formatStringWithHtml(params.itemData.title),
-                        description: `分享自：${SITE_NAME}`,
-                        thumbImage: params.itemData.contentImg,
+                        title: formatStringWithHtml(this.state.title),
+                        description: formatStringWithHtml(this.state.content),
+                        thumbImage: this.state.thumbImage,
                         type: 'news',
-                        webpageUrl: params.itemData.url
+                        webpageUrl: this.state.url
                       }).catch((error) => {
                         ToastUtil.showShort(error.message, true);
                       });
@@ -147,10 +158,11 @@ class WebViewPage extends React.Component {
                   WeChat.isWXAppInstalled().then((isInstalled) => {
                     if (isInstalled) {
                       WeChat.shareToTimeline({
-                        title: formatStringWithHtml(`[@wd_dnl]${params.itemData.title}`),
-                        thumbImage: params.itemData.contentImg,
+                        title: formatStringWithHtml(`[@${SITE_NAME}]${this.state.title}`),
+                        description: formatStringWithHtml(this.state.content),
+                        thumbImage: this.state.thumbImage,
                         type: 'news',
-                        webpageUrl: params.itemData.url
+                        webpageUrl: this.state.url
                       }).catch((error) => {
                         ToastUtil.showShort(error.message, true);
                       });
@@ -193,7 +205,7 @@ class WebViewPage extends React.Component {
             this.webview = ref;
           }}
           style={styles.base}
-          source={{ uri: params.itemData.url }}
+          source={{ uri: this.state.url }}
           javaScriptEnabled
           domStorageEnabled
           startInLoadingState

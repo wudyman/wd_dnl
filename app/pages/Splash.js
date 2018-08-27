@@ -43,8 +43,8 @@ class Splash extends React.Component {
     };
 
     this._getUserInfo(REQUEST_USER_INFO_URL);
+    registerApp('wxea16bb245c9cb1dc');
     /*
-    registerApp('wxb24c445773822c79');
     if (!AV.applicationId) {
       AV.init({
         appId: 'Tfi1z7dN9sjMwSul8sYaTEvg-gzGzoHsz',

@@ -59,7 +59,13 @@ class NotificationPage extends React.Component {
 
                 notification.questionUrl=SITE_URL+"/question/"+notification.target_id+"/";
                 notification.erUrl=SITE_URL+"/er/"+notification.sender_id+"/";
-                notification.url="";
+                notification.url="";//SITE_URL+"/question/"+notification.target_id+"/";
+
+                /*********for wechat share******** */
+                notification.title="";//notification.target_title;
+                //notification.format_content="";
+                //notification.contentImg="";
+
                 notifications.push(notification);
             });
             return notifications;
@@ -94,12 +100,20 @@ class NotificationPage extends React.Component {
     }
 
     onPress = (type,itemData) => {
-        if('PEOPLE'==type)
-            itemData.url=itemData.erUrl;
-        else
-            itemData.url=itemData.questionUrl;
         const { navigate } = this.props.navigation;
-        navigate('Web', { itemData });
+        if('PEOPLE'==type)
+        {
+            itemData.url=itemData.erUrl;
+            itemData.title=itemData.sender_first_name;
+            //navigate('Misc', { pageType:'er',itemData });
+            navigate('Web', { itemData });
+        }
+        else
+        {
+            itemData.url=itemData.questionUrl;
+            itemData.title=itemData.target_title;
+            navigate('Web', { itemData });
+        }
       };
 
     onRefresh = () => {
