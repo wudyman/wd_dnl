@@ -34,3 +34,4 @@ export const WRITE_URL= SITE_URL+'/write/';
 export const ASK_URL= SITE_URL+'/ask/';
 
 export const FOLLOW_TOPICS_URL= SITE_URL+'/ajax/app_follow_topics/';
+export const NOTIFICATIONS_URL= SITE_URL+'/ajax/notifications/';

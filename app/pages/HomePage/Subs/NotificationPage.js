@@ -1,0 +1,179 @@
+/**
+ *
+ * Copyright 2016-present wd_dnl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+import React from 'react';
+import PropTypes from 'prop-types';
+import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-native';
+import store from 'react-native-simple-store';
+import ItemList from './ItemList';
+import ItemNotification from './ItemNotification';
+import { SITE_URL, NOTIFICATIONS_URL } from '../../../constants/Urls';
+
+const propTypes = {
+};
+
+class NotificationPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            notifications: [],
+            dataSource: new ListView.DataSource({
+                rowHasChanged: (row1, row2) => row1 !== row2
+            }),
+        }
+    }
+
+    componentWillMount() {
+        this._getNotifications();
+    }
+
+    _convertNotifications(ret)
+    {
+        if("fail"!=ret)
+        {
+            let notifications=[];
+            ret.map((item)=>{
+                let notification={};
+                notification.id=item[0];
+                notification.type=item[1];
+                notification.pub_date=item[2];
+                notification.sender_id=item[3];
+                notification.sender_first_name=item[4];
+                notification.target_id=item[5];
+                notification.target_title=item[6];
+                notification.status=item[7];
+
+                notification.questionUrl=SITE_URL+"/question/"+notification.target_id+"/";
+                notification.erUrl=SITE_URL+"/er/"+notification.sender_id+"/";
+                notification.url="";
+                notifications.push(notification);
+            });
+            return notifications;
+        }
+    }
+
+    _getNotifications(){
+        let url=NOTIFICATIONS_URL+'1/0/10/';
+        fetch(url, {
+            method:'POST',
+        })
+        .then((response) => {
+        if (response.ok) {
+            isOk = true;
+        } else {
+            isOk = false;
+        }
+        return response.json();
+        })
+        .then((responseData) => {
+        if (isOk) {
+            console.log(responseData);
+            let notifications=this._convertNotifications(responseData);
+            this.setState({notifications:notifications});
+        } else {
+            console.log(responseData);
+        }
+        })
+        .catch((error) => {
+        console.error(error);
+        });
+    }
+
+    onPress = (type,itemData) => {
+        if('PEOPLE'==type)
+            itemData.url=itemData.erUrl;
+        else
+            itemData.url=itemData.questionUrl;
+        const { navigate } = this.props.navigation;
+        navigate('Web', { itemData });
+      };
+
+    onRefresh = () => {
+        this._getNotifications();
+    };
+
+    onEndReached = () => {
+
+    };
+
+    _renderFooter = () => {
+
+    };
+
+
+
+    _renderItem = notification => (
+        <ItemNotification notification={notification} onPressHandler={this.onPress}/>
+    );
+
+    renderItems = () => {
+        let dataSource=this.state.dataSource.cloneWithRows(this.state.notifications);
+        return (
+        <ScrollView
+            automaticallyAdjustContentInsets={false}
+            horizontal={false}
+            contentContainerStyle={styles.no_data}
+            style={styles.base}
+            refreshControl={
+            <RefreshControl
+                refreshing={false}
+                onRefresh={this.onRefresh}
+                title="Loading..."
+                colors={['#228b22cc', '#00ff00ff', '#ffffbb33', '#ffff4444']}
+                //colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
+            />
+            }
+        >
+            <ItemList
+                dataSource={dataSource}
+                topicId={1}
+                isRefreshing={false}
+                onEndReached={this.onEndReached}
+                onRefresh={this.onRefresh}
+                renderFooter={this._renderFooter}
+                renderItem={this._renderItem}
+            />
+        </ScrollView>
+        );
+    };
+
+    render() {
+        return (
+        <View style={styles.container}>
+            <View style={styles.content}>
+                <View style={{height: 5, backgroundColor:'#f0f4f4'}}/>
+                {this.renderItems()}
+            </View>
+        </View>
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        backgroundColor: '#fff'
+    },
+    content: {
+        //flex: 1,
+        justifyContent: 'center',
+        paddingBottom: 10
+    },
+});
+NotificationPage.propTypes = propTypes;
+export default NotificationPage;

@@ -21,8 +21,8 @@ import { bindActionCreators } from 'redux';
 import * as signInUpCreators from '../actions/signinup';
 
 import SignPage from '../pages/MiscPage/SignPage';
-import WritePage from '../pages/MiscPage/WritePageByWebView';
-import AskPage from '../pages/MiscPage/AskPageByWebView';
+import WritePage from '../pages/WebViewPage/WritePageByWebView';
+import AskPage from '../pages/WebViewPage/AskPageByWebView';
 import SearchPage from '../pages/MiscPage/SearchPage';
 
 import ToastUtil from '../utils/ToastUtil';

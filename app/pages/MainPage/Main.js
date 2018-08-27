@@ -139,9 +139,9 @@ class Main extends React.Component {
     //const index = this.state.typeIds.indexOf(typeId);
   };
 
-  onPress = (article) => {
+  onPress = (itemData) => {
     const { navigate } = this.props.navigation;
-    navigate('Web', { article });
+    navigate('Web', { itemData });
   };
 
   onIconClicked = () => {

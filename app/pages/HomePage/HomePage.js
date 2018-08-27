@@ -24,7 +24,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
 import ArrowButton from '../../components/ArrowButton';
-import UserInfoPage from './UserInfoPageByWebView';
+import UserInfoPage from '../../pages/WebViewPage/UserInfoPageByWebView';
 
 
 const propTypes = {
@@ -59,6 +59,9 @@ class HomePage extends React.Component {
 
   _openSettingPage(){
     this.props.navigation.navigate('Sub',{subPage:'Setting'});
+  }
+  _openNotificationPage(){
+    this.props.navigation.navigate('Sub',{subPage:'Notification'});
   }
 
   componentWillMount() {
@@ -99,6 +102,7 @@ class HomePage extends React.Component {
               icon='ios-arrow-forward'
               iconSize={14}
               iconColor='#aaa'
+              onPress={() => this._openNotificationPage()}
               />
               <View style={{height: 1, backgroundColor:'#f0f4f4'}}/>
               <ArrowButton text="我的私信" textStyle={styles.arrowButtonTextStyle}

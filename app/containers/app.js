@@ -19,7 +19,7 @@ import { StackNavigator, TabNavigator } from 'react-navigation';
 import Splash from '../pages/Splash';
 import CategoryContainer from '../containers/CategoryContainer';
 import MainContainer from '../containers/MainContainer';
-import WebViewPage from '../pages/ItemDetail/WebViewPage';
+import WebViewPage from '../pages/WebViewPage/WebViewPage';
 import HomePageContainer from '../containers/HomePageContainer';
 import MiscContainer from '../containers/MiscContainer';
 import SubContainer from '../containers/SubContainer';
