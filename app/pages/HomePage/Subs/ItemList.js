@@ -21,7 +21,6 @@ import { ListView, RefreshControl, StyleSheet } from 'react-native';
 
 const ItemList = ({
   dataSource,
-  topicId,
   isRefreshing,
   onEndReached,
   onRefresh,
@@ -31,16 +30,17 @@ const ItemList = ({
   <ListView
     initialListSize={1}
     dataSource={dataSource}
+    enableEmptySections={true}
     renderRow={renderItem}
     style={styles.listView}
-    onEndReached={() => onEndReached(topicId)}
+    onEndReached={() => onEndReached()}
     onEndReachedThreshold={10}
     renderFooter={renderFooter}
     refreshControl={
       <RefreshControl
         style={styles.refreshControlBase}
         refreshing={isRefreshing}
-        onRefresh={() => onRefresh(topicId)}
+        onRefresh={() => onRefresh()}
         title="Loading..."
         colors={['#228b22cc', '#00ff00ff', '#ffffbb33', '#ffff4444']}
         //colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}

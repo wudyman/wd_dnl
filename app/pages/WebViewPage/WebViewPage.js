@@ -37,6 +37,7 @@ import WebView2 from '../../components/WebView2';
 import { SITE_NAME } from '../../constants/Urls';
 
 let canGoBack = false;
+let lastCanGoBack = false;
 const shareIconWechat = require('../../img/share_icon_wechat.png');
 const shareIconMoments = require('../../img/share_icon_moments.png');
 
@@ -68,6 +69,7 @@ class WebViewPage extends React.Component {
   }
 
   componentDidMount() {
+    console.log('***********WebViewPage componentDidMount***************');
     this.props.navigation.setParams({ handleShare: this.onActionSelected });
     BackHandler.addEventListener('hardwareBackPress', this.goBack);
     const { params } = this.props.navigation.state;
@@ -80,6 +82,7 @@ class WebViewPage extends React.Component {
   }
 
   componentWillUnmount() {
+    console.log('***********WebViewPage componentWillUnmount***************');
     BackHandler.removeEventListener('hardwareBackPress', this.goBack);
   }
 
@@ -91,10 +94,12 @@ class WebViewPage extends React.Component {
 
   onNavigationStateChange = (navState) => {
     canGoBack = navState.canGoBack;
+    if((lastCanGoBack)&&(!canGoBack))
+      this.props.navigation.pop();
+    lastCanGoBack=canGoBack;
   };
 
   goBack = () => {
-    console.log("******goBack*******");
     if (this.state.isShareModal) {
       this.setState({
         isShareModal: false
@@ -185,7 +190,7 @@ class WebViewPage extends React.Component {
   };
 
   render() {
-    const { params } = this.props.navigation.state;
+    //const { params } = this.props.navigation.state;
     return (
       <View style={styles.container}>
         <Modal

@@ -21,11 +21,14 @@ import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-na
 import store from 'react-native-simple-store';
 import ItemList from './ItemList';
 import ItemNotification from './ItemNotification';
+import { concatFilterDuplicate } from '../../../utils/FormatUtil';
 import { SITE_URL, NOTIFICATIONS_URL } from '../../../constants/Urls';
+import { DATA_STEP } from '../../../constants/Constants';
 
 const propTypes = {
 };
 
+let start=0;
 class NotificationPage extends React.Component {
     constructor(props) {
         super(props);
@@ -38,14 +41,18 @@ class NotificationPage extends React.Component {
     }
 
     componentWillMount() {
-        this._getNotifications();
+        console.log('**************NotificationPage componentWillMount*********');
+        this.setState({notifications:[]});
+        start=0;
+        this._getNotifications(start);
+        start=start+DATA_STEP*2;
     }
 
     _convertNotifications(ret)
     {
+        let notifications=[];
         if("fail"!=ret)
         {
-            let notifications=[];
             ret.map((item)=>{
                 let notification={};
                 notification.id=item[0];
@@ -68,12 +75,14 @@ class NotificationPage extends React.Component {
 
                 notifications.push(notification);
             });
-            return notifications;
         }
+        return concatFilterDuplicate(this.state.notifications,notifications);
     }
 
-    _getNotifications(){
-        let url=NOTIFICATIONS_URL+'1/0/10/';
+    _getNotifications(start){
+        let end=start+DATA_STEP*2;
+        let url=NOTIFICATIONS_URL+'1/'+start+'/'+end+'/';
+        console.log(url);
         fetch(url, {
             method:'POST',
         })
@@ -117,15 +126,22 @@ class NotificationPage extends React.Component {
       };
 
     onRefresh = () => {
-        this._getNotifications();
+        console.log('**************NotificationPage onRefresh*********');
+        this.setState({notifications:[]});
+        start=0;
+        this._getNotifications(start);
+        start=start+DATA_STEP*2;
     };
 
     onEndReached = () => {
-
+        console.log('**************NotificationPage onEndReached*********');
+        this._getNotifications(start);
+        start=start+DATA_STEP*2;
     };
 
     _renderFooter = () => {
-
+        console.log('**************NotificationPage _renderFooter*********');
+        return <View />;
     };
 
 
@@ -154,7 +170,6 @@ class NotificationPage extends React.Component {
         >
             <ItemList
                 dataSource={dataSource}
-                topicId={1}
                 isRefreshing={false}
                 onEndReached={this.onEndReached}
                 onRefresh={this.onRefresh}
