@@ -57,14 +57,14 @@ class MainContainer extends React.Component {
     });
   }
 
-  static componentDidMount() {
+  componentDidMount() {
     console.log('**************MainContainer componentDidMount*********');
     CodePush.sync({
-      deploymentKey: 'RGOUfyINiLicZnld67aD0nrbRvyLV1Ifekvul',
+      deploymentKey: 'i08yF2_VmL5fc-x6-TFNP4jvAlSP53e08c89-2ae8-489d-b663-3966535e6711',
       updateDialog: {
         optionalIgnoreButtonLabel: '稍后',
-        optionalInstallButtonLabel: '后台更新',
-        optionalUpdateMessage: '大农令有新版本了，是否更新？',
+        optionalInstallButtonLabel: '立即更新',
+        optionalUpdateMessage: '有新版本了，是否更新？',
         title: '更新提示'
       },
       installMode: CodePush.InstallMode.ON_NEXT_RESTART

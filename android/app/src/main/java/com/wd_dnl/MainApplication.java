@@ -13,7 +13,9 @@ import com.wd_dnl.webview.WebViewReactPackage;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.theweflex.react.WeChatPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
+import com.microsoft.codepush.react.CodePush;
 import com.oblador.vectoricons.VectorIconsPackage;
+import javax.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,9 +36,16 @@ public class MainApplication extends Application implements ReactApplication {
           new CustomToastPackage(),
           new WebViewReactPackage(),
           new WeChatPackage(),
+          new CodePush(BuildConfig.CODEPUSH_KEY, MainApplication.this, BuildConfig.DEBUG),
           new RNDeviceInfo(),
           new VectorIconsPackage()
       );
+    }
+
+    @Nullable
+    @Override
+    protected String getJSBundleFile() {
+        return CodePush.getJSBundleFile();
     }
 
     @Override
