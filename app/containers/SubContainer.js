@@ -17,6 +17,8 @@
  */
 import React from 'react';
 import NotificationPage from '../pages/HomePage/Subs/NotificationPage';
+import ConversationPage from '../pages/HomePage/Subs/ConversationPage';
+import ConversationMessagePage from '../pages/HomePage/Subs/ConversationMessagePage';
 import SettingPage from '../pages/HomePage/Subs/SettingPage';
 import AboutPage from '../pages/HomePage/Subs/AboutPage';
 import FeedbackPage from '../pages/HomePage/Subs/FeedbackPage';
@@ -37,6 +39,10 @@ class SubContainer extends React.Component {
     const { params } = this.props.navigation.state;
     if(params.subPage=='Notification')
       return <NotificationPage closePage={()=>this._closePage()} {...this.props}/>;
+    else if(params.subPage=='Conversation')
+      return <ConversationPage closePage={()=>this._closePage()} {...this.props}/>;
+    else if(params.subPage=='ConversationMessage')
+      return <ConversationMessagePage conversationId={params.conversationId} closePage={()=>this._closePage()} {...this.props}/>;
     else if(params.subPage=='Setting')
         return <SettingPage closePage={()=>this._closePage()} {...this.props}/>;
     else if(params.subPage=='about')

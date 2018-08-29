@@ -24,7 +24,7 @@ const request = (url, method, data) => {
   console.log(data);
   return new Promise((resolve, reject) => {
     fetch(getUrl(url), {
-      method:'POST',
+      method:method,
       /*
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
@@ -54,6 +54,35 @@ const request = (url, method, data) => {
   });
 };
 
+const requestWithCallback = (url, method, data,callback) => {
+  let isOk;
+  console.log(url);
+  console.log(data);
+  fetch(url, {
+      method:method,
+      body:data
+  })
+  .then((response) => {
+  if (response.ok) {
+      isOk = true;
+  } else {
+      isOk = false;
+  }
+  return response.json();
+  })
+  .then((responseData) => {
+  if (isOk) {
+      callback(responseData);
+  } else {
+      console.log(responseData);
+  }
+  })
+  .catch((error) => {
+  console.error(error);
+  });
+};
+
 export default {
-  request
+  request,
+  requestWithCallback
 };

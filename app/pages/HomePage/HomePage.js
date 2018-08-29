@@ -63,8 +63,13 @@ class HomePage extends React.Component {
   _openSettingPage(){
     this.props.navigation.navigate('Sub',{subPage:'Setting'});
   }
+
   _openNotificationPage(){
     this.props.navigation.navigate('Sub',{subPage:'Notification'});
+  }
+
+  _openConversationPage(){
+    this.props.navigation.navigate('Sub',{subPage:'Conversation'});
   }
 
   componentWillMount() {
@@ -112,6 +117,7 @@ class HomePage extends React.Component {
               icon='ios-arrow-forward-outline'
               iconSize={14}
               iconColor='#aaa'
+              onPress={() => this._openConversationPage()}
               />
               <View style={{height: 1, backgroundColor:'#f0f4f4'}}/>
               <ArrowButton text="设置" textStyle={styles.arrowButtonTextStyle}

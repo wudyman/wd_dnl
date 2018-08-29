@@ -31,6 +31,7 @@ const maxWidth = Dimensions.get('window').width;
 const splashImg = require('../img/splash.png');
 let bDone=false;
 
+global.gUserInfo={};
 class Splash extends React.Component {
   static navigationOptions = {
     header: null
@@ -129,6 +130,8 @@ class Splash extends React.Component {
     else if("nologin"==ret)
     {
       userInfo.isSignIn='false';
+      gUserInfo={};
+      gUserInfo.isSignIn=userInfo.isSignIn;
       store.save('userInfo',userInfo).then(this._goToNext());
     }
     else
@@ -146,6 +149,11 @@ class Splash extends React.Component {
     
       userInfo.url=SITE_URL+'/er/'+userInfo.id+'/';
       userInfo.isSignIn='true';
+
+      gUserInfo.id=userInfo.id;
+      gUserInfo.name=userInfo.name;
+      gUserInfo.avatar=userInfo.avatar;
+      gUserInfo.isSignIn=userInfo.isSignIn;
 
       followTopicsArray.map((item)=>{
         let tempTopic={'id':item[0],'name':item[1],'dataIndex':0};
