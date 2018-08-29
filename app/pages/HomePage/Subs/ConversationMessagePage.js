@@ -206,21 +206,6 @@ class ConversationMessagePage extends React.Component {
     renderItems = () => {
         let dataSource=this.state.dataSource.cloneWithRows(this.state.messages);
         return (
-        <ScrollView
-            automaticallyAdjustContentInsets={false}
-            horizontal={false}
-            contentContainerStyle={styles.no_data}
-            style={styles.base}
-            refreshControl={
-            <RefreshControl
-                refreshing={false}
-                onRefresh={this.onRefresh}
-                title="Loading..."
-                colors={['#228b22cc', '#00ff00ff', '#ffffbb33', '#ffff4444']}
-                //colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
-            />
-            }
-        >
             <ItemList
                 dataSource={dataSource}
                 isRefreshing={false}
@@ -229,13 +214,13 @@ class ConversationMessagePage extends React.Component {
                 renderFooter={this._renderFooter}
                 renderItem={this._renderItem}
             />
-        </ScrollView>
         );
     };
 
     render() {
         return (
         <View style={styles.container}>
+            <View style={{height: 5, backgroundColor:'#f0f4f4'}}/>
             <View style={styles.letterTo}>
                 <Text style={styles.letterToText}>发私信给 {letterToName}:</Text>
             </View>
@@ -263,7 +248,6 @@ class ConversationMessagePage extends React.Component {
                 />
             </View>
             <View style={styles.content}>
-                <View style={{height: 5, backgroundColor:'#f0f4f4'}}/>
                 {this.renderItems()}
             </View>
         </View>
@@ -309,15 +293,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#fff'
     },
-    base: {
-        //flex: 1,
-        //justifyContent: 'center',
-        //paddingBottom: 50
-    },
     content: {
-        //flex: 1,
+        flex: 1,
+        flexDirection: 'column',
         //justifyContent: 'center',
-        paddingBottom: 300
+        paddingBottom: 1
     },
 });
 ConversationMessagePage.propTypes = propTypes;

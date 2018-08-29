@@ -163,21 +163,6 @@ class ConversationPage extends React.Component {
     renderItems = () => {
         let dataSource=this.state.dataSource.cloneWithRows(this.state.conversations);
         return (
-        <ScrollView
-            automaticallyAdjustContentInsets={false}
-            horizontal={false}
-            contentContainerStyle={styles.no_data}
-            style={styles.base}
-            refreshControl={
-            <RefreshControl
-                refreshing={false}
-                onRefresh={this.onRefresh}
-                title="Loading..."
-                colors={['#228b22cc', '#00ff00ff', '#ffffbb33', '#ffff4444']}
-                //colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
-            />
-            }
-        >
             <ItemList
                 dataSource={dataSource}
                 isRefreshing={false}
@@ -186,7 +171,6 @@ class ConversationPage extends React.Component {
                 renderFooter={this._renderFooter}
                 renderItem={this._renderItem}
             />
-        </ScrollView>
         );
     };
 
@@ -211,7 +195,7 @@ const styles = StyleSheet.create({
     content: {
         //flex: 1,
         justifyContent: 'center',
-        paddingBottom: 10
+        paddingBottom: 1
     },
 });
 ConversationPage.propTypes = propTypes;

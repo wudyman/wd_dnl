@@ -42,7 +42,7 @@ const ItemConversationMessage = ({ message, onPressHandler}) => (
         </View>
         <View style={styles.deleteConversation}>
             <TouchableOpacity style={styles.message} onPress={() => onPressHandler('DELETE',message)}>
-                <Text style={styles.deleteConversationText}>删除对话</Text>
+                <Text style={styles.deleteConversationText}>删除</Text>
             </TouchableOpacity>
         </View>
     </View>
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     timeAgo: {
-        paddingRight: 150
+        width: 300
     },
     timeAgoText: {
         fontSize: 14,

@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     timeAgo: {
-        paddingRight: 100
+        width: 200
     },
     timeAgoText: {
         fontSize: 14,
