@@ -37,3 +37,4 @@ export const FOLLOW_TOPICS_URL= SITE_URL+'/ajax/app_follow_topics/';
 export const NOTIFICATIONS_URL= SITE_URL+'/ajax/notifications/';
 export const CONVERSATIONS_URL= SITE_URL+'/ajax/conversations/';
 export const CONVERSATION_MESSAGES_URL= SITE_URL+'/ajax/conversation_messages/';
+export const SEND_MESSAGE_URL= SITE_URL+'/ajax/send_message/';

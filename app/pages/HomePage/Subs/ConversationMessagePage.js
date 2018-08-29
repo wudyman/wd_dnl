@@ -17,13 +17,15 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-native';
+import { ScrollView, RefreshControl, StyleSheet, View, ListView, Text, TextInput, Keyboard } from 'react-native';
 import store from 'react-native-simple-store';
 import RequestUtil from '../../../utils/RequestUtil';
 import ItemList from './ItemList';
 import ItemConversationMessage from './ItemConversationMessage';
+import Button from '../../../components/Button';
+import ToastUtil from '../../../utils/ToastUtil';
 import { concatFilterDuplicate } from '../../../utils/FormatUtil';
-import { SITE_URL, CONVERSATION_MESSAGES_URL } from '../../../constants/Urls';
+import { SITE_URL, CONVERSATION_MESSAGES_URL, SEND_MESSAGE_URL } from '../../../constants/Urls';
 import { DATA_STEP } from '../../../constants/Constants';
 
 const propTypes = {
@@ -31,6 +33,9 @@ const propTypes = {
 
 let start=0;
 let conversationId=0;
+let letterToId;
+let letterToName;
+let letterText;
 class ConversationMessagePage extends React.Component {
     constructor(props) {
         super(props);
@@ -44,6 +49,7 @@ class ConversationMessagePage extends React.Component {
 
     componentWillMount() {
         console.log('**************ConversationMessagePage componentWillMount*********');
+        letterText = '';
         conversationId=this.props.conversationId;
         this.setState({messages:[]});
         start=0;
@@ -79,11 +85,15 @@ class ConversationMessagePage extends React.Component {
                     message.sender_name="我";
                     message.letter_id=message.receiver_id;
                     message.letter_name=message.receiver_name;
+                    letterToId=message.receiver_id;
+                    letterToName=message.receiver_name;
                 }
                 else
                 {
                     message.letter_id=message.sender_id;
                     message.letter_name=message.sender_name;
+                    letterToId=message.sender_id
+                    letterToName=message.sender_name;
                 }
                 message.er_url=SITE_URL+"/er/"+message.sender_id+"/";
 
@@ -115,6 +125,31 @@ class ConversationMessagePage extends React.Component {
         let end=start+DATA_STEP*2;
         let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+start+'/'+end+'/';
         RequestUtil.requestWithCallback(url,'POST','',this._convertConversationMessages.bind(this));
+    }
+
+    _sendLetterCallback(ret){
+        if("fail"!=ret)
+        {
+            let messages=[];
+            let message={};
+            message.id=ret;
+            message.content=letterText;
+            message.pub_date=new Date();
+            message.sender_id=gUserInfo.id;
+            message.sender_name='我';
+            message.sender_avatar=gUserInfo.avatar;
+            message.er_url=SITE_URL+"/er/"+message.sender_id+"/";
+
+            messages.push(message);
+            this.setState({messages:concatFilterDuplicate(messages,this.state.messages)});
+        }
+    }
+
+    _sendLetter(){
+        let formData=new FormData();
+        formData.append("content",letterText);
+        let url=SEND_MESSAGE_URL+letterToId+'/';
+        RequestUtil.requestWithCallback(url,'POST',formData,this._sendLetterCallback.bind(this));
     }
 
     onPress = (type,itemData) => {
@@ -152,7 +187,17 @@ class ConversationMessagePage extends React.Component {
         return <View />;
     };
 
-
+    onActionSelected = () => {
+        letterText=letterText.replace(/\s+/g, '');
+        if (letterText === undefined || letterText === '') {
+          ToastUtil.showShort('请填写建议内容哦~');
+        } else {
+          this._sendLetter();
+          this.textInput.clear();
+          Keyboard.dismiss();
+          //ToastUtil.showShort('已发送');
+        }
+    };
 
     _renderItem = message => (
         <ItemConversationMessage message={message} onPressHandler={this.onPress}/>
@@ -191,6 +236,32 @@ class ConversationMessagePage extends React.Component {
     render() {
         return (
         <View style={styles.container}>
+            <View style={styles.letterTo}>
+                <Text style={styles.letterToText}>发私信给 {letterToName}:</Text>
+            </View>
+            <View style={styles.letterContent}>
+                <TextInput
+                ref={(ref) => {
+                    this.textInput = ref;
+                }}
+                style={styles.textInput}
+                placeholder={'内容...'}
+                placeholderTextColor="#aaaaaa"
+                underlineColorAndroid="transparent"
+                multiline
+                onChangeText={(text) => {
+                    letterText = text;
+                }}
+                />
+            </View>
+            <View>
+                <Button
+                btnStyle={styles.submitBtn}
+                textStyle={styles.submitBtnText}
+                text="发送"
+                onPress={() => this.onActionSelected()}
+                />
+            </View>
             <View style={styles.content}>
                 <View style={{height: 5, backgroundColor:'#f0f4f4'}}/>
                 {this.renderItems()}
@@ -206,10 +277,47 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#fff'
     },
+    letterTo: {
+        margin:10,
+    },
+    letterToText: {
+        fontWeight:'900',
+    },
+    letterContent: {
+        minHeight:100,
+        marginLeft:10,
+        marginRight:10,
+        borderColor:'#f0f0f0',
+        borderWidth:1,
+        borderRadius: 3
+    },
+    textInput: {
+        flex: 1,
+        fontSize: 16,
+        padding: 10,
+        textAlignVertical: 'top'
+    },
+    submitBtn: {
+        margin: 10,
+        marginLeft:200,
+        padding: 5,
+        borderRadius: 5,
+        backgroundColor: '#228b22'
+    },
+    submitBtnText: {
+        fontSize: 16,
+        textAlign: 'center',
+        color: '#fff'
+    },
+    base: {
+        //flex: 1,
+        //justifyContent: 'center',
+        //paddingBottom: 50
+    },
     content: {
         //flex: 1,
-        justifyContent: 'center',
-        paddingBottom: 10
+        //justifyContent: 'center',
+        paddingBottom: 300
     },
 });
 ConversationMessagePage.propTypes = propTypes;
