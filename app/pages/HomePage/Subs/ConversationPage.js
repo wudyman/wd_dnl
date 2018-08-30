@@ -98,7 +98,6 @@ class ConversationPage extends React.Component {
                 }
             });
         }
-        console.log(conversations);
         this.setState({conversations:concatFilterDuplicate(this.state.conversations,conversations)});
         //return concatFilterDuplicate(this.state.conversations,conversations);
         

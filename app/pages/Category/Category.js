@@ -71,7 +71,6 @@ class Category extends React.Component {
           }
           tempFollowTopicsIds=[];
           tempFollowTopics.map((topic)=>{tempFollowTopicsIds.push(topic.id);});
-          console.log(tempFollowTopicsIds);
         });
       });
     }
@@ -117,7 +116,6 @@ class Category extends React.Component {
     }
     tempFollowTopicsIds=[];
     tempFollowTopics.map((topic)=>{tempFollowTopicsIds.push(topic.id);});
-    console.log(tempFollowTopicsIds);
 
     this.setState({
       followTopics: tempFollowTopics
@@ -182,7 +180,6 @@ class Category extends React.Component {
   };
 
   routeMain = () => {
-    console.log(this.state.followTopics);
     const { navigate } = this.props.navigation;
     DeviceEventEmitter.emit('changeCategory', this.state.followTopics);
     navigate('Main');

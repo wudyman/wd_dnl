@@ -73,8 +73,6 @@ class Main extends React.Component {
       console.log('**************MainPage componentDidMount changeCategory*********');
       myTopics = new Array(Object.assign({},preTopic1),Object.assign({},preTopic2));
       myTopics=myTopics.concat(followTopics);
-      //readActions.requestArticleList(currentTopicId, currentTabIndex, dataIndex, false, true);
-      //console.log(this.refs.myScrollableTabView);
       this.refs.myScrollableTabView.goToPage(0);
     });
 
@@ -95,8 +93,6 @@ class Main extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { read } = this.props;
-    //console.log(read);
-    //console.log(nextProps);
     if (
       read.isLoadMore &&
       !nextProps.read.isLoadMore &&
@@ -110,15 +106,10 @@ class Main extends React.Component {
 
     if((read.loading && !nextProps.read.loading)||(read.isRefreshing && !nextProps.read.isRefreshing)||(read.isLoadMore && !nextProps.read.isLoadMore))
     {
-      //this.setState({followTopics[currentTabIndex].articleList:[]})
       let topicId=nextProps.read.topicId;
       if(topicId==currentTopicId)
       {
-        //this.state.followTopics[currentTabIndex].articleList=nextProps.read.articleList;
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-        console.log(currentTabIndex);
-        console.log(currentTopicId);
-        //console.log(this.state.followTopics);
       }
     }
   }
@@ -175,7 +166,6 @@ class Main extends React.Component {
   );
 
   renderContent = (topic) => {
-    console.log(topic);
     const { read } = this.props;
     if (read.loading) {
       return <LoadingView />;
@@ -188,7 +178,6 @@ class Main extends React.Component {
         <EmptyView read={read} topicId={topic.id} onRefresh={this.onRefresh} />
       );
     }
-    console.log("$$$$$$$$$$$$$$$$$$$$$$$$"+topic.id);
     let dataSource=this.state.dataSource.cloneWithRows(getArticleList(read.articleList[currentTabIndex]));
     return (
       <ItemListView
@@ -204,8 +193,6 @@ class Main extends React.Component {
   };
 
   render() {
-    //console.log(this.props);
-    //const { read } = this.props;
     const content = myTopics.map((topic) => {
       const typeView = (
         <View key={topic.id} tabLabel={topic.name} style={styles.base}>

@@ -83,7 +83,6 @@ class WebViewPage extends React.Component {
   };
 
   goBack = () => {
-    console.log("******goBack*******");
     if (this.state.isShareModal) {
       this.setState({
         isShareModal: false

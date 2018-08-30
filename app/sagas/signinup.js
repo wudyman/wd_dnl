@@ -103,14 +103,11 @@ export function* signIn(phoneNo,password) {
         if(followTopics!=['nologin'])
           {
             let oldFollowTopics=yield call(store.get, 'followTopics');
-            console.log(oldFollowTopics.length);
             if(oldFollowTopics.length>0)
             {
               followTopics=concatFilterDuplicateTopics(followTopics,oldFollowTopics);
-              console.log(followTopics);
               let followTopicsIds=[];
               followTopics.map((topic)=>{followTopicsIds.push(topic.id);});
-              console.log(followTopicsIds);
               let formData=new FormData();
               formData.append("topicsIds",""+followTopicsIds);
               yield call(RequestUtil.request, FOLLOW_TOPICS_URL, 'post',formData);

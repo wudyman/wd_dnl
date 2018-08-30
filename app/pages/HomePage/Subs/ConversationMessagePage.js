@@ -110,7 +110,6 @@ class ConversationMessagePage extends React.Component {
 
             });
         }
-        console.log(messages);
         this.setState({messages:concatFilterDuplicate(this.state.messages,messages)});
         //return concatFilterDuplicate(this.state.conversations,conversations);
         
