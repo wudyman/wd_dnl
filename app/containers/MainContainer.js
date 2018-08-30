@@ -59,13 +59,17 @@ class MainContainer extends React.Component {
     console.log('**************MainContainer componentDidMount*********');
     CodePush.sync({
       deploymentKey: 'i08yF2_VmL5fc-x6-TFNP4jvAlSP53e08c89-2ae8-489d-b663-3966535e6711',
+      /*
       updateDialog: {
         optionalIgnoreButtonLabel: '稍后',
         optionalInstallButtonLabel: '立即更新',
         optionalUpdateMessage: '有新版本了，是否更新？',
         title: '更新提示'
       },
+      */
       installMode: CodePush.InstallMode.ON_NEXT_RESTART
+      //installMode: CodePush.InstallMode.IMMEDIATE,
+      //mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE
     });
   }
 
