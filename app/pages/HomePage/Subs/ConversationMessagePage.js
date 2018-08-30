@@ -44,7 +44,9 @@ class ConversationMessagePage extends React.Component {
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => row1 !== row2
             }),
-        }
+        },
+        this.aInterval=null;
+        this.componentWillUnmount=this.componentWillUnmount.bind(this);
     }
 
     componentWillMount() {
@@ -53,12 +55,18 @@ class ConversationMessagePage extends React.Component {
         conversationId=this.props.conversationId;
         this.setState({messages:[]});
         start=0;
-        this._getConversationMessages(start);
+        this._getNewMessages();
         start=start+DATA_STEP*2;
+
+        this.aInterval=setInterval(this._getNewMessages.bind(this),10*1000);
     }
 
-    _getConversationMessagesCallback(ret)
-    {
+    componentWillUnmount() {
+        console.log('**************ConversationMessagePage componentWillUnmount*********');
+        clearInterval(this.aInterval);
+    }
+
+    _convertMessages(ret){
         let messages=[];
         if("fail"!=ret)
         {
@@ -110,18 +118,35 @@ class ConversationMessagePage extends React.Component {
 
             });
         }
-        this.setState({messages:concatFilterDuplicate(this.state.messages,messages)});
-        //return concatFilterDuplicate(this.state.conversations,conversations);
-        
+        return messages;
     }
 
-    _getConversationMessages(start){
+    _getNewMessagesCallback(ret){
+        let messages=this._convertMessages(ret);
+        this.setState({messages:concatFilterDuplicate(messages,this.state.messages)});
+    }
+
+    _getNewMessages(){
+        console.log('**************ConversationMessagePage _getNewMessages*********');
+        let end=0+DATA_STEP*2;
+        let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+0+'/'+end+'/';
+        RequestUtil.requestWithCallback(url,'POST','',this._getNewMessagesCallback.bind(this));
+    }
+
+    _getMoreMessagesCallback(ret)
+    {
+        let messages=this._convertMessages(ret);
+        this.setState({messages:concatFilterDuplicate(this.state.messages,messages)});
+        //return concatFilterDuplicate(this.state.conversations,conversations);       
+    }
+
+    _getMoreMessages(start){
         let end=start+DATA_STEP*2;
         let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+start+'/'+end+'/';
-        RequestUtil.requestWithCallback(url,'POST','',this._getConversationMessagesCallback.bind(this));
+        RequestUtil.requestWithCallback(url,'POST','',this._getMoreMessagesCallback.bind(this));
     }
 
-    _sendLetterCallback(ret){
+    _sendMessageCallback(ret){
         if("fail"!=ret)
         {
             let messages=[];
@@ -139,11 +164,11 @@ class ConversationMessagePage extends React.Component {
         }
     }
 
-    _sendLetter(){
+    _sendMessage(){
         let formData=new FormData();
         formData.append("content",letterText);
         let url=SEND_MESSAGE_URL+letterToId+'/';
-        RequestUtil.requestWithCallback(url,'POST',formData,this._sendLetterCallback.bind(this));
+        RequestUtil.requestWithCallback(url,'POST',formData,this._sendMessageCallback.bind(this));
     }
 
     _deleteMessageCallback(ret){
@@ -188,15 +213,12 @@ class ConversationMessagePage extends React.Component {
 
     onRefresh = () => {
         console.log('**************ConversationMessagePage onRefresh*********');
-        this.setState({messages:[]});
-        start=0;
-        this._getConversationMessages(start);
-        start=start+DATA_STEP*2;
+        this._getNewMessages();
     };
 
     onEndReached = () => {
         console.log('**************ConversationMessagePage onEndReached*********');
-        this._getConversationMessages(start);
+        this._getMoreMessages(start);
         start=start+DATA_STEP*2;
     };
 
@@ -210,7 +232,7 @@ class ConversationMessagePage extends React.Component {
         if (letterText === undefined || letterText === '') {
           ToastUtil.showShort('请填写建议内容哦~');
         } else {
-          this._sendLetter();
+          this._sendMessage();
           this.textInput.clear();
           Keyboard.dismiss();
           //ToastUtil.showShort('已发送');

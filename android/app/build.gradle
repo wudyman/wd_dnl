@@ -107,8 +107,8 @@ android {
         applicationId "com.wd_dnl"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0.2"
+        versionCode 3
+        versionName "1.0.3"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
