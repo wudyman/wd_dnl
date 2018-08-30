@@ -18,6 +18,7 @@
 
 import React from 'react';
 import {Text, View, StyleSheet, Platform, TextInput, BackHandler} from 'react-native';
+import RequestUtil from '../../utils/RequestUtil';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
 import { GET_SMS_URL, SITE_NAME } from '../../constants/Urls';
@@ -79,7 +80,7 @@ export default class SignUpPage extends React.Component {
         return true;
     }
 
-    _checkGetSmsCode(ret){
+    _getSmsCodeCallback(ret){
 
         if('registered'==ret){
             ToastUtil.showShort("该手机号已被注册");
@@ -94,34 +95,11 @@ export default class SignUpPage extends React.Component {
     }
 
     _getSmsCode(){
+        let url=GET_SMS_URL;
         let formData=new FormData();
         formData.append("phone_no",this.state.phoneNo);
         formData.append("type","register");
-        fetch(GET_SMS_URL, {
-          method:'POST',
-          body:formData
-        })
-          .then((response) => {
-            if (response.ok) {
-              isOk = true;
-            } else {
-              isOk = false;
-            }
-            return response.json();
-          })
-          .then((responseData) => {
-            if (isOk) {
-                console.log(responseData);
-                this._checkGetSmsCode(responseData);
-            } else {
-                console.log(responseData);
-                this._checkGetSmsCode('fail');
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            this._checkGetSmsCode('fail');
-          });
+        RequestUtil.requestWithCallback(url,'POST',formData,this._getSmsCodeCallback.bind(this));
 
         this.setState({smsGetDisable:true,countDownValue:60});
         this.aInterval=setInterval(this._countDown.bind(this),1000);

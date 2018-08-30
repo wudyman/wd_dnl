@@ -49,7 +49,7 @@ class ConversationPage extends React.Component {
         start=start+DATA_STEP*2;
     }
 
-    _convertConversations(ret)
+    _getConversationsCallback(ret)
     {
         let conversations=[];
         if("fail"!=ret)
@@ -107,7 +107,7 @@ class ConversationPage extends React.Component {
     _getConversations(start){
         let end=start+DATA_STEP*2;
         let url=CONVERSATIONS_URL+'1/'+start+'/'+end+'/';
-        RequestUtil.requestWithCallback(url,'POST','',this._convertConversations.bind(this));
+        RequestUtil.requestWithCallback(url,'POST','',this._getConversationsCallback.bind(this));
     }
 
     _deleteConversationCallback(ret){

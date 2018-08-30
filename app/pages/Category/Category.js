@@ -33,9 +33,8 @@ import store from 'react-native-simple-store';
 import GridView from '../../components/GridView';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
+import RequestUtil from '../../utils/RequestUtil';
 import ToastUtil from '../../utils/ToastUtil';
-//import NavigationUtil from '../../utils/NavigationUtil';
-//import { HEAD_TOPIC_ID, ANSWER_TOPIC_ID } from '../../constants/Constants';
 import { FOLLOW_TOPICS_URL } from '../../constants/Urls';
 
 //let tempFollowTopicsIds = [HEAD_TOPIC_ID,ANSWER_TOPIC_ID];
@@ -92,31 +91,15 @@ class Category extends React.Component {
     }
   }
 
-  followTopicsServer(topicsIds) {
+  _followTopicsServerCallback(ret){
+
+  }
+
+  _followTopicsServer(topicsIds) {
+    let url=FOLLOW_TOPICS_URL;
     let formData=new FormData();
     formData.append("topicsIds",""+topicsIds);
-    fetch(FOLLOW_TOPICS_URL, {
-      method:'POST',
-      body:formData
-    })
-      .then((response) => {
-        if (response.ok) {
-          isOk = true;
-        } else {
-          isOk = false;
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (isOk) {
-          console.log(responseData);
-        } else {
-          console.log(responseData);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    RequestUtil.requestWithCallback(url,'POST',formData,this._followTopicsServerCallback.bind(this));
   }
 
   onRefresh = () => {
@@ -190,7 +173,7 @@ class Category extends React.Component {
         if("true"==isSignIn)
         {
           console.log('*******followTopicsServer********');
-          this.followTopicsServer(tempFollowTopicsIds);
+          this._followTopicsServer(tempFollowTopicsIds);
         }
         store.save('followTopics', this.state.followTopics).then(this.routeMain);
 

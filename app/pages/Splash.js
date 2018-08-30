@@ -43,7 +43,7 @@ class Splash extends React.Component {
       bounceValue: new Animated.Value(1)
     };
 
-    this._getUserInfo(REQUEST_USER_INFO_URL);
+    this._getUserInfo();
     registerApp('wxea16bb245c9cb1dc');
     /*
     if (!AV.applicationId) {
@@ -94,33 +94,7 @@ class Splash extends React.Component {
 
   }
 
-  _getUserInfo(url){
-    fetch(url, {
-      method:'POST'
-    })
-      .then((response) => {
-        if (response.ok) {
-          isOk = true;
-        } else {
-          isOk = false;
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (isOk) {
-          this._saveUserInfo(responseData);
-        } else {
-          console.log(responseData);
-          this._saveUserInfo('fail');
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        this._saveUserInfo('fail');
-      });
-  }
-
-  _saveUserInfo(ret){
+  _getUserInfoCallback(ret){
     gUserInfo={};
     let followTopics=[];
     if("fail"==ret)
@@ -167,6 +141,11 @@ class Splash extends React.Component {
         store.save('userInfo',gUserInfo).then(store.save('followTopics',followTopics)).then(this._goToNext());
       });
     }
+  }
+
+  _getUserInfo(){
+    let url=REQUEST_USER_INFO_URL;
+    RequestUtil.requestWithCallback(url,'POST','',this._getUserInfoCallback.bind(this));
   }
 
   render() {

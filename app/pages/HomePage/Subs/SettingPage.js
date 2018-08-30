@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, View } from 'react-native';
 import store from 'react-native-simple-store';
 import NavigationUtil from '../../../utils/NavigationUtil';
+import RequestUtil from '../../../utils/RequestUtil';
 import DeviceInfo from 'react-native-device-info';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../../../components/Button';
@@ -53,35 +54,21 @@ class SettingPage extends React.Component {
   _doNothing(){
   }
 
+  _logOutCallback(ret) {
+
+  }
+
   _logOut(){
-    fetch(LOG_OUT_URL, {
-      method:'POST',
-    })
-      .then((response) => {
-        if (response.ok) {
-          isOk = true;
-        } else {
-          isOk = false;
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (isOk) {
-            console.log(responseData);
-        } else {
-            console.log(responseData);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      gUserInfo={};
-      gUserInfo.isSignIn='false';
-      this.setState({userInfo: gUserInfo});
-      store.save('userInfo',gUserInfo)
-      .then(
-        NavigationUtil.reset(this.props.navigation, 'Home')
-      );
+    let url=LOG_OUT_URL;
+    RequestUtil.requestWithCallback(url,'POST','',this._logOutCallback.bind(this));
+    
+    gUserInfo={};
+    gUserInfo.isSignIn='false';
+    this.setState({userInfo: gUserInfo});
+    store.save('userInfo',gUserInfo)
+    .then(
+      NavigationUtil.reset(this.props.navigation, 'Home')
+    );
   
   }
 

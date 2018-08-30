@@ -75,10 +75,12 @@ const requestWithCallback = (url, method, data,callback) => {
       callback(responseData);
   } else {
       console.log(responseData);
+      callback('fail');
   }
   })
   .catch((error) => {
-  console.error(error);
+    console.error(error);
+    callback('fail');
   });
 };
 

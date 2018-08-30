@@ -19,6 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-native';
 import store from 'react-native-simple-store';
+import RequestUtil from '../../../utils/RequestUtil';
 import ItemList from './ItemList';
 import ItemNotification from './ItemNotification';
 import { concatFilterDuplicate } from '../../../utils/ItemsUtil';
@@ -48,7 +49,7 @@ class NotificationPage extends React.Component {
         start=start+DATA_STEP*2;
     }
 
-    _convertNotifications(ret)
+    _getNotificationsCallback(ret)
     {
         let notifications=[];
         if("fail"!=ret)
@@ -76,36 +77,14 @@ class NotificationPage extends React.Component {
                 notifications.push(notification);
             });
         }
-        return concatFilterDuplicate(this.state.notifications,notifications);
+        this.setState({notifications:concatFilterDuplicate(this.state.notifications,notifications)});
+        //return concatFilterDuplicate(this.state.notifications,notifications);
     }
 
     _getNotifications(start){
         let end=start+DATA_STEP*2;
         let url=NOTIFICATIONS_URL+'1/'+start+'/'+end+'/';
-        console.log(url);
-        fetch(url, {
-            method:'POST',
-        })
-        .then((response) => {
-        if (response.ok) {
-            isOk = true;
-        } else {
-            isOk = false;
-        }
-        return response.json();
-        })
-        .then((responseData) => {
-        if (isOk) {
-            console.log(responseData);
-            let notifications=this._convertNotifications(responseData);
-            this.setState({notifications:notifications});
-        } else {
-            console.log(responseData);
-        }
-        })
-        .catch((error) => {
-        console.error(error);
-        });
+        RequestUtil.requestWithCallback(url,'POST','',this._getNotificationsCallback.bind(this));
     }
 
     onPress = (type,itemData) => {

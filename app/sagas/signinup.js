@@ -26,34 +26,6 @@ import { SITE_URL } from '../constants/Urls';
 import { SIGN_IN_URL,REQUEST_USER_INFO_URL,SIGN_UP_URL,FOLLOW_TOPICS_URL } from '../constants/Urls';
 import { startSignIn,endSignIn,requestUserInfo,receiveUserInfo,startSignUp,endSignUp } from '../actions/signinup';
 
-function followTopicsServer(topicsIds) {
-  let formData=new FormData();
-  formData.append("topicsIds",""+topicsIds);
-  fetch(FOLLOW_TOPICS_URL, {
-    method:'POST',
-    body:formData
-  })
-    .then((response) => {
-      if (response.ok) {
-        isOk = true;
-      } else {
-        isOk = false;
-      }
-      console.log(response);
-      return response.json();
-    })
-    .then((responseData) => {
-      if (isOk) {
-        console.log(responseData);
-      } else {
-        console.log(responseData);
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-}
-
 function convertUserInfo(ret)
 {
   gUserInfo={};
@@ -90,6 +62,7 @@ function convertUserInfo(ret)
   }
   return gUserInfo;
 }
+
 function convertFollowTopics(ret)
 {
   let followTopics=[];
@@ -108,6 +81,7 @@ function convertFollowTopics(ret)
   }
   return followTopics;
 }
+
 export function* signIn(phoneNo,password) {
   let formData=new FormData();
   formData.append("phoneNo",phoneNo);
@@ -137,7 +111,9 @@ export function* signIn(phoneNo,password) {
               let followTopicsIds=[];
               followTopics.map((topic)=>{followTopicsIds.push(topic.id);});
               console.log(followTopicsIds);
-              followTopicsServer(followTopicsIds);
+              let formData=new FormData();
+              formData.append("topicsIds",""+followTopicsIds);
+              yield call(RequestUtil.request, FOLLOW_TOPICS_URL, 'post',formData);
             }
             yield call(store.save, 'followTopics', followTopics);
           }

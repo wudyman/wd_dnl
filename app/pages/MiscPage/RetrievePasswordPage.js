@@ -18,6 +18,7 @@
 
 import React from 'react';
 import {Text, View, StyleSheet, Platform, TextInput, BackHandler} from 'react-native';
+import RequestUtil from '../../utils/RequestUtil';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
 import { GET_SMS_URL, CHECK_SMS_URL, RESET_PWD_URL } from '../../constants/Urls';
@@ -67,7 +68,7 @@ export default class SignUpPage extends React.Component {
     }
 
 
-    _getSmsCodeCheck(ret){
+    _getSmsCodeCallback(ret){
         if('fail'==ret)
         {
             ToastUtil.showShort("网络错误");
@@ -87,37 +88,17 @@ export default class SignUpPage extends React.Component {
     }
 
     _getSmsCode(){
+        let url=GET_SMS_URL;
         let formData=new FormData();
         formData.append("phone_no",this.state.phoneNo);
         formData.append("type","password_reset");
-        fetch(GET_SMS_URL, {
-          method:'POST',
-          body:formData
-        })
-          .then((response) => {
-            if (response.ok) {
-              isOk = true;
-            } else {
-              isOk = false;
-            }
-            return response.json();
-          })
-          .then((responseData) => {
-            if (isOk) {
-                this._getSmsCodeCheck(responseData);
-            } else {
-                console.log(responseData);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        RequestUtil.requestWithCallback(url,'POST',formData,this._getSmsCodeCallback.bind(this));
 
         this.setState({smsGetDisable:true,countDownValue:60});
         this.aInterval=setInterval(this._countDown.bind(this),1000);
     }
 
-    _nextStepCheck(ret){
+    _nextStepCallback(ret){
         if('fail'==ret)
         {
             ToastUtil.showShort("网络错误");
@@ -153,35 +134,15 @@ export default class SignUpPage extends React.Component {
             return;
         }
 
+        let url=CHECK_SMS_URL;
         let formData=new FormData();
         formData.append("phone_no",this.state.phoneNo);
         formData.append("type","password_reset");
         formData.append("veri_code",this.state.smsCode);
-        fetch(CHECK_SMS_URL, {
-          method:'POST',
-          body:formData
-        })
-          .then((response) => {
-            if (response.ok) {
-              isOk = true;
-            } else {
-              isOk = false;
-            }
-            return response.json();
-          })
-          .then((responseData) => {
-            if (isOk) {
-                this._nextStepCheck(responseData);
-            } else {
-                console.log(responseData);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        RequestUtil.requestWithCallback(url,'POST',formData,this._nextStepCallback.bind(this));
     }
 
-    _modifyPasswordCheck(ret){
+    _modifyPasswordCallback(ret){
         if('fail'==ret)
         {
             ToastUtil.showShort("网络错误");
@@ -212,33 +173,12 @@ export default class SignUpPage extends React.Component {
             ToastUtil.showShort("两次密码输入不一致");
             return;
         }
-
+        let url=RESET_PWD_URL;
         let formData=new FormData();
         formData.append("phone_no",this.state.phoneNo);
         formData.append("veri_code",this.state.smsCode);
         formData.append("pwd",this.state.password);
-        fetch(RESET_PWD_URL, {
-          method:'POST',
-          body:formData
-        })
-          .then((response) => {
-            if (response.ok) {
-              isOk = true;
-            } else {
-              isOk = false;
-            }
-            return response.json();
-          })
-          .then((responseData) => {
-            if (isOk) {
-                this._modifyPasswordCheck(responseData);
-            } else {
-                console.log(responseData);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        RequestUtil.requestWithCallback(url,'POST',formData,this._modifyPasswordCallback.bind(this));
     }
 
     _renderStep()
