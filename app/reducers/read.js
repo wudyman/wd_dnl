@@ -16,7 +16,7 @@
  *
  */
 import * as types from '../constants/ActionTypes';
-import { concatFilterDuplicate } from '../utils/FormatUtil';
+import { concatFilterDuplicate } from '../utils/ItemsUtil';
 
 const initialState = {
   isRefreshing: false,

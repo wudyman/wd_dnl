@@ -17,13 +17,13 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-native';
+import { ScrollView, RefreshControl, StyleSheet, View, ListView, Alert } from 'react-native';
 import store from 'react-native-simple-store';
 import RequestUtil from '../../../utils/RequestUtil';
 import ItemList from './ItemList';
 import ItemConversation from './ItemConversation';
-import { concatFilterDuplicate } from '../../../utils/FormatUtil';
-import { SITE_URL, CONVERSATIONS_URL } from '../../../constants/Urls';
+import { concatFilterDuplicate, removeItemById } from '../../../utils/ItemsUtil';
+import { SITE_URL, CONVERSATIONS_URL, DELETE_CONVERSATION_URL } from '../../../constants/Urls';
 import { DATA_STEP } from '../../../constants/Constants';
 
 const propTypes = {
@@ -119,6 +119,19 @@ class ConversationPage extends React.Component {
         RequestUtil.requestWithCallback(url,'POST','',this._convertConversations.bind(this));
     }
 
+    _deleteConversationCallback(ret){
+        if("fail"!=ret)
+        {
+            console.log("delete ok"); 
+        }
+    }
+
+    _deleteConversation(conversationId){
+        let url=DELETE_CONVERSATION_URL+conversationId+'/';
+        RequestUtil.requestWithCallback(url,'POST','',this._deleteConversationCallback.bind(this));
+        this.setState({conversations:removeItemById(conversationId,this.state.conversations)});       
+    }
+
     onPress = (type,itemData) => {
         const { navigate } = this.props.navigation;
         if('PEOPLE'==type)
@@ -128,9 +141,20 @@ class ConversationPage extends React.Component {
             //navigate('Misc', { pageType:'er',itemData });
             navigate('Web', { itemData });
         }
+        else if('DELETE'==type)
+        {
+            Alert.alert(
+                '确定要删除？',
+                '',
+                [
+                  {text: '确定', onPress: () => this._deleteConversation(itemData.id)},
+                  {text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                ],
+                { cancelable: false }
+              )
+        }
         else
         {
-            console.log("open message 3");
             navigate('Sub',{subPage:'ConversationMessage',conversationId:itemData.id});
         }
       };

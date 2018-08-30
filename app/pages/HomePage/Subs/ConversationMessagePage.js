@@ -17,15 +17,15 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ScrollView, RefreshControl, StyleSheet, View, ListView, Text, TextInput, Keyboard } from 'react-native';
+import { ScrollView, RefreshControl, StyleSheet, View, ListView, Text, TextInput, Keyboard, Alert } from 'react-native';
 import store from 'react-native-simple-store';
 import RequestUtil from '../../../utils/RequestUtil';
 import ItemList from './ItemList';
 import ItemConversationMessage from './ItemConversationMessage';
 import Button from '../../../components/Button';
 import ToastUtil from '../../../utils/ToastUtil';
-import { concatFilterDuplicate } from '../../../utils/FormatUtil';
-import { SITE_URL, CONVERSATION_MESSAGES_URL, SEND_MESSAGE_URL } from '../../../constants/Urls';
+import { concatFilterDuplicate, removeItemById } from '../../../utils/ItemsUtil';
+import { SITE_URL, CONVERSATION_MESSAGES_URL, SEND_MESSAGE_URL, DELETE_MESSAGE_URL } from '../../../constants/Urls';
 import { DATA_STEP } from '../../../constants/Constants';
 
 const propTypes = {
@@ -57,7 +57,7 @@ class ConversationMessagePage extends React.Component {
         start=start+DATA_STEP*2;
     }
 
-    _convertConversationMessages(ret)
+    _getConversationMessagesCallback(ret)
     {
         let messages=[];
         if("fail"!=ret)
@@ -112,7 +112,11 @@ class ConversationMessagePage extends React.Component {
                     message.receiver_avatar=SITE_URL+message.receiver_avatar;
                 }
 
-                messages.push(message);
+                if (message.delete_id!=gUserInfo.id)
+                {
+                    messages.push(message);
+                }
+
             });
         }
         console.log(messages);
@@ -124,7 +128,7 @@ class ConversationMessagePage extends React.Component {
     _getConversationMessages(start){
         let end=start+DATA_STEP*2;
         let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+start+'/'+end+'/';
-        RequestUtil.requestWithCallback(url,'POST','',this._convertConversationMessages.bind(this));
+        RequestUtil.requestWithCallback(url,'POST','',this._getConversationMessagesCallback.bind(this));
     }
 
     _sendLetterCallback(ret){
@@ -152,6 +156,19 @@ class ConversationMessagePage extends React.Component {
         RequestUtil.requestWithCallback(url,'POST',formData,this._sendLetterCallback.bind(this));
     }
 
+    _deleteMessageCallback(ret){
+        if("fail"!=ret)
+        {
+            console.log("delete ok"); 
+        }
+    }
+
+    _deleteMessage(messageId){
+        let url=DELETE_MESSAGE_URL+messageId+'/';
+        RequestUtil.requestWithCallback(url,'POST','',this._deleteMessageCallback.bind(this));
+        this.setState({messages:removeItemById(messageId,this.state.messages)});       
+    }
+
     onPress = (type,itemData) => {
         const { navigate } = this.props.navigation;
         if('PEOPLE'==type)
@@ -161,9 +178,20 @@ class ConversationMessagePage extends React.Component {
             //navigate('Misc', { pageType:'er',itemData });
             navigate('Web', { itemData });
         }
+        else if('DELETE'==type)
+        {
+            Alert.alert(
+                '确定要删除？',
+                '',
+                [
+                  {text: '确定', onPress: () => this._deleteMessage(itemData.id)},
+                  {text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                ],
+                { cancelable: false }
+              )
+        }
         else
         {
-            console.log("open message");
             navigate('Sub',{subPage:'ConversationMessage'});
         }
       };
@@ -296,6 +324,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         flexDirection: 'column',
+        backgroundColor: '#fff',
         //justifyContent: 'center',
         paddingBottom: 1
     },

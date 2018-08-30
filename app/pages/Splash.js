@@ -23,7 +23,7 @@ import { registerApp } from 'react-native-wechat';
 import SplashScreen from 'react-native-splash-screen';
 import NavigationUtil from '../utils/NavigationUtil';
 import RequestUtil from '../utils/RequestUtil';
-import { concatFilterDuplicateTopics } from '../utils/FormatUtil';
+import { concatFilterDuplicateTopics } from '../utils/ItemsUtil';
 import { SITE_URL,REQUEST_USER_INFO_URL } from '../constants/Urls';
 
 const maxHeight = Dimensions.get('window').height;

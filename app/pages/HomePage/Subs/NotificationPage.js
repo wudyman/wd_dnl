@@ -21,7 +21,7 @@ import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-na
 import store from 'react-native-simple-store';
 import ItemList from './ItemList';
 import ItemNotification from './ItemNotification';
-import { concatFilterDuplicate } from '../../../utils/FormatUtil';
+import { concatFilterDuplicate } from '../../../utils/ItemsUtil';
 import { SITE_URL, NOTIFICATIONS_URL } from '../../../constants/Urls';
 import { DATA_STEP } from '../../../constants/Constants';
 
