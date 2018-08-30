@@ -56,27 +56,39 @@ function followTopicsServer(topicsIds) {
 
 function convertUserInfo(ret)
 {
-  let userInfo={};
-  if('nologin'==ret)
+  gUserInfo={};
+  if("fail"==ret)
   {
-    userInfo.isSignIn='fail';
+    store.get('userInfo').then((userInfo)=>{
+      if(null!=userInfo)
+      {
+        gUserInfo=userInfo;
+      }
+      else{
+        gUserInfo.isSignIn='false';
+      }
+    });      
+  }
+  else if('nologin'==ret)
+  {
+    gUserInfo.isSignIn='fail';
   }
   else
   {
     let userInfoArray=ret[0];
-    userInfo.id=userInfoArray[0];
-    userInfo.name=userInfoArray[1];
-    userInfo.avatar=userInfoArray[2];
-    if(userInfo.avatar.indexOf('http')<0)
+    gUserInfo.id=userInfoArray[0];
+    gUserInfo.name=userInfoArray[1];
+    gUserInfo.avatar=userInfoArray[2];
+    if(gUserInfo.avatar.indexOf('http')<0)
     {
-      userInfo.avatar=SITE_URL+userInfo.avatar;
+      gUserInfo.avatar=SITE_URL+gUserInfo.avatar;
     }
-    userInfo.mood=userInfoArray[3];
+    gUserInfo.mood=userInfoArray[3];
   
-    userInfo.url=SITE_URL+'/er/'+userInfo.id+'/';
-    userInfo.isSignIn='true';
+    gUserInfo.url=SITE_URL+'/er/'+gUserInfo.id+'/';
+    gUserInfo.isSignIn='true';
   }
-  return userInfo;
+  return gUserInfo;
 }
 function convertFollowTopics(ret)
 {
@@ -111,9 +123,9 @@ export function* signIn(phoneNo,password) {
       const ret = yield call(RequestUtil.request, REQUEST_USER_INFO_URL, 'post');
       if("fail"!=ret)
       {
-        const userInfo=convertUserInfo(ret);
+        convertUserInfo(ret);
         const followTopics=convertFollowTopics(ret);
-        yield call(store.save, 'userInfo', userInfo);
+        yield call(store.save, 'userInfo', gUserInfo);
         if(followTopics!=['nologin'])
           {
             let oldFollowTopics=yield call(store.get, 'followTopics');
@@ -129,7 +141,7 @@ export function* signIn(phoneNo,password) {
             }
             yield call(store.save, 'followTopics', followTopics);
           }
-        yield put(receiveUserInfo(userInfo));
+        yield put(receiveUserInfo(gUserInfo));
       }
     }
     else

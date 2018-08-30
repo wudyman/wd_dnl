@@ -49,13 +49,10 @@ class MainContainer extends React.Component {
 
   componentWillMount() {
     console.log('**************MainContainer componentWillMount*********');
-    console.log(gUserInfo);
-    store.get('userInfo').then((userInfo)=>{
-      if('true'==userInfo.isSignIn)
-        isSignIn='true';
-      else
-        isSignIn='false';
-    });
+    if('true'==gUserInfo.isSignIn)
+      isSignIn='true';
+    else
+      isSignIn='false';
   }
 
   componentDidMount() {

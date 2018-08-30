@@ -121,49 +121,50 @@ class Splash extends React.Component {
   }
 
   _saveUserInfo(ret){
-    let userInfo={};
+    gUserInfo={};
     let followTopics=[];
     if("fail"==ret)
     {
-      this._goToNext();
+      store.get('userInfo').then((userInfo)=>{
+        if(null!=userInfo)
+        {
+          gUserInfo=userInfo;
+        }
+        else{
+          gUserInfo.isSignIn='false';
+        }
+        this._goToNext();
+      });      
     }
     else if("nologin"==ret)
     {
-      userInfo.isSignIn='false';
-      gUserInfo={};
-      gUserInfo.isSignIn=userInfo.isSignIn;
-      store.save('userInfo',userInfo).then(this._goToNext());
+      gUserInfo.isSignIn='false';
+      store.save('userInfo',gUserInfo).then(this._goToNext());
     }
     else
     {
       let userInfoArray=ret[0];
       let followTopicsArray=ret[1];
-      userInfo.id=userInfoArray[0];
-      userInfo.name=userInfoArray[1];
-      userInfo.avatar=userInfoArray[2];
-      if(userInfo.avatar.indexOf('http')<0)
+      gUserInfo.id=userInfoArray[0];
+      gUserInfo.name=userInfoArray[1];
+      gUserInfo.avatar=userInfoArray[2];
+      if(gUserInfo.avatar.indexOf('http')<0)
       {
-        userInfo.avatar=SITE_URL+userInfo.avatar;
+        gUserInfo.avatar=SITE_URL+gUserInfo.avatar;
       }
-      userInfo.mood=userInfoArray[3];
+      gUserInfo.mood=userInfoArray[3];
     
-      userInfo.url=SITE_URL+'/er/'+userInfo.id+'/';
-      userInfo.isSignIn='true';
-
-      gUserInfo.id=userInfo.id;
-      gUserInfo.name=userInfo.name;
-      gUserInfo.avatar=userInfo.avatar;
-      gUserInfo.isSignIn=userInfo.isSignIn;
+      gUserInfo.url=SITE_URL+'/er/'+gUserInfo.id+'/';
+      gUserInfo.isSignIn='true';
 
       followTopicsArray.map((item)=>{
         let tempTopic={'id':item[0],'name':item[1],'dataIndex':0};
         followTopics.push(tempTopic);
       });
 
-      console.log(followTopics);
       store.get('followTopics').then((oldFollowTopics)=>{
         followTopics=concatFilterDuplicateTopics(followTopics,oldFollowTopics);
-        store.save('userInfo',userInfo).then(store.save('followTopics',followTopics)).then(this._goToNext());
+        store.save('userInfo',gUserInfo).then(store.save('followTopics',followTopics)).then(this._goToNext());
       });
     }
   }

@@ -75,9 +75,10 @@ class SettingPage extends React.Component {
       .catch((error) => {
         console.error(error);
       });
-
-      this.setState({userInfo: {}});
-      store.save('userInfo',{})
+      gUserInfo={};
+      gUserInfo.isSignIn='false';
+      this.setState({userInfo: gUserInfo});
+      store.save('userInfo',gUserInfo)
       .then(
         NavigationUtil.reset(this.props.navigation, 'Home')
       );
@@ -85,9 +86,7 @@ class SettingPage extends React.Component {
   }
 
   componentWillMount() {
-    store.get('userInfo').then((userInfo)=>{
-      this.setState({userInfo:userInfo});
-    });
+    this.setState({userInfo:gUserInfo});
   }
 
 

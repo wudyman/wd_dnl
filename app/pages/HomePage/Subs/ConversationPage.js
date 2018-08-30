@@ -68,10 +68,6 @@ class ConversationPage extends React.Component {
                 conversation.parter_avatar=item[8];
                 conversation.latest_message_content=item[9];
 
-                //notification.questionUrl=SITE_URL+"/question/"+notification.target_id+"/";
-                //notification.erUrl=SITE_URL+"/er/"+notification.sender_id+"/";
-                //notification.url="";//SITE_URL+"/question/"+notification.target_id+"/";
-
                 if((conversation.initator_avatar!=null)&&(conversation.initator_avatar.indexOf('http')<0))
                 {
                     conversation.initator_avatar=SITE_URL+conversation.initator_avatar;
@@ -81,9 +77,6 @@ class ConversationPage extends React.Component {
                     conversation.parter_avatar=SITE_URL+conversation.parter_avatar;
                 }
 
-                if(conversation.delete_id==gUserInfo.id) //user have delete this message
-                {
-                }
                 if(conversation.initator_id!=gUserInfo.id)
                 {
                     conversation.er_id=conversation.initator_id;
@@ -99,12 +92,10 @@ class ConversationPage extends React.Component {
                     conversation.er_url=SITE_URL+"/er/"+conversation.er_id+"/";
                 }
 
-                /*********for wechat share******** */
-                //notification.title="";//notification.target_title;
-                //notification.format_content="";
-                //notification.contentImg="";
-
-                conversations.push(conversation);
+                if(conversation.delete_id!=gUserInfo.id) //user have delete this message
+                {
+                    conversations.push(conversation);
+                }
             });
         }
         console.log(conversations);

@@ -50,9 +50,7 @@ class SettingPage extends React.Component {
   }
 
   componentWillMount() {
-    store.get('userInfo').then((userInfo)=>{
-      this.setState({userInfo:userInfo});
-    });
+    this.setState({userInfo:gUserInfo});
   }
 
 

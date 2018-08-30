@@ -77,9 +77,6 @@ class ConversationMessagePage extends React.Component {
                 message.receiver_name=item[9];
                 message.receiver_avatar=item[10];
     
-                //if (message.delete_id==gUserInfo.id) //user have delete this message
-                //    continue;
-    
                 if(message.sender_id==gUserInfo.id)
                 {
                     message.sender_name="我";
@@ -97,12 +94,6 @@ class ConversationMessagePage extends React.Component {
                 }
                 message.er_url=SITE_URL+"/er/"+message.sender_id+"/";
 
-
-
-                //notification.questionUrl=SITE_URL+"/question/"+notification.target_id+"/";
-                //notification.erUrl=SITE_URL+"/er/"+notification.sender_id+"/";
-                //notification.url="";//SITE_URL+"/question/"+notification.target_id+"/";
-
                 if((message.sender_avatar!=null)&&(message.sender_avatar.indexOf('http')<0))
                 {
                     message.sender_avatar=SITE_URL+message.sender_avatar;
@@ -112,7 +103,7 @@ class ConversationMessagePage extends React.Component {
                     message.receiver_avatar=SITE_URL+message.receiver_avatar;
                 }
 
-                if (message.delete_id!=gUserInfo.id)
+                if (message.delete_id!=gUserInfo.id)//user have delete this message
                 {
                     messages.push(message);
                 }

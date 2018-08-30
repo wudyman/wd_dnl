@@ -62,9 +62,7 @@ class SignPage extends React.Component {
 
   componentWillMount() {
     console.log('***************SignPage componentWillMount**************');
-    store.get('userInfo').then((userInfo)=>{
-      this.setState({userInfo:userInfo});
-    });
+    this.setState({userInfo:gUserInfo});
   }
 
   componentWillReceiveProps(nextProps) {

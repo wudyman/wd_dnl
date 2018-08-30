@@ -85,13 +85,10 @@ class Category extends React.Component {
     const { params } = this.props.navigation.state;
     if (params === undefined || !params.isFirst) {
       this.props.navigation.setParams({ handleCheck: this.onActionSelected });
-      store.get('userInfo').then((userInfo)=>{
-        if('true'==userInfo.isSignIn)
-          isSignIn='true';
-        else
-          isSignIn='false';
-        console.log(isSignIn);
-      });
+      if('true'==gUserInfo.isSignIn)
+        isSignIn='true';
+      else
+        isSignIn='false';
     }
   }
 

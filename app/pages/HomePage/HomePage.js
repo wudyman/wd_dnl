@@ -35,26 +35,17 @@ class HomePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        userInfo: {},
-        userInfoPageModal: false
+        userInfo: {}
     }
   }
 
   _openSignPage(){
-    //const { signInUpActions } = this.props;
-    //signInUpActions.initSignIn();
-    //this.setState({signModal:true});
     this.props.navigation.navigate('Misc',{pageType:'sign',isSignIn:'false'});
   }
 
   _openUserInfoPage(){
-    //this.setState({userInfoPageModal:true});
     let itemData={'url':this.state.userInfo.url,'title':this.state.userInfo.name,'content':this.state.userInfo.mood,'thumbImage':this.state.userInfo.avatar};
     this.props.navigation.navigate('Web',{itemData});
-  }
-
-  _closeUserInfoPage(){
-    this.setState({userInfoPageModal:false});
   }
 
   _doNothing(){
@@ -74,9 +65,7 @@ class HomePage extends React.Component {
 
   componentWillMount() {
     console.log('**************HomePage componentWillMount***************');
-    store.get('userInfo').then((userInfo)=>{
-      this.setState({userInfo:userInfo});
-    });
+    this.setState({userInfo:gUserInfo});
   }
 
 
@@ -100,9 +89,7 @@ class HomePage extends React.Component {
             />
           }
           </View>
-
           <View style={{height: 5, backgroundColor:'#f0f4f4'}}/>
-
           <View style={styles.midContainer}>
             <View style={styles.midContent}>
               <ArrowButton text="我的消息" textStyle={styles.arrowButtonTextStyle}
@@ -128,20 +115,7 @@ class HomePage extends React.Component {
               />
             </View>
           </View>
-
         </View>
-
-        <View>
-          <Modal
-                animationType={'slide'}
-                transparent={true}
-                onRequestClose={() => this._closeUserInfoPage()}
-                visible={this.state.userInfoPageModal}
-          >
-            <UserInfoPage userInfoUrl={this.state.userInfo.url} closePage={()=>this._closeUserInfoPage()}/>
-          </Modal>
-        </View>
-
       </View>
     );
   }
