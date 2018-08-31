@@ -16,6 +16,7 @@
  *
  */
 import React from 'react';
+import { View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import HomePage from '../pages/HomePage/HomePage';
@@ -24,10 +25,28 @@ class HomePageContainer extends React.Component {
   static navigationOptions = {
     title: '我',
     tabBarIcon: ({ tintColor }) => (
-      <Icon name="md-person" size={25} color={tintColor} />
+      <View>
+        {gShowNotice?
+        <View style={{flexDirection:'row',paddingLeft:7}}>
+          <Icon name="md-person" size={25} color={tintColor} />
+          <View style={{left:-6,top:1,height:8,width:8,borderRadius:4,backgroundColor:'red',borderColor:'#fff',borderWidth:1}}></View>
+        </View>
+        :
+        <Icon name="md-person" size={25} color={tintColor} />
+        }
+      </View>
     ),
     header:null
   };
+
+  componentWillMount() {
+    console.log('**************HomePageContainer componentWillMount*********');
+    gShowNotice=false;
+  }
+
+  componentDidMount() {
+    console.log('**************HomePageContainer componentDidMount*********');
+  }
 
   render() {
     return <HomePage {...this.props} />;

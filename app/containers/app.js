@@ -35,7 +35,7 @@ const TabContainer = TabNavigator(
     tabBarPosition: 'bottom',
     tabBarOptions: {
       activeTintColor: '#228b22',
-      inactiveTintColor: '#999999',
+      inactiveTintColor: '#555',
       showIcon: true,
       style: {
         backgroundColor: '#fff'
@@ -59,7 +59,7 @@ const App = StackNavigator(
         headerStyle: {borderBottomWidth: 1,borderColor:'#f8f8f8',elevation: 0,shadowOpacity: 0},
       }
     },
-    Home: {
+    Main: {
       screen: TabContainer,
       navigationOptions: {
         //headerLeft: null,

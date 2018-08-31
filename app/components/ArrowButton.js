@@ -27,6 +27,7 @@ const propTypes = {
     textStyle: Text.propTypes.style,
     tipsStyle: Text.propTypes.style,
     text: PropTypes.string,
+    newNotice: PropTypes.string,
     tips: PropTypes.string,
     activeOpacity: PropTypes.number,
     icon: PropTypes.string,
@@ -40,6 +41,7 @@ const ArrowButton=({
     activeOpacity,
     icon,
     text,
+    newNotice,
     tips, 
     btnStyle,
     textStyle,
@@ -50,21 +52,28 @@ const ArrowButton=({
 {
     return (
         <TouchableOpacity style={{flexDirection: 'row',justifyContent: 'space-between',paddingTop:15, paddingBottom:15}}  onPress={onPress} disabled={disabled} activeOpacity={activeOpacity}>
-
-        {text ?
-            <Text style={textStyle}>{text}</Text>
-            :
-            null
-        }
-        <View style={{flexDirection: 'row',alignItems: 'center'}}>
-        {tips ?
-            <Text style={tipsStyle}>{tips}</Text>
-            :
-            null
-        }
-        <Icon name={icon} size={iconSize} color={iconColor}/>
-        </View>
-
+            <View style={{flexDirection: 'row',alignItems: 'center'}}>
+                {text ?
+                    <Text style={textStyle}>{text}</Text>
+                    :
+                    null
+                }
+                {newNotice ?
+                    <View style={{marginLeft:5,height:14,width:14,borderRadius:7,backgroundColor:'#eb413d'}}>
+                        <Text style={{fontSize:10,color:'#ddd',textAlign: 'center'}}>{newNotice}</Text>
+                    </View>
+                    :
+                    null
+                }
+            </View>
+            <View style={{flexDirection: 'row',alignItems: 'center'}}>
+                {tips ?
+                    <Text style={tipsStyle}>{tips}</Text>
+                    :
+                    null
+                }
+                <Icon name={icon} size={iconSize} color={iconColor}/>
+            </View>
         </TouchableOpacity>
     )
 };

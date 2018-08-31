@@ -75,7 +75,7 @@ class SignPage extends React.Component {
     {
       console.log("getUserInfoResult success");
       this.setState({userInfo:signinup.userInfo});
-      NavigationUtil.reset(this.props.navigation, 'Home');
+      NavigationUtil.reset(this.props.navigation, 'Main');
     }
     if('success'==signinup.signUpResult)
     {

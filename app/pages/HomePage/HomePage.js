@@ -35,7 +35,9 @@ class HomePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        userInfo: {}
+        userInfo: {},
+        newNotifications: ' ',
+        newMessages: '1',
     }
   }
 
@@ -56,10 +58,12 @@ class HomePage extends React.Component {
   }
 
   _openNotificationPage(){
+    this.setState({newNotifications:null});
     this.props.navigation.navigate('Sub',{subPage:'Notification'});
   }
 
   _openConversationPage(){
+    this.setState({newMessages:null});
     this.props.navigation.navigate('Sub',{subPage:'Conversation'});
   }
 
@@ -93,6 +97,7 @@ class HomePage extends React.Component {
           <View style={styles.midContainer}>
             <View style={styles.midContent}>
               <ArrowButton text="我的消息" textStyle={styles.arrowButtonTextStyle}
+              newNotice={this.state.newNotifications}
               /* tips='评论/通知' tipsStyle={styles.arrowButtonTipsStyle} */
               icon='ios-arrow-forward'
               iconSize={14}
@@ -101,6 +106,7 @@ class HomePage extends React.Component {
               />
               <View style={{height: 1, backgroundColor:'#f0f4f4'}}/>
               <ArrowButton text="我的私信" textStyle={styles.arrowButtonTextStyle}
+              newNotice={this.state.newMessages}
               icon='ios-arrow-forward-outline'
               iconSize={14}
               iconColor='#aaa'

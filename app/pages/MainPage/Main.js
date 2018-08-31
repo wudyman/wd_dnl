@@ -65,6 +65,12 @@ class Main extends React.Component {
     };
   }
 
+  componentWillMount() {
+    console.log('**************MainPage componentWillMount*********');
+  }
+
+
+
   componentDidMount() {
     console.log('**************MainPage componentDidMount*********');
     const { readActions } = this.props;
@@ -241,7 +247,7 @@ class Main extends React.Component {
           tabBarBackgroundColor="#ffffff"
           tabBarUnderlineStyle={styles.tabBarUnderline}
           tabBarActiveTextColor="#228b22"
-          tabBarInactiveTextColor="#aaaaaa"
+          tabBarInactiveTextColor="#888"
         >
           {content}
         </ScrollableTabView>

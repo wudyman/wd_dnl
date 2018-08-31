@@ -32,6 +32,7 @@ const splashImg = require('../img/splash.png');
 let bDone=false;
 
 global.gUserInfo={};
+global.gShowNotice=false;
 class Splash extends React.Component {
   static navigationOptions = {
     header: null
@@ -87,7 +88,7 @@ class Splash extends React.Component {
         if (!isInit) {
           navigate('Category', { isFirst: true });
         } else {
-          NavigationUtil.reset(this.props.navigation, 'Home');
+          NavigationUtil.reset(this.props.navigation, 'Main');
         }
       });
     }, 1000);
@@ -135,6 +136,10 @@ class Splash extends React.Component {
         let tempTopic={'id':item[0],'name':item[1],'dataIndex':0};
         followTopics.push(tempTopic);
       });
+
+      global.gShowNotice=true;
+      global.gHaveNewNotification=true;
+      global.gHaveNewMessage=true;
 
       store.get('followTopics').then((oldFollowTopics)=>{
         followTopics=concatFilterDuplicateTopics(followTopics,oldFollowTopics);

@@ -51,18 +51,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1
   },
   title: {
-    fontSize: 20,
-    //fontWeight: '500',
+    fontSize: 18,
+    fontWeight: '700',
     textAlign: 'left',
-    color: 'black'
+    marginBottom:5,
+    color: '#1a1a1a'
   },
   content: {
-    fontSize: 18,
+    fontSize: 15,
     textAlign: 'left',
-    color: '#666666'
+    fontWeight: '400',
+    color: '#333'
   },
   itemImg: {
     height: 120,
+    marginBottom:5,
     marginRight: 0
   },
   itemRightContent: {
