@@ -21,7 +21,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import HomePage from '../pages/HomePage/HomePage';
 
-class HomePageContainer extends React.Component {
+class HomeContainer extends React.Component {
   static navigationOptions = {
     title: '我',
     tabBarIcon: ({ tintColor }) => (
@@ -40,12 +40,12 @@ class HomePageContainer extends React.Component {
   };
 
   componentWillMount() {
-    console.log('**************HomePageContainer componentWillMount*********');
+    console.log('**************HomeContainer componentWillMount*********');
     gShowNotice=false;
   }
 
   componentDidMount() {
-    console.log('**************HomePageContainer componentDidMount*********');
+    console.log('**************HomeContainer componentDidMount*********');
   }
 
   render() {
@@ -53,4 +53,4 @@ class HomePageContainer extends React.Component {
   }
 }
 
-export default HomePageContainer;
+export default HomeContainer;

@@ -67,7 +67,7 @@ class SettingPage extends React.Component {
     this.setState({userInfo: gUserInfo});
     store.save('userInfo',gUserInfo)
     .then(
-      NavigationUtil.reset(this.props.navigation, 'Home')
+      NavigationUtil.reset(this.props.navigation, 'Main')
     );
   
   }

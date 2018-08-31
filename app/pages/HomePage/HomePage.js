@@ -36,7 +36,7 @@ class HomePage extends React.Component {
     super(props);
     this.state = {
         userInfo: {},
-        newNotifications: ' ',
+        newNotifications: '...',
         newMessages: '1',
     }
   }

@@ -20,7 +20,7 @@ import Splash from '../pages/Splash';
 import CategoryContainer from '../containers/CategoryContainer';
 import MainContainer from '../containers/MainContainer';
 import WebViewPage from '../pages/WebViewPage/WebViewPage';
-import HomePageContainer from '../containers/HomePageContainer';
+import HomeContainer from '../containers/HomeContainer';
 import MiscContainer from '../containers/MiscContainer';
 import SubContainer from '../containers/SubContainer';
 
@@ -28,7 +28,7 @@ const TabContainer = TabNavigator(
   {
     Main: { screen: MainContainer },
     Category: { screen: CategoryContainer },
-    HomePage: { screen: HomePageContainer }
+    Home: { screen: HomeContainer }
   },
   {
     lazy: true,
