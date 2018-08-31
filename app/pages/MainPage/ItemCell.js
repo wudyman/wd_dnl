@@ -24,31 +24,35 @@ import { formatStringWithHtml } from '../../utils/FormatUtil';
 require('moment/locale/zh-cn');
 
 const ItemCell = ({ article, onPressHandler }) => (
-  <TouchableOpacity onPress={() => onPressHandler(article)}>
-    <View style={styles.containerItem}>
-      <View style={styles.itemRightContent}>
-        <Text style={styles.title}>{formatStringWithHtml(article.title)}</Text>
-        <Image style={styles.itemImg} source={{ uri: article.contentImg }} />
+  <View style={styles.container}>
+    <View style={styles.itemTop}>
+      <TouchableOpacity onPress={() => onPressHandler('CONTENT',article)}>
+        <Text style={styles.title}>{formatStringWithHtml(article.questionTitle)}</Text>
+        <Image style={styles.contentImg} source={{ uri: article.contentImg }} />
         <Text numberOfLines={3} style={styles.content}>{formatStringWithHtml(article.format_content)}</Text>
-        <View style={styles.itemRightBottom}>
-          <Image style={styles.authorAvatar} source={{ uri: article.author_avatar }} />
-          <Text style={styles.authorName}>{article.authorName}</Text>
-          <Text style={styles.timeAgo}>{moment(article.pub_date).fromNow()}</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     </View>
-  </TouchableOpacity>
+    <View style={styles.itemBottom}>
+      <TouchableOpacity style={styles.itemBottomLeft} onPress={() => onPressHandler('PEOPLE',article)}>
+        <Image style={styles.authorAvatar} source={{ uri: article.author_avatar }} />
+        <Text style={styles.authorName}>{article.authorName}</Text>
+      </TouchableOpacity>
+      <Text style={styles.timeAgo}>{moment(article.pub_date).fromNow()}</Text>
+    </View>
+  </View>
 );
 
 const styles = StyleSheet.create({
-  containerItem: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+  container: {
+    flex: 1,
+    flexDirection: 'column',
     backgroundColor: '#ffffff',
     padding: 15,
     borderBottomColor: '#f8f8f8',
     borderBottomWidth: 1
+  },
+  itemTop: {
+    flexDirection: 'column'
   },
   title: {
     fontSize: 18,
@@ -57,25 +61,23 @@ const styles = StyleSheet.create({
     marginBottom:5,
     color: '#1a1a1a'
   },
+  contentImg: {
+    height: 120,
+    marginBottom:5,
+    marginRight: 0
+  },
   content: {
     fontSize: 15,
     textAlign: 'left',
     fontWeight: '400',
     color: '#333'
   },
-  itemImg: {
-    height: 120,
-    marginBottom:5,
-    marginRight: 0
-  },
-  itemRightContent: {
-    flex: 1,
-    flexDirection: 'column'
-  },
-  itemRightBottom: {
-    flex: 1,
+  itemBottom: {
     flexDirection: 'row',
-    alignItems: 'center'
+    justifyContent: 'space-between',
+  },
+  itemBottomLeft: {
+    flexDirection: 'row',
   },
   authorAvatar: {
     width:20,
@@ -85,7 +87,6 @@ const styles = StyleSheet.create({
     marginRight: 5
   },
   authorName: {
-    flex: 1,
     fontSize: 14,
     color: '#a0b0a0',
     marginTop: 5,

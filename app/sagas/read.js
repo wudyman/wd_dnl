@@ -70,18 +70,18 @@ function convertQuestionList(ret,noAnswer)
       if("article"==content_type)
       {
         question.id=item[0];
-        question.title=item[1];
+        question.questionTitle=item[1];
         question.topics=item[3];
         question.click_nums=item[4];
-        question.url=SITE_URL+"/article/"+question.id+"/";
+        question.questionUrl=SITE_URL+"/article/"+question.id+"/";
       }
       else
       {
         question.id=item[0];
-        question.title=item[1];
+        question.questionTitle=item[1];
         question.topics=item[3];
         question.answer_id=item[4];
-        question.url=SITE_URL+"/question/"+question.id+"/?ans="+question.answer_id;
+        question.questionUrl=SITE_URL+"/question/"+question.id+"/?ans="+question.answer_id;
       }
 
       question.push_index=item[5];
@@ -101,6 +101,11 @@ function convertQuestionList(ret,noAnswer)
       question.author_follower_nums=item[19];
       question.author_followtopic_nums=item[20];
       question.author_followquestion_nums=item[21];
+
+      question.erUrl=SITE_URL+"/er/"+question.author_id+"/";
+      question.url="";
+
+      question.title="";
 
       question.contentImg=getIndexImg(question.content);
       if((question.contentImg!=null)&&(question.contentImg.indexOf('http')<0))

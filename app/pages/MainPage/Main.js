@@ -136,9 +136,20 @@ class Main extends React.Component {
     //const index = this.state.typeIds.indexOf(typeId);
   };
 
-  onPress = (itemData) => {
+  onPress = (type,itemData) => {
     const { navigate } = this.props.navigation;
-    navigate('Web', { itemData });
+    if('PEOPLE'==type)
+    {
+        itemData.url=itemData.erUrl;
+        itemData.title=itemData.author_name;
+        navigate('Web', { itemData });
+    }
+    else
+    {
+        itemData.url=itemData.questionUrl;
+        itemData.title=itemData.questionTitle;
+        navigate('Web', { itemData });
+    }
   };
 
   onIconClicked = () => {
