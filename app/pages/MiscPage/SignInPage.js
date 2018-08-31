@@ -33,7 +33,7 @@ class SignInPage extends React.Component{
     }
 
     componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this._handleBack.bind(this));
+        BackHandler.addEventListener('hardwareBackPress', this.handleBack);
     }
 
     componentWillUnmount() {
@@ -58,6 +58,7 @@ class SignInPage extends React.Component{
         signInUpActions.requestSignIn(this.state.phoneNo,this.state.password);
     }
     _handleBack() {
+        console.log('*********SignInPage _handleBack***************');
         return true;
     }
 
