@@ -100,23 +100,20 @@ class Main extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { read } = this.props;
-    if (
-      read.isLoadMore &&
-      !nextProps.read.isLoadMore &&
-      !nextProps.read.isRefreshing
-    ) {
-      if (nextProps.read.noMore) {
-        ToastUtil.showShort('没有更多数据了');
-        //const index = this.state.typeIds.indexOf(currentLoadMoreTypeId);
-      }
-    }
 
     if((read.loading && !nextProps.read.loading)||(read.isRefreshing && !nextProps.read.isRefreshing)||(read.isLoadMore && !nextProps.read.isLoadMore))
     {
-      let topicId=nextProps.read.topicId;
-      if(topicId==currentTopicId)
+      console.log('@@@@@@@@@@@@@@@recieve finish@@@@@@@@@@@@@@@');
+      if (nextProps.read.noMore)
       {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        ToastUtil.showShort('没有更多数据了');
+      }
+      else
+      {
+        console.log('@@@@@@@@@@@@@@@  dataIndex+DATA_STEP @@@@@@@@@@@@@@@');
+        dataIndex=myTopics[currentTabIndex].dataIndex;
+        dataIndex=dataIndex+DATA_STEP;
+        myTopics[currentTabIndex].dataIndex=dataIndex;
       }
     }
   }
@@ -131,9 +128,8 @@ class Main extends React.Component {
     console.log('**************MainPage onRefresh*********');
     const { readActions } = this.props;
     dataIndex=0;
-    readActions.requestArticleList(topicId, currentTabIndex, dataIndex, true, false);
-    //dataIndex=dataIndex+DATA_STEP;
     myTopics[currentTabIndex].dataIndex=dataIndex;
+    readActions.requestArticleList(topicId, currentTabIndex, dataIndex, true, false);
   };
 
   onPress = (type,itemData) => {
@@ -159,15 +155,9 @@ class Main extends React.Component {
   onEndReached = (topicId) => {
     currentLoadMoreTopicId = topicId;
     const time = Date.parse(new Date()) / 1000;
-    //const index = this.state.typeIds.indexOf(topicId);
-    //if (index < 0) {
-    //  return;
-    //}
+
     if (time - loadMoreTime > 1) {
       const { readActions } = this.props;
-      dataIndex=myTopics[currentTabIndex].dataIndex;
-      dataIndex=dataIndex+DATA_STEP;
-      myTopics[currentTabIndex].dataIndex=dataIndex;
       console.log('**************MainPage onEndReached*********');
       readActions.requestArticleList(currentTopicId, currentTabIndex, dataIndex, false, false, true);
       loadMoreTime = Date.parse(new Date()) / 1000;
@@ -242,7 +232,6 @@ class Main extends React.Component {
               console.log('**************MainPage onChangeTab*********');
               currentTabIndex=obj.i;
               this.setState({tabIndex:currentTabIndex});
-              const { read } = this.props;
               currentTopicId=myTopics[currentTabIndex].id;
               dataIndex=myTopics[currentTabIndex].dataIndex;
               if(0==dataIndex)
@@ -250,8 +239,6 @@ class Main extends React.Component {
                 console.log('**************MainPage onChangeTab need refresh*********');
                 const { readActions } = this.props;
                 readActions.requestArticleList(currentTopicId, currentTabIndex, dataIndex, true, false);
-                dataIndex=dataIndex+DATA_STEP;
-                myTopics[currentTabIndex].dataIndex=dataIndex;
               }
             }
           }
