@@ -17,13 +17,14 @@
  */
 import React from 'react';
 import { Dimensions, Animated,StatusBar,View } from 'react-native';
+import moment from 'moment';
 import store from 'react-native-simple-store';
 import { registerApp } from 'react-native-wechat';
 //import AV from 'leancloud-storage';
 import SplashScreen from 'react-native-splash-screen';
 import NavigationUtil from '../utils/NavigationUtil';
 import RequestUtil from '../utils/RequestUtil';
-import { concatFilterDuplicateTopics } from '../utils/ItemsUtil';
+import { concatFilterDuplicate } from '../utils/ItemsUtil';
 import { SITE_URL,REQUEST_USER_INFO_URL } from '../constants/Urls';
 
 const maxHeight = Dimensions.get('window').height;
@@ -32,7 +33,10 @@ const splashImg = require('../img/splash.png');
 let bDone=false;
 
 global.gUserInfo={};
+global.gLastQueryTime={};
 global.gShowNotice=false;
+global.gNewNotifications=null;
+global.gNewMessages=null;
 class Splash extends React.Component {
   static navigationOptions = {
     header: null
@@ -96,7 +100,6 @@ class Splash extends React.Component {
   }
 
   _getUserInfoCallback(ret){
-    gUserInfo={};
     let followTopics=[];
     if("fail"==ret)
     {
@@ -120,6 +123,9 @@ class Splash extends React.Component {
     {
       let userInfoArray=ret[0];
       let followTopicsArray=ret[1];
+      let notificationsArray=ret[2];
+      let conversationsArray=ret[3];
+
       gUserInfo.id=userInfoArray[0];
       gUserInfo.name=userInfoArray[1];
       gUserInfo.avatar=userInfoArray[2];
@@ -137,20 +143,44 @@ class Splash extends React.Component {
         followTopics.push(tempTopic);
       });
 
-      global.gShowNotice=true;
-      global.gHaveNewNotification=true;
-      global.gHaveNewMessage=true;
+      if(notificationsArray.length>0)
+        gNewNotifications=''+notificationsArray.length;
+      if(conversationsArray.length>0)
+        gNewMessages=''+conversationsArray.length;
+      if(gNewNotifications||gNewMessages)
+        gShowNotice=true;
 
       store.get('followTopics').then((oldFollowTopics)=>{
-        followTopics=concatFilterDuplicateTopics(followTopics,oldFollowTopics);
+        followTopics=concatFilterDuplicate(followTopics,oldFollowTopics);
         store.save('userInfo',gUserInfo).then(store.save('followTopics',followTopics)).then(this._goToNext());
       });
     }
   }
 
   _getUserInfo(){
-    let url=REQUEST_USER_INFO_URL;
-    RequestUtil.requestWithCallback(url,'POST','',this._getUserInfoCallback.bind(this));
+    gUserInfo={};
+    gLastQueryTime={};
+    gShowNotice=false;
+    gNewNotifications=null;
+    gNewMessages=null;
+
+    store.get('lastQueryTime').then((time)=>{
+      let url=REQUEST_USER_INFO_URL;
+      let formData='';
+      if(time)
+      {
+        gLastQueryTime=time
+        console.log(gLastQueryTime);
+        formData=new FormData();
+        if(gLastQueryTime.notification)
+          formData.append("lastNotificationTime",''+gLastQueryTime.notification);
+        if(gLastQueryTime.conversation)
+          formData.append("lastConversationTime",''+gLastQueryTime.conversation);
+      }
+      console.log(formData);
+      RequestUtil.requestWithCallback(url,'POST',formData,this._getUserInfoCallback.bind(this));
+
+    });
   }
 
   render() {

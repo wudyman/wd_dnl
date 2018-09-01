@@ -21,7 +21,7 @@ import store from 'react-native-simple-store';
 import * as types from '../constants/ActionTypes';
 import ToastUtil from '../utils/ToastUtil';
 import RequestUtil from '../utils/RequestUtil';
-import { concatFilterDuplicateTopics } from '../utils/ItemsUtil';
+import { concatFilterDuplicate } from '../utils/ItemsUtil';
 import { SITE_URL } from '../constants/Urls';
 import { SIGN_IN_URL,REQUEST_USER_INFO_URL,SIGN_UP_URL,FOLLOW_TOPICS_URL } from '../constants/Urls';
 import { startSignIn,endSignIn,requestUserInfo,receiveUserInfo,startSignUp,endSignUp } from '../actions/signinup';
@@ -105,7 +105,7 @@ export function* signIn(phoneNo,password) {
             let oldFollowTopics=yield call(store.get, 'followTopics');
             if(oldFollowTopics.length>0)
             {
-              followTopics=concatFilterDuplicateTopics(followTopics,oldFollowTopics);
+              followTopics=concatFilterDuplicate(followTopics,oldFollowTopics);
               let followTopicsIds=[];
               followTopics.map((topic)=>{followTopicsIds.push(topic.id);});
               let formData=new FormData();

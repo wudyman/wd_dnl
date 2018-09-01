@@ -92,6 +92,7 @@ class Main extends React.Component {
         }
         currentTopicId=myTopics[0].id;
         currentTabIndex=0;
+        dataIndex=myTopics[0].dataIndex;
         readActions.requestArticleList(currentTopicId, currentTabIndex, dataIndex, false, true);
       });
     });
@@ -131,9 +132,8 @@ class Main extends React.Component {
     const { readActions } = this.props;
     dataIndex=0;
     readActions.requestArticleList(topicId, currentTabIndex, dataIndex, true, false);
-    dataIndex=dataIndex+DATA_STEP;
+    //dataIndex=dataIndex+DATA_STEP;
     myTopics[currentTabIndex].dataIndex=dataIndex;
-    //const index = this.state.typeIds.indexOf(typeId);
   };
 
   onPress = (type,itemData) => {

@@ -16,7 +16,7 @@
  *
  */
 import * as types from '../constants/ActionTypes';
-import { concatFilterDuplicate } from '../utils/ItemsUtil';
+import { concatFilterDuplicateArticles } from '../utils/ItemsUtil';
 
 const initialState = {
   isRefreshing: false,
@@ -53,7 +53,7 @@ function combine(state, action) {
 }
 
 function loadMore(state, action) {
-  state.articleList[action.tabIndex] = concatFilterDuplicate(
+  state.articleList[action.tabIndex] = concatFilterDuplicateArticles(
     state.articleList[action.tabIndex],
     action.articleList
   );

@@ -19,6 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-native';
 import store from 'react-native-simple-store';
+import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
 import ItemList from './ItemList';
 import ItemNotification from './ItemNotification';
@@ -43,6 +44,10 @@ class NotificationPage extends React.Component {
 
     componentWillMount() {
         console.log('**************NotificationPage componentWillMount*********');
+        if('true'==gUserInfo.isSignIn){
+            gLastQueryTime.notification=moment().format('YYYY-MM-DD HH:mm:ss.S');
+            store.save('lastQueryTime',gLastQueryTime);
+        }
         this.setState({notifications:[]});
         start=0;
         this._getNotifications(start);

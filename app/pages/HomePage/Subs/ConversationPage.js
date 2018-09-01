@@ -19,6 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ScrollView, RefreshControl, StyleSheet, View, ListView, Alert } from 'react-native';
 import store from 'react-native-simple-store';
+import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
 import ItemList from './ItemList';
 import ItemConversation from './ItemConversation';
@@ -43,6 +44,10 @@ class ConversationPage extends React.Component {
 
     componentWillMount() {
         console.log('**************ConversationPage componentWillMount*********');
+        if('true'==gUserInfo.isSignIn){
+            gLastQueryTime.conversation=moment().format('YYYY-MM-DD HH:mm:ss.S');
+            store.save('lastQueryTime',gLastQueryTime);
+        }
         this.setState({conversations:[]});
         start=0;
         this._getConversations(start);
