@@ -101,6 +101,29 @@ class WebViewPage extends React.Component {
     lastCanGoBack=canGoBack;
   };
 
+  onMessage = (event) => {
+    const message = JSON.parse(event.nativeEvent.data);
+    console.log('message:'+message);
+    if('login'==message.command)
+    {
+      if('false'==message.payload.status)
+        this.props.navigation.navigate('Misc',{pageType:'sign',isSignIn:'false'});
+    }
+    else if('page'==message.command)
+    {
+      console.log('url:'+message.payload.url);
+      console.log('title:'+message.payload.title);
+      console.log('content:'+message.payload.content);
+      console.log('thumbImage:'+message.payload.thumbImage);
+      this.setState({
+        url:message.payload.url,
+        title:message.payload.title,
+        content:message.payload.content,
+        thumbImage:message.payload.thumbImage,
+      });
+    }
+  }
+
   goBack = () => {
     if (this.state.isShareModal) {
       this.setState({
@@ -212,6 +235,7 @@ class WebViewPage extends React.Component {
             this.webview = ref;
           }}
           style={styles.base}
+          onMessage={this.onMessage}
           source={{ uri: this.state.url }}
           javaScriptEnabled
           domStorageEnabled

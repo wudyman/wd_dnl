@@ -206,35 +206,6 @@ class Category extends React.Component {
     );
   };
 
-  renderGridView = () => {
-    const { category } = this.props;
-    return (
-      <ScrollView
-        automaticallyAdjustContentInsets={false}
-        horizontal={false}
-        contentContainerStyle={styles.no_data}
-        style={styles.base}
-        refreshControl={
-          <RefreshControl
-            refreshing={category.loading}
-            onRefresh={this.onRefresh}
-            title="Loading..."
-            colors={['#228b22cc', '#00ff00ff', '#ffffbb33', '#ffff4444']}
-            //colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
-          />
-        }
-      >
-        <View style={styles.gridLayout}>
-          <GridView
-            items={Array.from(category.topicList)}
-            itemsPerRow={3}
-            renderItem={this.renderItem}
-          />
-        </View>
-      </ScrollView>
-    );
-  };
-
   renderItemMyTopic = (item) => {
     return (
       <Button
@@ -253,18 +224,61 @@ class Category extends React.Component {
     );
   };
 
-  renderGridViewMyTopic = () => {
+  renderTopicsView = (bothMyAndAll) => {
     const { category } = this.props;
     return (
-
+      <ScrollView
+        automaticallyAdjustContentInsets={false}
+        horizontal={false}
+        contentContainerStyle={styles.no_data}
+        style={styles.base}
+        refreshControl={
+          <RefreshControl
+            refreshing={category.loading}
+            onRefresh={this.onRefresh}
+            title="Loading..."
+            colors={['#228b22cc', '#00ff00ff', '#ffffbb33', '#ffff4444']}
+            //colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
+          />
+        }
+      >
+        {'true'==bothMyAndAll ?
+        <View>
+          <View style={styles.myTopic}>
+            <Text style={styles.myTopicText}>我的栏目</Text>
+            <Text style={styles.myTopicSubText}>点击栏目移除</Text> 
+          </View>
+          <View style={styles.gridLayout}>
+            <GridView
+              items={Array.from(tempFollowTopics)}
+              itemsPerRow={2}
+              renderItem={this.renderItemMyTopic}
+            />
+          </View>
+          <View style={{paddingBottom:10}}/>
+          <View style={styles.allTopic}>
+            <Text style={styles.allTopicText}>所有栏目</Text>
+            <Text style={styles.allTopicSubText}>点击栏目添加或移除</Text>
+          </View>
+          <View style={styles.gridLayout}>
+            <GridView
+              items={Array.from(category.topicList)}
+              itemsPerRow={3}
+              renderItem={this.renderItem}
+            />
+          </View>
+          <View style={{paddingBottom:10}}/>
+        </View>
+        :
         <View style={styles.gridLayout}>
           <GridView
-            items={Array.from(tempFollowTopics)}
-            itemsPerRow={2}
-            renderItem={this.renderItemMyTopic}
+            items={Array.from(category.topicList)}
+            itemsPerRow={3}
+            renderItem={this.renderItem}
           />
         </View>
-
+        }        
+      </ScrollView>
     );
   };
 
@@ -286,7 +300,7 @@ class Category extends React.Component {
               初次见面，请选择您感兴趣的栏目
             </Text>
           </View>
-          {this.renderGridView()}
+          {this.renderTopicsView('false')} 
           <Button
             btnStyle={styles.sureBtn}
             textStyle={styles.sureBtnText}
@@ -298,41 +312,23 @@ class Category extends React.Component {
     }
     return (
       <View style={styles.container}>
-
         <View style={styles.header}>
           <ImageButton btnStyle={{padding:10}} icon="md-close" iconSize={25} iconColor="black" activeOpacity={0.2} onPress={() => this.onActionSelected()}/>
           <View style={styles.title}>
             <Text style={styles.titleText}>栏目</Text>
           </View>
           <ImageButton btnStyle={{padding:10}} icon="md-checkmark" iconSize={25} iconColor="black" activeOpacity={0.2} onPress={() => this.onActionSelected()}/>
-        </View>   
-
-        <View style={styles.myTopic}>
-          <Text style={styles.myTopicText}>我的栏目</Text>
-          <Text style={styles.myTopicSubText}>点击栏目移除</Text> 
-        </View>
-        {this.renderGridViewMyTopic()}
-        <View style={{paddingBottom:50}}/>
-        <View style={styles.allTopic}>
-          <Text style={styles.allTopicText}>所有栏目</Text>
-          <Text style={styles.allTopicSubText}>点击栏目添加或移除</Text>
-        </View>
-        {this.renderGridView()}
+        </View>  
+        {this.renderTopicsView('true')} 
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  base: {
-    //flex: 1
-  },
   container: {
     flex: 1,
     flexDirection: 'column',
-    //justifyContent: 'flex-start',
-    //alignItems:'flex-start',
-    //alignContent:'flex-start',
     backgroundColor: '#fff'
   },
   header: {
@@ -356,9 +352,6 @@ const styles = StyleSheet.create({
     marginBottom:10,
     //flex: 1,  //can`t use
     flexDirection: 'row',
-    //justifyContent: 'flex-start',
-    //alignItems:'flex-start',
-    //alignContent:'flex-start',
   },
   myTopicText: {
     fontSize: 16,
@@ -376,11 +369,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginTop:20,
     marginBottom:10,
-    //flex: 1,  //can`t use
     flexDirection: 'row',
-    //justifyContent: 'flex-start',
-    //alignItems:'flex-start',
-    //alignContent:'flex-start',
   },
   allTopicText: {
     fontSize: 16,
@@ -409,7 +398,6 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   gridLayout: {
-    //flex: 1,
     alignItems: 'center',
     backgroundColor: '#fff'
   },

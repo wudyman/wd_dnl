@@ -86,6 +86,7 @@ const GridView = ({
 const styles = StyleSheet.create({
   group: {
     flexDirection: 'row',
+    justifyContent:'center',
     alignItems: 'center'
   }
 });
