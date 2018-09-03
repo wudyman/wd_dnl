@@ -21,7 +21,7 @@ import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-na
 import store from 'react-native-simple-store';
 import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
-import ItemList from './ItemList';
+import ItemList from '../../../components/ItemList';
 import ItemNotification from './ItemNotification';
 import { concatFilterDuplicate } from '../../../utils/ItemsUtil';
 import { SITE_URL, NOTIFICATIONS_URL } from '../../../constants/Urls';

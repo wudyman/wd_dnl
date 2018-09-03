@@ -21,7 +21,7 @@ import { ScrollView, RefreshControl, StyleSheet, View, ListView, Alert } from 'r
 import store from 'react-native-simple-store';
 import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
-import ItemList from './ItemList';
+import ItemList from '../../../components/ItemList';
 import ItemConversation from './ItemConversation';
 import { concatFilterDuplicate, removeItemById } from '../../../utils/ItemsUtil';
 import { SITE_URL, CONVERSATIONS_URL, DELETE_CONVERSATION_URL } from '../../../constants/Urls';
@@ -44,14 +44,18 @@ class ConversationPage extends React.Component {
 
     componentWillMount() {
         console.log('**************ConversationPage componentWillMount*********');
-        if('true'==gUserInfo.isSignIn){
-            gLastQueryTime.conversation=moment().format('YYYY-MM-DD HH:mm:ss.S');
-            store.save('lastQueryTime',gLastQueryTime);
-        }
         this.setState({conversations:[]});
         start=0;
         this._getConversations(start);
         start=start+DATA_STEP*2;
+    }
+
+    componentWillUnmount() {
+        console.log('**************ConversationPage componentWillUnmount*********');
+        if('true'==gUserInfo.isSignIn){
+            gLastQueryTime.conversation=moment().format('YYYY-MM-DD HH:mm:ss.S');
+            store.save('lastQueryTime',gLastQueryTime);
+        }
     }
 
     _getConversationsCallback(ret)

@@ -19,7 +19,7 @@
 import React from 'react';
 import { ListView, RefreshControl, StyleSheet } from 'react-native';
 
-const ItemListView = ({
+const ItemListArticle = ({
   dataSource,
   topicId,
   isRefreshing,
@@ -58,4 +58,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ItemListView;
+export default ItemListArticle;

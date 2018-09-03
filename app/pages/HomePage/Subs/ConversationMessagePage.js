@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import { ScrollView, RefreshControl, StyleSheet, View, ListView, Text, TextInput, Keyboard, Alert } from 'react-native';
 import store from 'react-native-simple-store';
 import RequestUtil from '../../../utils/RequestUtil';
-import ItemList from './ItemList';
+import ItemList from '../../../components/ItemList';
 import ItemConversationMessage from './ItemConversationMessage';
 import Button from '../../../components/Button';
 import ToastUtil from '../../../utils/ToastUtil';

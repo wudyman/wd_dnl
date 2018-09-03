@@ -29,7 +29,7 @@ class HomeContainer extends React.Component {
         {gShowNotice?
         <View style={{flexDirection:'row',paddingLeft:7}}>
           <Icon name="md-person" size={25} color={tintColor} />
-          <View style={{left:-6,top:1,height:8,width:8,borderRadius:4,backgroundColor:'red',borderColor:'#fff',borderWidth:1}}></View>
+          <View style={{left:-5,top:1,height:8,width:8,borderRadius:4,backgroundColor:'red',borderColor:'#fff',borderWidth:1}}></View>
         </View>
         :
         <Icon name="md-person" size={25} color={tintColor} />

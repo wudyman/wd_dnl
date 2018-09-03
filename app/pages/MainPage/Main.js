@@ -30,10 +30,10 @@ import store from 'react-native-simple-store';
 import LoadingView from '../../components/LoadingView';
 import ToastUtil from '../../utils/ToastUtil';
 import { getArticleList } from '../../utils/ItemsUtil';
-import ItemCell from './ItemCell';
+import ItemArticle from './ItemArticle';
 import Footer from './Footer';
 import EmptyView from './EmptyView';
-import ItemListView from './ItemListView';
+import ItemListArticle from '../../components/ItemListArticle';
 import { DATA_STEP } from '../../constants/Constants';
 import { HEAD_TOPIC_ID, ANSWER_TOPIC_ID } from '../../constants/Constants';
 
@@ -169,7 +169,7 @@ class Main extends React.Component {
   };
 
   renderItem = article => (
-    <ItemCell article={article} onPressHandler={this.onPress} />
+    <ItemArticle article={article} onPressHandler={this.onPress} />
   );
 
   renderContent = (topic) => {
@@ -187,7 +187,7 @@ class Main extends React.Component {
     }
     let dataSource=this.state.dataSource.cloneWithRows(getArticleList(read.articleList[currentTabIndex]));
     return (
-      <ItemListView
+      <ItemListArticle
         dataSource={dataSource}
         topicId={topic.id}
         isRefreshing={read.isRefreshing}

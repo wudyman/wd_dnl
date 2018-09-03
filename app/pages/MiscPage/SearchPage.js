@@ -17,11 +17,18 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, View,TextInput,Platform } from 'react-native';
+import { StyleSheet, Text, View,TextInput,Platform, ListView } from 'react-native';
 import store from 'react-native-simple-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
+
+import RequestUtil from '../../utils/RequestUtil';
+import ItemList from '../../components/ItemList';
+import ItemSearch from './ItemSearch';
+import { concatFilterDuplicate, removeItemById } from '../../utils/ItemsUtil';
+import { SITE_URL, SEARCH_URL } from '../../constants/Urls';
+import { DATA_STEP } from '../../constants/Constants';
 
 const propTypes = {
 };
@@ -30,29 +37,81 @@ class SettingPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        userInfo: {}
+        userInfo: {},
+        keywordText: '',
+        results: [],
+        dataSource: new ListView.DataSource({
+            rowHasChanged: (row1, row2) => row1 !== row2
+        }),
     }
   }
 
-  _about() {
-    this.props.navigation.navigate('Sub',{subPage:'about'});
+  _searchCallback(ret){
+    console.log(ret);
+    let resultDatas=[];
+    if('fail'!=ret)
+    {
+      ret.map((item)=>{
+        let data={};
+        data.id=item[0];
+        data.title=item[1];
+        data.answer_nums=item[2];
+        resultDatas.push(data);
+      });
+    }
+    this.setState({results:resultDatas});
   }
 
-  _feedBack() {
-    this.props.navigation.navigate('Sub',{subPage:'feedback'});
-  }
-
-  _checkUpdate(){
-    
-  }
-
-  _doNothing(){
+  _search() {
+    let keyword=this.state.keywordText.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,"");
+    let type='all';
+    let order=1;
+    let start=0;
+    let end=start+DATA_STEP*2;
+    let url=SEARCH_URL+type+'/'+order+'/'+start+'/'+end+'/';
+    let formData=new FormData();
+    formData.append("keyword",keyword);
+    RequestUtil.requestWithCallback(url,'POST',formData,this._searchCallback.bind(this));
   }
 
   componentWillMount() {
     this.setState({userInfo:gUserInfo});
   }
 
+  onPress = (itemData) => {
+    const { navigate } = this.props.navigation;
+    navigate('Web', { itemData });
+  };
+
+  onRefresh = () => {
+    console.log('**************onRefresh*********');
+  };
+
+  onEndReached = () => {
+    console.log('**************onEndReached*********');
+  };
+
+  _renderFooter = () => {
+    return <View />;
+  };
+
+  _renderItem = resultData => (
+    <ItemSearch resultData={resultData} onPressHandler={this.onPress}/>
+  );
+
+  _renderResult() {
+    let dataSource=this.state.dataSource.cloneWithRows(this.state.results);
+    return (
+        <ItemList
+            dataSource={dataSource}
+            isRefreshing={false}
+            onEndReached={this.onEndReached}
+            onRefresh={this.onRefresh}
+            renderFooter={this._renderFooter}
+            renderItem={this._renderItem}
+        />
+    );
+  }
 
   render() {
     return (
@@ -72,26 +131,41 @@ class SettingPage extends React.Component {
                 <Icon name="md-search" size={20} color='#aaaaaa' />
                 <TextInput
                 style={{width:200,padding:2,fontSize:14,textAlign:'left'}}
-                underlineColorAndroid='transparent'
-                placeholderTextColor='#aaaaaa'
                 autoFocus= {true}
                 selectionColor='#228b22'
-                placeholder='请输入关键字' />
+                placeholder='请输入关键字'
+                placeholderTextColor='#aaaaaa'
+                onChangeText={
+                    (text) => {
+                      console.log(text);
+                      this.setState({keywordText:text});
+                    }
+                  }
+                underlineColorAndroid='transparent' />
             </View>
             <View style={{}}>
                 <Button
                     btnStyle={{padding:10}}
                     textStyle={{color:'black',fontSize:16}}
                     text='搜索'
+                    onPress={this._search.bind(this)}
                     activeOpacity={0.2}
                 />
             </View>
         </View>
         <View style={styles.content}>
-            <View style={styles.hot}>
-                <Text style={{paddingBottom:10,fontSize:15,color:"#aaaaaa"}}>热门搜索</Text>
-                <View style={{height: 1, backgroundColor:'#f0f0f0'}}/>
+            {this.state.keywordText ?
+            <View style={styles.result}>
+            {this._renderResult()}
             </View>
+            :
+            <View style={styles.recommend}>
+              <View style={styles.hot}>
+                  <Text style={{paddingBottom:10,fontSize:15,color:"#aaaaaa"}}>热门搜索</Text>
+                  <View style={{height: 1, backgroundColor:'#f0f0f0'}}/>
+              </View>
+            </View>
+            }
         </View>
 
       </View>
