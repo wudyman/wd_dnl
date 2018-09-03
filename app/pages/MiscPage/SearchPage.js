@@ -19,6 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text, View,TextInput,Platform, ListView } from 'react-native';
 import store from 'react-native-simple-store';
+import ScrollableTabView, { ScrollableTabBar, DefaultTabBar } from 'react-native-scrollable-tab-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
@@ -26,6 +27,7 @@ import ImageButton from '../../components/ImageButtonWithText';
 import RequestUtil from '../../utils/RequestUtil';
 import ItemList from '../../components/ItemList';
 import ItemSearch from './ItemSearch';
+import ToastUtil from '../../utils/ToastUtil';
 import { concatFilterDuplicate, removeItemById } from '../../utils/ItemsUtil';
 import { SITE_URL, SEARCH_URL } from '../../constants/Urls';
 import { DATA_STEP } from '../../constants/Constants';
@@ -40,6 +42,7 @@ class SettingPage extends React.Component {
         userInfo: {},
         keywordText: '',
         results: [],
+        showResult: false,
         dataSource: new ListView.DataSource({
             rowHasChanged: (row1, row2) => row1 !== row2
         }),
@@ -59,19 +62,26 @@ class SettingPage extends React.Component {
         resultDatas.push(data);
       });
     }
-    this.setState({results:resultDatas});
+    this.setState({results:resultDatas,showResult:true});
   }
 
   _search() {
     let keyword=this.state.keywordText.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,"");
-    let type='all';
-    let order=1;
-    let start=0;
-    let end=start+DATA_STEP*2;
-    let url=SEARCH_URL+type+'/'+order+'/'+start+'/'+end+'/';
-    let formData=new FormData();
-    formData.append("keyword",keyword);
-    RequestUtil.requestWithCallback(url,'POST',formData,this._searchCallback.bind(this));
+    if(keyword)
+    {
+      let type='all';
+      let order=1;
+      let start=0;
+      let end=start+DATA_STEP*2;
+      let url=SEARCH_URL+type+'/'+order+'/'+start+'/'+end+'/';
+      let formData=new FormData();
+      formData.append("keyword",keyword);
+      RequestUtil.requestWithCallback(url,'POST',formData,this._searchCallback.bind(this));
+    }
+    else
+    {
+      ToastUtil.showShort("请输入有效关键字");
+    }
   }
 
   componentWillMount() {
@@ -113,6 +123,49 @@ class SettingPage extends React.Component {
     );
   }
 
+  _renderContent() {
+    if(this.state.showResult)
+      return (      
+          <ScrollableTabView
+            ref="myScrollableTabView"
+            renderTabBar={() => (
+              <DefaultTabBar
+                style={{borderWidth:1,borderColor:'#f8f8f8'}}
+                tabStyle={styles.tab}
+                textStyle={styles.tabText}
+              />
+            )}
+            initialPage={0}
+            locked={false}
+            scrollWithoutAnimation={false}
+            tabBarBackgroundColor="#ffffff"
+            tabBarUnderlineStyle={styles.tabBarUnderline}
+            tabBarActiveTextColor="#228b22"
+            tabBarInactiveTextColor="#888"
+          >
+            <View key='0' tabLabel='内容' style={styles.base}>
+              {this._renderResult()}
+            </View>
+            <View key='1' tabLabel='用户' style={styles.base}>
+              {this._renderResult()}
+            </View>
+          </ScrollableTabView>
+          );
+    else{
+        if(this.state.keywordText)
+          return (<View />);
+        else
+          return (
+              <View style={styles.recommend}>
+                <View style={styles.hot}>
+                    <Text style={{paddingBottom:10,fontSize:15,color:"#aaaaaa"}}>热门搜索</Text>
+                    <View style={{height: 1, backgroundColor:'#f0f0f0'}}/>
+                </View>
+              </View>
+          );
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -137,8 +190,7 @@ class SettingPage extends React.Component {
                 placeholderTextColor='#aaaaaa'
                 onChangeText={
                     (text) => {
-                      console.log(text);
-                      this.setState({keywordText:text});
+                        this.setState({keywordText:text,results:[],showResult:false});
                     }
                   }
                 underlineColorAndroid='transparent' />
@@ -153,23 +205,10 @@ class SettingPage extends React.Component {
                 />
             </View>
         </View>
-        <View style={styles.content}>
-            {this.state.keywordText ?
-            <View style={styles.result}>
-            {this._renderResult()}
-            </View>
-            :
-            <View style={styles.recommend}>
-              <View style={styles.hot}>
-                  <Text style={{paddingBottom:10,fontSize:15,color:"#aaaaaa"}}>热门搜索</Text>
-                  <View style={{height: 1, backgroundColor:'#f0f0f0'}}/>
-              </View>
-            </View>
-            }
-        </View>
-
+        {this._renderContent()}
       </View>
     );
+    
   }
 }
 
@@ -183,11 +222,13 @@ const styles = StyleSheet.create({
     marginTop: (Platform.OS === 'ios') ? 10 : 0,
     backgroundColor: '#fff'
   },
-  content: {
-    //flex: 1,
+  recommend: {
     margin:10,
     justifyContent: 'center',
     paddingBottom: 10
+  },
+  tabBarUnderline: {
+    backgroundColor: 'transparent',
   },
   hot: {
 
