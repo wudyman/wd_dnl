@@ -17,8 +17,8 @@
  */
 import React from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { formatStringWithHtml } from '../../../utils/FormatUtil';
 import moment from 'moment';
-
 require('moment/locale/zh-cn');
 
 const ItemNotification = ({ notification, onPressHandler}) => (
@@ -29,13 +29,13 @@ const ItemNotification = ({ notification, onPressHandler}) => (
     <View style={styles.Item}>
         <TouchableOpacity onPress={() => onPressHandler('PEOPLE',notification)}>
             <View style={styles.containerItem}>
-                <Text style={styles.contentLinkText}>{notification.sender_first_name}</Text>
+                <Text style={styles.contentLinkText}>{formatStringWithHtml(notification.sender_first_name)}</Text>
             </View>
         </TouchableOpacity>
         <Text style={styles.contentText}>邀请你回答</Text>
         <TouchableOpacity onPress={() => onPressHandler('QUESTION',notification)}>
             <View style={styles.containerItem}>
-                <Text style={styles.contentLinkText}>{notification.target_title}</Text>
+                <Text style={styles.contentLinkText}>{formatStringWithHtml(notification.target_title)}</Text>
             </View>
         </TouchableOpacity>
     </View>

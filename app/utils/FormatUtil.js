@@ -15,6 +15,9 @@
  * limitations under the License.
  *
  */
+
+import { SITE_URL } from '../constants/Urls';
+
 export const formatDateString = (timestamp) => {
   if (timestamp === undefined) {
     return '';
@@ -37,4 +40,12 @@ export const formatStringWithHtml = (originString) => {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>');
   return newString;
+};
+
+export const formatUrlWithSiteUrl = (url) => {
+  if((url!=null)&&(url.indexOf('http')<0))
+  {
+    url=SITE_URL+url;
+  }
+  return url;
 };

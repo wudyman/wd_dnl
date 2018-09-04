@@ -25,7 +25,7 @@ import ItemList from '../../../components/ItemList';
 import ItemNotification from './ItemNotification';
 import { concatFilterDuplicate } from '../../../utils/ItemsUtil';
 import { SITE_URL, NOTIFICATIONS_URL } from '../../../constants/Urls';
-import { DATA_STEP } from '../../../constants/Constants';
+import { DATA_STEP_DOUBLE } from '../../../constants/Constants';
 
 const propTypes = {
 };
@@ -51,7 +51,7 @@ class NotificationPage extends React.Component {
         this.setState({notifications:[]});
         start=0;
         this._getNotifications(start);
-        start=start+DATA_STEP*2;
+        start=start+DATA_STEP_DOUBLE;
     }
 
     _getNotificationsCallback(ret)
@@ -87,7 +87,7 @@ class NotificationPage extends React.Component {
     }
 
     _getNotifications(start){
-        let end=start+DATA_STEP*2;
+        let end=start+DATA_STEP_DOUBLE;
         let url=NOTIFICATIONS_URL+'1/'+start+'/'+end+'/';
         RequestUtil.requestWithCallback(url,'POST','',this._getNotificationsCallback.bind(this));
     }
@@ -114,13 +114,13 @@ class NotificationPage extends React.Component {
         this.setState({notifications:[]});
         start=0;
         this._getNotifications(start);
-        start=start+DATA_STEP*2;
+        start=start+DATA_STEP_DOUBLE;
     };
 
     onEndReached = () => {
         console.log('**************NotificationPage onEndReached*********');
         this._getNotifications(start);
-        start=start+DATA_STEP*2;
+        start=start+DATA_STEP_DOUBLE;
     };
 
     _renderFooter = () => {

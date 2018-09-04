@@ -18,3 +18,4 @@
 export const HEAD_TOPIC_ID = '-2';
 export const ANSWER_TOPIC_ID = '-1';
 export const DATA_STEP = 10;
+export const DATA_STEP_DOUBLE = 20;

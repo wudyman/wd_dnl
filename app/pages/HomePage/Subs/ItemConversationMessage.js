@@ -17,8 +17,8 @@
  */
 import React from 'react';
 import { Text, Image, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { formatStringWithHtml } from '../../../utils/FormatUtil';
 import moment from 'moment';
-
 require('moment/locale/zh-cn');
 
 const ItemConversationMessage = ({ message, onPressHandler}) => (
@@ -29,10 +29,10 @@ const ItemConversationMessage = ({ message, onPressHandler}) => (
         </TouchableOpacity>
         <View style={styles.itemRight}>
             <TouchableOpacity style={styles.name} onPress={() => onPressHandler('PEOPLE',message)}>
-                <Text style={styles.nameText}>{message.sender_name}:</Text>
+                <Text style={styles.nameText}>{formatStringWithHtml(message.sender_name)}:</Text>
             </TouchableOpacity>
             <View style={styles.message}>
-                <Text style={styles.messageText}>{message.content}</Text>
+                <Text style={styles.messageText}>{formatStringWithHtml(message.content)}</Text>
             </View>
         </View>
     </View>

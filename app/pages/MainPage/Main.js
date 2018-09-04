@@ -106,7 +106,7 @@ class Main extends React.Component {
       console.log('@@@@@@@@@@@@@@@recieve finish@@@@@@@@@@@@@@@');
       if (nextProps.read.noMore)
       {
-        ToastUtil.showShort('没有更多数据了');
+        ToastUtil.showShort('没有更多内容了');
       }
       else
       {

@@ -54,7 +54,7 @@ const request = (url, method, data) => {
   });
 };
 
-const requestWithCallback = (url, method, data,callback) => {
+const requestWithCallback = (url, method, data,callback,callbackarg) => {
   let isOk;
   console.log(url);
   console.log(data);
@@ -72,15 +72,15 @@ const requestWithCallback = (url, method, data,callback) => {
   })
   .then((responseData) => {
   if (isOk) {
-      callback(responseData);
+      callback(responseData,callbackarg);
   } else {
       console.log(responseData);
-      callback('fail');
+      callback('fail',callbackarg);
   }
   })
   .catch((error) => {
     console.error(error);
-    callback('fail');
+    callback('fail',callbackarg);
   });
 };
 

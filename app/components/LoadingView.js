@@ -21,7 +21,7 @@ import { ActivityIndicator, Text, StyleSheet, View } from 'react-native';
 const LoadingView = () => (
   <View style={styles.loading}>
     <ActivityIndicator size="large" color="#228b22" />
-    <Text style={styles.loadingText}>数据加载中...</Text>
+    <Text style={styles.loadingText}>内容加载中...</Text>
   </View>
 );
 

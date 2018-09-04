@@ -43,7 +43,7 @@ const EmptyView = ({ read, topicId, onRefresh }) => (
     }
   >
     <View style={{ alignItems: 'center' }}>
-      <Text style={{ fontSize: 16 }}>目前没有数据，请刷新重试……</Text>
+      <Text style={{ fontSize: 16 }}>目前没内容，请刷新重试……</Text>
     </View>
   </ScrollView>
 );

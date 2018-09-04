@@ -45,7 +45,7 @@ const Loading = ({
         <View style={[styles.background, { backgroundColor: overlayColor }]}>
           <View style={styles.loading}>
             <ActivityIndicator size={size} color={color} />
-            <Text style={styles.loadingText}>数据加载中...</Text>
+            <Text style={styles.loadingText}>内容加载中...</Text>
           </View>
         </View>
       </View>

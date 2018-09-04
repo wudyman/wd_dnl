@@ -25,7 +25,7 @@ import ItemList from '../../../components/ItemList';
 import ItemConversation from './ItemConversation';
 import { concatFilterDuplicate, removeItemById } from '../../../utils/ItemsUtil';
 import { SITE_URL, CONVERSATIONS_URL, DELETE_CONVERSATION_URL } from '../../../constants/Urls';
-import { DATA_STEP } from '../../../constants/Constants';
+import { DATA_STEP_DOUBLE } from '../../../constants/Constants';
 
 const propTypes = {
 };
@@ -47,7 +47,7 @@ class ConversationPage extends React.Component {
         this.setState({conversations:[]});
         start=0;
         this._getConversations(start);
-        start=start+DATA_STEP*2;
+        start=start+DATA_STEP_DOUBLE;
     }
 
     componentWillUnmount() {
@@ -113,7 +113,7 @@ class ConversationPage extends React.Component {
     }
 
     _getConversations(start){
-        let end=start+DATA_STEP*2;
+        let end=start+DATA_STEP_DOUBLE;
         let url=CONVERSATIONS_URL+'1/'+start+'/'+end+'/';
         RequestUtil.requestWithCallback(url,'POST','',this._getConversationsCallback.bind(this));
     }
@@ -163,13 +163,13 @@ class ConversationPage extends React.Component {
         this.setState({notifications:[]});
         start=0;
         this._getConversations(start);
-        start=start+DATA_STEP*2;
+        start=start+DATA_STEP_DOUBLE;
     };
 
     onEndReached = () => {
         console.log('**************ConversationPage onEndReached*********');
         this._getConversations(start);
-        start=start+DATA_STEP*2;
+        start=start+DATA_STEP_DOUBLE;
     };
 
     _renderFooter = () => {

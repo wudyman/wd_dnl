@@ -26,7 +26,7 @@ import Button from '../../../components/Button';
 import ToastUtil from '../../../utils/ToastUtil';
 import { concatFilterDuplicate, removeItemById } from '../../../utils/ItemsUtil';
 import { SITE_URL, CONVERSATION_MESSAGES_URL, SEND_MESSAGE_URL, DELETE_MESSAGE_URL } from '../../../constants/Urls';
-import { DATA_STEP } from '../../../constants/Constants';
+import { DATA_STEP_DOUBLE } from '../../../constants/Constants';
 
 const propTypes = {
 };
@@ -56,7 +56,7 @@ class ConversationMessagePage extends React.Component {
         this.setState({messages:[]});
         start=0;
         this._getNewMessages();
-        start=start+DATA_STEP*2;
+        start=start+DATA_STEP_DOUBLE;
 
         this.aInterval=setInterval(this._getNewMessages.bind(this),10*1000);
     }
@@ -128,7 +128,7 @@ class ConversationMessagePage extends React.Component {
 
     _getNewMessages(){
         console.log('**************ConversationMessagePage _getNewMessages*********');
-        let end=0+DATA_STEP*2;
+        let end=0+DATA_STEP_DOUBLE;
         let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+0+'/'+end+'/';
         RequestUtil.requestWithCallback(url,'POST','',this._getNewMessagesCallback.bind(this));
     }
@@ -141,7 +141,7 @@ class ConversationMessagePage extends React.Component {
     }
 
     _getMoreMessages(start){
-        let end=start+DATA_STEP*2;
+        let end=start+DATA_STEP_DOUBLE;
         let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+start+'/'+end+'/';
         RequestUtil.requestWithCallback(url,'POST','',this._getMoreMessagesCallback.bind(this));
     }
@@ -219,7 +219,7 @@ class ConversationMessagePage extends React.Component {
     onEndReached = () => {
         console.log('**************ConversationMessagePage onEndReached*********');
         this._getMoreMessages(start);
-        start=start+DATA_STEP*2;
+        start=start+DATA_STEP_DOUBLE;
     };
 
     _renderFooter = () => {

@@ -18,28 +18,38 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text, View,TextInput,Platform, ListView } from 'react-native';
-import store from 'react-native-simple-store';
 import ScrollableTabView, { ScrollableTabBar, DefaultTabBar } from 'react-native-scrollable-tab-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
-
 import RequestUtil from '../../utils/RequestUtil';
 import ItemList from '../../components/ItemList';
-import ItemSearch from './ItemSearch';
+import ItemSearchContent from './ItemSearchContent';
+import ItemSearchPeople from './ItemSearchPeople';
+import ItemSearchTopic from './ItemSearchTopic';
 import ToastUtil from '../../utils/ToastUtil';
-import { concatFilterDuplicate, removeItemById } from '../../utils/ItemsUtil';
+import { formatUrlWithSiteUrl } from '../../utils/FormatUtil';
 import { SITE_URL, SEARCH_URL } from '../../constants/Urls';
-import { DATA_STEP } from '../../constants/Constants';
+import { DATA_STEP_DOUBLE } from '../../constants/Constants';
 
 const propTypes = {
 };
+
+const SEARCH_TYPE = [['0','content','内容',0],['1','people','用户',0],['2','topic','栏目',0]];
+const INDEX_ID =0;
+const INDEX_TYPE =1;
+const INDEX_NAME =2;
+const INDEX_DATAINDEX =3;
+
+let currentTabIndex=0;
+let currentSearchType=SEARCH_TYPE[0][INDEX_NAME];
+let currentDataIndex=0;
+let resultDatas=[[],[],[]];
 
 class SettingPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        userInfo: {},
         keywordText: '',
         results: [],
         showResult: false,
@@ -49,34 +59,69 @@ class SettingPage extends React.Component {
     }
   }
 
-  _searchCallback(ret){
-    console.log(ret);
-    let resultDatas=[];
+  _searchCallback(ret,callbackarg){
     if('fail'!=ret)
     {
-      ret.map((item)=>{
-        let data={};
-        data.id=item[0];
-        data.title=item[1];
-        data.answer_nums=item[2];
-        resultDatas.push(data);
+      let contents=resultDatas[0];
+      let users=resultDatas[1];
+      let topics=resultDatas[2];
+      ret[0].map((item)=>{
+        let question={};
+        question.id=item[0];
+        question.title=item[1];
+        question.url=SITE_URL+"/question/"+question.id+"/";
+        contents.push(question);
       });
+      ret[1].map((item)=>{
+        let article={};
+        article.id=item[0];
+        article.title=item[1];
+        article.url=SITE_URL+"/article/"+article.id+"/";
+        contents.push(article);
+      });
+      ret[2].map((item)=>{
+        let user={};
+        user.id=item[0];
+        user.name=item[1];
+        user.avatar=formatUrlWithSiteUrl(item[2]);
+        user.mood=item[3];
+        user.url=SITE_URL+"/er/"+user.id+"/";
+        users.push(user);
+      });
+      ret[3].map((item)=>{
+        let topic={};
+        topic.id=item[0];
+        topic.name=item[1];
+        topic.avatar=formatUrlWithSiteUrl(item[2]);
+        topic.detail=item[3];
+        topic.url=SITE_URL+"/topic/"+topic.id+"/";
+        topics.push(topic);
+      });
+      /*
+      resultDatas=[];
+      resultDatas.push(contents);
+      resultDatas.push(users);
+      resultDatas.push(topics);
+      */
+      SEARCH_TYPE[callbackarg][INDEX_DATAINDEX]+=DATA_STEP_DOUBLE;
+    }
+    else{
+      ToastUtil.showShort('没有更多内容了');
     }
     this.setState({results:resultDatas,showResult:true});
   }
 
-  _search() {
+  _search(start) {
     let keyword=this.state.keywordText.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,"");
     if(keyword)
     {
-      let type='all';
+      let type=currentSearchType;
       let order=1;
-      let start=0;
-      let end=start+DATA_STEP*2;
+      let end=start+DATA_STEP_DOUBLE;
       let url=SEARCH_URL+type+'/'+order+'/'+start+'/'+end+'/';
       let formData=new FormData();
       formData.append("keyword",keyword);
-      RequestUtil.requestWithCallback(url,'POST',formData,this._searchCallback.bind(this));
+      RequestUtil.requestWithCallback(url,'POST',formData,this._searchCallback.bind(this),callbackarg=currentTabIndex);
     }
     else
     {
@@ -84,8 +129,19 @@ class SettingPage extends React.Component {
     }
   }
 
+  _pressSearch() {
+    currentTabIndex=0;
+    currentSearchType=SEARCH_TYPE[0][INDEX_TYPE];
+    currentDataIndex=0;
+    resultDatas=[[],[],[]];
+    SEARCH_TYPE[0][INDEX_DATAINDEX]=0;
+    SEARCH_TYPE[1][INDEX_DATAINDEX]=0;
+    SEARCH_TYPE[2][INDEX_DATAINDEX]=0;
+    this.setState({results:resultDatas,showResult:false});
+    this._search(currentDataIndex);
+  }
+
   componentWillMount() {
-    this.setState({userInfo:gUserInfo});
   }
 
   onPress = (itemData) => {
@@ -95,22 +151,30 @@ class SettingPage extends React.Component {
 
   onRefresh = () => {
     console.log('**************onRefresh*********');
+    this._pressSearch();
   };
 
   onEndReached = () => {
     console.log('**************onEndReached*********');
+    currentDataIndex=SEARCH_TYPE[currentTabIndex][INDEX_DATAINDEX];
+    this._search(currentDataIndex);
   };
 
   _renderFooter = () => {
     return <View />;
   };
 
-  _renderItem = resultData => (
-    <ItemSearch resultData={resultData} onPressHandler={this.onPress}/>
-  );
+  _renderItem = resultData => {
+    if(0==currentTabIndex)
+      return <ItemSearchContent resultData={resultData} onPressHandler={this.onPress}/>
+    else if(1==currentTabIndex)
+      return <ItemSearchPeople resultData={resultData} onPressHandler={this.onPress}/>
+    else if(2==currentTabIndex)
+      return <ItemSearchTopic resultData={resultData} onPressHandler={this.onPress}/>
+  };
 
-  _renderResult() {
-    let dataSource=this.state.dataSource.cloneWithRows(this.state.results);
+  _renderResult(typeId) {
+    let dataSource=this.state.dataSource.cloneWithRows(this.state.results[parseInt(typeId)]);
     return (
         <ItemList
             dataSource={dataSource}
@@ -125,6 +189,21 @@ class SettingPage extends React.Component {
 
   _renderContent() {
     if(this.state.showResult)
+    {
+      const content = SEARCH_TYPE.map((type) => {
+        const typeView = (
+          <View key={type[INDEX_ID]} tabLabel={type[INDEX_NAME]} style={styles.base}>
+            {(currentSearchType==type[INDEX_TYPE])? 
+              this._renderResult(
+                type[INDEX_ID]
+            )
+            :
+            <View/>
+            }
+          </View>
+        );
+        return typeView;
+      });
       return (      
           <ScrollableTabView
             ref="myScrollableTabView"
@@ -138,19 +217,23 @@ class SettingPage extends React.Component {
             initialPage={0}
             locked={false}
             scrollWithoutAnimation={false}
+            onChangeTab={(obj) => {
+                console.log('**************searchPage onChangeTab*********');
+                currentTabIndex=obj.i;
+                currentSearchType=SEARCH_TYPE[currentTabIndex][INDEX_TYPE];
+                currentDataIndex=SEARCH_TYPE[currentTabIndex][INDEX_DATAINDEX];
+                this._search(currentDataIndex);
+              }
+            }
             tabBarBackgroundColor="#ffffff"
             tabBarUnderlineStyle={styles.tabBarUnderline}
             tabBarActiveTextColor="#228b22"
             tabBarInactiveTextColor="#888"
           >
-            <View key='0' tabLabel='内容' style={styles.base}>
-              {this._renderResult()}
-            </View>
-            <View key='1' tabLabel='用户' style={styles.base}>
-              {this._renderResult()}
-            </View>
+            {content}
           </ScrollableTabView>
           );
+    }
     else{
         if(this.state.keywordText)
           return (<View />);
@@ -190,7 +273,8 @@ class SettingPage extends React.Component {
                 placeholderTextColor='#aaaaaa'
                 onChangeText={
                     (text) => {
-                        this.setState({keywordText:text,results:[],showResult:false});
+                        resultDatas=[[],[],[]];
+                        this.setState({keywordText:text,results:resultDatas,showResult:false});
                     }
                   }
                 underlineColorAndroid='transparent' />
@@ -200,7 +284,7 @@ class SettingPage extends React.Component {
                     btnStyle={{padding:10}}
                     textStyle={{color:'black',fontSize:16}}
                     text='搜索'
-                    onPress={this._search.bind(this)}
+                    onPress={this._pressSearch.bind(this)}
                     activeOpacity={0.2}
                 />
             </View>
