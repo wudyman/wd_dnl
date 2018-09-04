@@ -21,6 +21,7 @@ import { ScrollView, RefreshControl, StyleSheet, View, ListView, Alert } from 'r
 import store from 'react-native-simple-store';
 import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
+import { formatUrlWithSiteUrl } from '../../../utils/FormatUtil';
 import ItemList from '../../../components/ItemList';
 import ItemConversation from './ItemConversation';
 import { concatFilterDuplicate, removeItemById } from '../../../utils/ItemsUtil';
@@ -44,10 +45,7 @@ class ConversationPage extends React.Component {
 
     componentWillMount() {
         console.log('**************ConversationPage componentWillMount*********');
-        this.setState({conversations:[]});
-        start=0;
-        this._getConversations(start);
-        start=start+DATA_STEP_DOUBLE;
+        this._getConversations('refresh');
     }
 
     componentWillUnmount() {
@@ -71,20 +69,11 @@ class ConversationPage extends React.Component {
                 conversation.update=item[2];
                 conversation.initator_id=item[3];
                 conversation.initator_name=item[4];
-                conversation.initator_avatar=item[5];
+                conversation.initator_avatar=formatUrlWithSiteUrl(item[5]);
                 conversation.parter_id=item[6];
                 conversation.parter_name=item[7];
-                conversation.parter_avatar=item[8];
+                conversation.parter_avatar=formatUrlWithSiteUrl(item[8]);
                 conversation.latest_message_content=item[9];
-
-                if((conversation.initator_avatar!=null)&&(conversation.initator_avatar.indexOf('http')<0))
-                {
-                    conversation.initator_avatar=SITE_URL+conversation.initator_avatar;
-                }
-                if((conversation.parter_avatar!=null)&&(conversation.parter_avatar.indexOf('http')<0))
-                {
-                    conversation.parter_avatar=SITE_URL+conversation.parter_avatar;
-                }
 
                 if(conversation.initator_id!=gUserInfo.id)
                 {
@@ -106,13 +95,17 @@ class ConversationPage extends React.Component {
                     conversations.push(conversation);
                 }
             });
+            start+=DATA_STEP_DOUBLE;
         }
-        this.setState({conversations:concatFilterDuplicate(this.state.conversations,conversations)});
-        //return concatFilterDuplicate(this.state.conversations,conversations);
-        
+        this.setState({conversations:concatFilterDuplicate(this.state.conversations,conversations)});       
     }
 
-    _getConversations(start){
+    _getConversations(type){
+        if('refresh'==type)
+        {
+            start=0;
+            this.setState({conversations:[]});
+        }
         let end=start+DATA_STEP_DOUBLE;
         let url=CONVERSATIONS_URL+'1/'+start+'/'+end+'/';
         RequestUtil.requestWithCallback(url,'POST','',this._getConversationsCallback.bind(this));
@@ -137,7 +130,6 @@ class ConversationPage extends React.Component {
         {
             itemData.url=itemData.er_url;
             itemData.title=itemData.er_name;
-            //navigate('Misc', { pageType:'er',itemData });
             navigate('Web', { itemData });
         }
         else if('DELETE'==type)
@@ -160,16 +152,12 @@ class ConversationPage extends React.Component {
 
     onRefresh = () => {
         console.log('**************ConversationPage onRefresh*********');
-        this.setState({notifications:[]});
-        start=0;
-        this._getConversations(start);
-        start=start+DATA_STEP_DOUBLE;
+        this._getConversations('refresh');
     };
 
     onEndReached = () => {
         console.log('**************ConversationPage onEndReached*********');
-        this._getConversations(start);
-        start=start+DATA_STEP_DOUBLE;
+        this._getConversations('more');
     };
 
     _renderFooter = () => {
@@ -216,7 +204,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     content: {
-        //flex: 1,
         justifyContent: 'center',
         paddingBottom: 1
     },

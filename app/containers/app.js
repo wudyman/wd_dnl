@@ -72,7 +72,6 @@ const App = StackNavigator(
       navigationOptions: {
         header: null,
         headerStyle: {borderBottomWidth: 1,borderColor:'#f8f8f8',elevation: 0,shadowOpacity: 0},
-        //headerStyle：设置导航条的样式。背景色，宽高等。如果想去掉安卓导航条底部阴影可以添加elevation: 0，iOS下用shadowOpacity: 0
       }
     },
     Sub: {
@@ -80,7 +79,6 @@ const App = StackNavigator(
       navigationOptions: {
         //header: null,
         headerStyle: {borderBottomWidth: 1,borderColor:'#f8f8f8',elevation: 0,shadowOpacity: 0},
-        //headerStyle：设置导航条的样式。背景色，宽高等。如果想去掉安卓导航条底部阴影可以添加elevation: 0，iOS下用shadowOpacity: 0
       }
     },
     Web: { 

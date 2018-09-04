@@ -48,10 +48,7 @@ class NotificationPage extends React.Component {
             gLastQueryTime.notification=moment().format('YYYY-MM-DD HH:mm:ss.S');
             store.save('lastQueryTime',gLastQueryTime);
         }
-        this.setState({notifications:[]});
-        start=0;
-        this._getNotifications(start);
-        start=start+DATA_STEP_DOUBLE;
+        this._getNotifications('refresh');
     }
 
     _getNotificationsCallback(ret)
@@ -81,12 +78,17 @@ class NotificationPage extends React.Component {
 
                 notifications.push(notification);
             });
+            start+=DATA_STEP_DOUBLE;
         }
         this.setState({notifications:concatFilterDuplicate(this.state.notifications,notifications)});
-        //return concatFilterDuplicate(this.state.notifications,notifications);
     }
 
-    _getNotifications(start){
+    _getNotifications(type){
+        if('refresh'==type)
+        {
+            start=0;
+            this.setState({notifications:[]});
+        }
         let end=start+DATA_STEP_DOUBLE;
         let url=NOTIFICATIONS_URL+'1/'+start+'/'+end+'/';
         RequestUtil.requestWithCallback(url,'POST','',this._getNotificationsCallback.bind(this));
@@ -98,7 +100,6 @@ class NotificationPage extends React.Component {
         {
             itemData.url=itemData.erUrl;
             itemData.title=itemData.sender_first_name;
-            //navigate('Misc', { pageType:'er',itemData });
             navigate('Web', { itemData });
         }
         else
@@ -111,16 +112,12 @@ class NotificationPage extends React.Component {
 
     onRefresh = () => {
         console.log('**************NotificationPage onRefresh*********');
-        this.setState({notifications:[]});
-        start=0;
-        this._getNotifications(start);
-        start=start+DATA_STEP_DOUBLE;
+        this._getNotifications('refresh');
     };
 
     onEndReached = () => {
         console.log('**************NotificationPage onEndReached*********');
-        this._getNotifications(start);
-        start=start+DATA_STEP_DOUBLE;
+        this._getNotifications('more');
     };
 
     _renderFooter = () => {

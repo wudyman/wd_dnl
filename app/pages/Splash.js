@@ -24,6 +24,7 @@ import { registerApp } from 'react-native-wechat';
 import SplashScreen from 'react-native-splash-screen';
 import NavigationUtil from '../utils/NavigationUtil';
 import RequestUtil from '../utils/RequestUtil';
+import { formatUrlWithSiteUrl } from '../utils/FormatUtil';
 import { concatFilterDuplicate } from '../utils/ItemsUtil';
 import { SITE_URL,REQUEST_USER_INFO_URL } from '../constants/Urls';
 
@@ -50,14 +51,6 @@ class Splash extends React.Component {
 
     this._getUserInfo();
     registerApp('wxea16bb245c9cb1dc');
-    /*
-    if (!AV.applicationId) {
-      AV.init({
-        appId: 'Tfi1z7dN9sjMwSul8sYaTEvg-gzGzoHsz',
-        appKey: '57qmeEJonefntNqRe17dAgi4'
-      });
-    }
-    */
   }
 
   componentDidMount() {
@@ -128,11 +121,7 @@ class Splash extends React.Component {
 
       gUserInfo.id=userInfoArray[0];
       gUserInfo.name=userInfoArray[1];
-      gUserInfo.avatar=userInfoArray[2];
-      if(gUserInfo.avatar.indexOf('http')<0)
-      {
-        gUserInfo.avatar=SITE_URL+gUserInfo.avatar;
-      }
+      gUserInfo.avatar=formatUrlWithSiteUrl(userInfoArray[2]);
       gUserInfo.mood=userInfoArray[3];
     
       gUserInfo.url=SITE_URL+'/er/'+gUserInfo.id+'/';

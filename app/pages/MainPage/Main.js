@@ -264,43 +264,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#fff'
   },
-  drawerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f8f8f8'
-  },
-  drawerTitleContent: {
-    height: 120,
-    justifyContent: 'flex-end',
-    padding: 20,
-    backgroundColor: '#228b22'
-  },
-  drawerIcon: {
-    width: 30,
-    height: 30,
-    marginLeft: 5
-  },
-  drawerTitle: {
-    fontSize: 20,
-    textAlign: 'left',
-    color: '#fcfcfc'
-  },
-  drawerText: {
-    fontSize: 18,
-    marginLeft: 15,
-    textAlign: 'center',
-    color: 'black'
-  },
-  timeAgo: {
-    fontSize: 14,
-    color: '#aaaaaa',
-    marginTop: 5
-  },
-  refreshControlBase: {
-    backgroundColor: 'transparent'
-  },
   tab: {
     paddingBottom: 0
   },
@@ -308,8 +271,6 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   tabBarUnderline: {
-    //backgroundColor: '#228b22',
-    //height: 2
     backgroundColor: 'transparent',
   }
 });

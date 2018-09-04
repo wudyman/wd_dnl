@@ -55,21 +55,24 @@ class SettingPage extends React.Component {
   }
 
   _logOutCallback(ret) {
-
+    if('success'==ret)
+    {
+      gShowNotice=false;
+      gNewNotifications=null;
+      gNewMessages=null;
+      gUserInfo={};
+      gUserInfo.isSignIn='false';
+      this.setState({userInfo: gUserInfo});
+      store.save('userInfo',gUserInfo)
+      .then(
+        NavigationUtil.reset(this.props.navigation, 'Main')
+      );
+    }
   }
 
   _logOut(){
     let url=LOG_OUT_URL;
     RequestUtil.requestWithCallback(url,'POST','',this._logOutCallback.bind(this));
-    
-    gUserInfo={};
-    gUserInfo.isSignIn='false';
-    this.setState({userInfo: gUserInfo});
-    store.save('userInfo',gUserInfo)
-    .then(
-      NavigationUtil.reset(this.props.navigation, 'Main')
-    );
-  
   }
 
   componentWillMount() {

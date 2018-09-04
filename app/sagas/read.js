@@ -21,6 +21,7 @@ import { put, take, call, fork } from 'redux-saga/effects';
 import * as types from '../constants/ActionTypes';
 import ToastUtil from '../utils/ToastUtil';
 import RequestUtil from '../utils/RequestUtil';
+import { formatUrlWithSiteUrl } from '../utils/FormatUtil';
 import { SITE_URL } from '../constants/Urls';
 import { HEAD_TOPIC_ID, ANSWER_TOPIC_ID,DATA_STEP } from '../constants/Constants';
 import { fetchArticleList, receiveArticleList } from '../actions/read';
@@ -97,7 +98,7 @@ function convertQuestionList(ret,noAnswer)
       question.pub_date=item[9];
       question.author_id=item[10];
       question.author_name=item[11];
-      question.author_avatar=item[12];
+      question.author_avatar=formatUrlWithSiteUrl(item[12]);
       question.author_mood=item[13];
       question.author_sexual=item[14];
       question.author_question_nums=item[15];
@@ -110,19 +111,8 @@ function convertQuestionList(ret,noAnswer)
 
       question.erUrl=SITE_URL+"/er/"+question.author_id+"/";
       question.url="";
-
       question.title="";
-
-      question.contentImg=getIndexImg(question.content);
-      if((question.contentImg!=null)&&(question.contentImg.indexOf('http')<0))
-      {
-        question.contentImg=SITE_URL+question.contentImg;
-      }
-      if((question.author_avatar!=null)&&(question.author_avatar.indexOf('http')<0))
-      {
-        question.author_avatar=SITE_URL+question.author_avatar;
-      }
-      question.authorName=question.author_name;
+      question.contentImg=formatUrlWithSiteUrl(getIndexImg(question.content));
       question.format_content=removeImg(question.content);
 
       questions.push(question);

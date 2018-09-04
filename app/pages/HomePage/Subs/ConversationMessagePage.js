@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import { ScrollView, RefreshControl, StyleSheet, View, ListView, Text, TextInput, Keyboard, Alert } from 'react-native';
 import store from 'react-native-simple-store';
 import RequestUtil from '../../../utils/RequestUtil';
+import { formatUrlWithSiteUrl } from '../../../utils/FormatUtil';
 import ItemList from '../../../components/ItemList';
 import ItemConversationMessage from './ItemConversationMessage';
 import Button from '../../../components/Button';
@@ -53,12 +54,8 @@ class ConversationMessagePage extends React.Component {
         console.log('**************ConversationMessagePage componentWillMount*********');
         letterText = '';
         conversationId=this.props.conversationId;
-        this.setState({messages:[]});
-        start=0;
-        this._getNewMessages();
-        start=start+DATA_STEP_DOUBLE;
-
-        this.aInterval=setInterval(this._getNewMessages.bind(this),10*1000);
+        this._getMessages('refresh');
+        this.aInterval=setInterval(this._getMessagesTimer.bind(this),10*1000);
     }
 
     componentWillUnmount() {
@@ -66,7 +63,7 @@ class ConversationMessagePage extends React.Component {
         clearInterval(this.aInterval);
     }
 
-    _convertMessages(ret){
+    _getMessagesCallback(ret,type){
         let messages=[];
         if("fail"!=ret)
         {
@@ -80,10 +77,10 @@ class ConversationMessagePage extends React.Component {
                 message.pub_date=item[4];
                 message.sender_id=item[5];
                 message.sender_name=item[6];
-                message.sender_avatar=item[7];
+                message.sender_avatar=formatUrlWithSiteUrl(item[7]);
                 message.receiver_id=item[8];
                 message.receiver_name=item[9];
-                message.receiver_avatar=item[10];
+                message.receiver_avatar=formatUrlWithSiteUrl(item[10]);
     
                 if(message.sender_id==gUserInfo.id)
                 {
@@ -102,48 +99,39 @@ class ConversationMessagePage extends React.Component {
                 }
                 message.er_url=SITE_URL+"/er/"+message.sender_id+"/";
 
-                if((message.sender_avatar!=null)&&(message.sender_avatar.indexOf('http')<0))
-                {
-                    message.sender_avatar=SITE_URL+message.sender_avatar;
-                }
-                if((message.receiver_avatar!=null)&&(message.receiver_avatar.indexOf('http')<0))
-                {
-                    message.receiver_avatar=SITE_URL+message.receiver_avatar;
-                }
-
                 if (message.delete_id!=gUserInfo.id)//user have delete this message
                 {
                     messages.push(message);
                 }
 
             });
+            if('timer'!=type)
+                start+=DATA_STEP_DOUBLE;
         }
-        return messages;
+        if('more'==type)
+            this.setState({messages:concatFilterDuplicate(this.state.messages,messages)});
+        else
+            this.setState({messages:concatFilterDuplicate(messages,this.state.messages)});
     }
 
-    _getNewMessagesCallback(ret){
-        let messages=this._convertMessages(ret);
-        this.setState({messages:concatFilterDuplicate(messages,this.state.messages)});
+    _getMessagesTimer(){
+        console.log('**************ConversationMessagePage _getMessagesTimer*********');
+        let tmpStart=0;
+        let end=tmpStart+DATA_STEP_DOUBLE;
+        let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+tmpStart+'/'+end+'/';
+        RequestUtil.requestWithCallback(url,'POST','',this._getMessagesCallback.bind(this),callbackarg='timer');
     }
 
-    _getNewMessages(){
-        console.log('**************ConversationMessagePage _getNewMessages*********');
-        let end=0+DATA_STEP_DOUBLE;
-        let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+0+'/'+end+'/';
-        RequestUtil.requestWithCallback(url,'POST','',this._getNewMessagesCallback.bind(this));
-    }
 
-    _getMoreMessagesCallback(ret)
-    {
-        let messages=this._convertMessages(ret);
-        this.setState({messages:concatFilterDuplicate(this.state.messages,messages)});
-        //return concatFilterDuplicate(this.state.conversations,conversations);       
-    }
-
-    _getMoreMessages(start){
+    _getMessages(type){
+        if('refresh'==type)
+        {
+            start=0;
+            this.setState({messages:[]});
+        }
         let end=start+DATA_STEP_DOUBLE;
         let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+start+'/'+end+'/';
-        RequestUtil.requestWithCallback(url,'POST','',this._getMoreMessagesCallback.bind(this));
+        RequestUtil.requestWithCallback(url,'POST','',this._getMessagesCallback.bind(this),callbackarg=type);
     }
 
     _sendMessageCallback(ret){
@@ -190,7 +178,6 @@ class ConversationMessagePage extends React.Component {
         {
             itemData.url=itemData.er_url;
             itemData.title=itemData.er_name;
-            //navigate('Misc', { pageType:'er',itemData });
             navigate('Web', { itemData });
         }
         else if('DELETE'==type)
@@ -213,13 +200,12 @@ class ConversationMessagePage extends React.Component {
 
     onRefresh = () => {
         console.log('**************ConversationMessagePage onRefresh*********');
-        this._getNewMessages();
+        this._getMessages('refresh');
     };
 
     onEndReached = () => {
         console.log('**************ConversationMessagePage onEndReached*********');
-        this._getMoreMessages(start);
-        start=start+DATA_STEP_DOUBLE;
+        this._getMessages('more');
     };
 
     _renderFooter = () => {

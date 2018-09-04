@@ -34,16 +34,6 @@ class FeedbackPage extends React.Component {
     if (feedbackText === undefined || feedbackText.replace(/\s+/g, '') === '') {
       ToastUtil.showShort('请填写建议内容哦~');
     } else {
-      /*
-      const feedback = AV.Object.new('Feedback');
-      feedback.set('manufacturer', DeviceInfo.getManufacturer());
-      feedback.set('system', DeviceInfo.getSystemName());
-      feedback.set('deviceVersion', DeviceInfo.getSystemVersion());
-      feedback.set('deviceModel', DeviceInfo.getModel());
-      feedback.set('appVersion', DeviceInfo.getVersion());
-      feedback.set('feedback', feedbackText);
-      feedback.save();
-      */
       ToastUtil.showShort('您的问题已反馈，我们会及时跟进处理');
       this.textInput.clear();
       Keyboard.dismiss();

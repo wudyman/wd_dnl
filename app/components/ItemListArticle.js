@@ -51,7 +51,7 @@ const ItemListArticle = ({
 
 const styles = StyleSheet.create({
   listView: {
-    backgroundColor: '#eeeeec'
+    backgroundColor: '#fff'
   },
   refreshControlBase: {
     backgroundColor: 'transparent'

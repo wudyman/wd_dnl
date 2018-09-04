@@ -21,6 +21,7 @@ import store from 'react-native-simple-store';
 import * as types from '../constants/ActionTypes';
 import ToastUtil from '../utils/ToastUtil';
 import RequestUtil from '../utils/RequestUtil';
+import { formatUrlWithSiteUrl } from '../utils/FormatUtil';
 import { concatFilterDuplicate } from '../utils/ItemsUtil';
 import { SITE_URL } from '../constants/Urls';
 import { SIGN_IN_URL,REQUEST_USER_INFO_URL,SIGN_UP_URL,FOLLOW_TOPICS_URL } from '../constants/Urls';
@@ -48,17 +49,22 @@ function convertUserInfo(ret)
   else
   {
     let userInfoArray=ret[0];
+    let notificationsArray=ret[2];
+    let conversationsArray=ret[3];
     gUserInfo.id=userInfoArray[0];
     gUserInfo.name=userInfoArray[1];
-    gUserInfo.avatar=userInfoArray[2];
-    if(gUserInfo.avatar.indexOf('http')<0)
-    {
-      gUserInfo.avatar=SITE_URL+gUserInfo.avatar;
-    }
+    gUserInfo.avatar=formatUrlWithSiteUrl(userInfoArray[2]);
     gUserInfo.mood=userInfoArray[3];
   
     gUserInfo.url=SITE_URL+'/er/'+gUserInfo.id+'/';
     gUserInfo.isSignIn='true';
+
+    if(notificationsArray.length>0)
+      gNewNotifications=''+notificationsArray.length;
+    if(conversationsArray.length>0)
+      gNewMessages=''+conversationsArray.length;
+    if(gNewNotifications||gNewMessages)
+      gShowNotice=true;
   }
   return gUserInfo;
 }
