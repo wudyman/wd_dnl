@@ -22,7 +22,8 @@ import {
   InteractionManager,
   ListView,
   StyleSheet,
-  View
+  View,
+  BackHandler
 } from 'react-native';
 import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab-view';
 import store from 'react-native-simple-store';
@@ -36,7 +37,6 @@ import EmptyView from './EmptyView';
 import ItemListArticle from '../../components/ItemListArticle';
 import { DATA_STEP } from '../../constants/Constants';
 import { HEAD_TOPIC_ID, ANSWER_TOPIC_ID } from '../../constants/Constants';
-
 
 const propTypes = {
   readActions: PropTypes.object,
@@ -54,6 +54,8 @@ let currentTopicId;
 let initDataIndex=0;
 let dataIndex=0;
 
+const lastBackPressed = Date.now();
+
 class Main extends React.Component {
   constructor(props) {
     super(props);
@@ -67,9 +69,26 @@ class Main extends React.Component {
 
   componentWillMount() {
     console.log('**************MainPage componentWillMount*********');
+    BackHandler.addEventListener('hardwareBackPress', this._handleBack.bind(this));
   }
 
+  componentWillUnmount() {
+    console.log('**************MainPage componentWillUnmount*********');
+    BackHandler.removeEventListener('hardwareBackPress', this._handleBack.bind(this));
+    //DeviceEventEmitter.removeAllListeners('changeCategory');
+  }
 
+  _handleBack() {
+    if(this.props.navigation.isFocused()&&isMainPage)
+    {
+      if (lastBackPressed && lastBackPressed + 3000 >= Date.now()) {
+        return false;
+      }
+      lastBackPressed = Date.now();
+      ToastUtil.showShort('再按一次退出应用');
+      return true;
+    }
+  }
 
   componentDidMount() {
     console.log('**************MainPage componentDidMount*********');
@@ -117,12 +136,6 @@ class Main extends React.Component {
       }
     }
   }
-  
-
-  componentWillUnmount() {
-    console.log('**************MainPage componentWillUnmount*********');
-    //DeviceEventEmitter.removeAllListeners('changeCategory');
-  }
 
   onRefresh = (topicId) => {
     console.log('**************MainPage onRefresh*********');
@@ -146,10 +159,6 @@ class Main extends React.Component {
         itemData.title=itemData.questionTitle;
         navigate('Web', { itemData });
     }
-  };
-
-  onIconClicked = () => {
-    this.drawer.openDrawer();
   };
 
   onEndReached = (topicId) => {
@@ -250,7 +259,6 @@ class Main extends React.Component {
           {content}
         </ScrollableTabView>
       </View>
-
     );
   }
 }

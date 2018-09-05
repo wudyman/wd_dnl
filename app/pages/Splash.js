@@ -38,6 +38,7 @@ global.gLastQueryTime={};
 global.gShowNotice=false;
 global.gNewNotifications=null;
 global.gNewMessages=null;
+global.isMainPage=true;
 class Splash extends React.Component {
   static navigationOptions = {
     header: null

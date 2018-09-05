@@ -55,6 +55,10 @@ class MainContainer extends React.Component {
       isSignIn='false';
   }
 
+  componentWillUnmount() {
+    console.log('**************MainContainer componentWillUnmount*********');
+  }
+
   componentDidMount() {
     console.log('**************MainContainer componentDidMount*********');
     CodePush.sync({

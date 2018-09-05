@@ -43,6 +43,12 @@ class MiscContainer extends React.Component {
     {
       ToastUtil.showShort("此功能需要先登录");
     }
+    isMainPage=false;
+  }
+
+  componentWillUnmount() {
+    console.log('**************MiscContainer componentWillUnmount*********');
+    isMainPage=true;
   }
 
 

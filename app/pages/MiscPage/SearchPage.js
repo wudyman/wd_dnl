@@ -27,6 +27,7 @@ import ItemList from '../../components/ItemList';
 import ItemSearchContent from './ItemSearchContent';
 import ItemSearchPeople from './ItemSearchPeople';
 import ItemSearchTopic from './ItemSearchTopic';
+import ItemSearchHotWord from './ItemSearchHotWord';
 import ToastUtil from '../../utils/ToastUtil';
 import { formatUrlWithSiteUrl } from '../../utils/FormatUtil';
 import { SITE_URL, SEARCH_URL } from '../../constants/Urls';
@@ -45,6 +46,8 @@ let currentTabIndex=0;
 let currentSearchType=SEARCH_TYPE[0][INDEX_NAME];
 let currentDataIndex=0;
 let resultDatas=[[],[],[]];
+
+let keywordText='';
 
 class SettingPage extends React.Component {
   constructor(props) {
@@ -112,7 +115,7 @@ class SettingPage extends React.Component {
   }
 
   _search(start) {
-    let keyword=this.state.keywordText.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,"");
+    let keyword=keywordText.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,"");
     if(keyword)
     {
       let type=currentSearchType;
@@ -160,6 +163,12 @@ class SettingPage extends React.Component {
     this._search(currentDataIndex);
   };
 
+  _selectKeyWord = (keyword) => {
+    keywordText=keyword;
+    this.setState({placeholderText:keywordText,keywordText:keywordText});
+    this._pressSearch();
+  };
+
   _renderFooter = () => {
     return <View />;
   };
@@ -184,6 +193,23 @@ class SettingPage extends React.Component {
             renderFooter={this._renderFooter}
             renderItem={this._renderItem}
         />
+    );
+  }
+
+  _renderHotWord() {
+    return (
+      <View>
+        <ItemSearchHotWord index='1' indexColor={{color:'#ff7243'}} keyword={'大'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='2' indexColor={{color:'#ff923f'}} keyword={'关键词2'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='3' indexColor={{color:'#ffc639'}} keyword={'关键词3'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='4' keyword={'关键词4'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='5' keyword={'关键词5'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='6' keyword={'关键词6'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='7' keyword={'关键词7'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='8' keyword={'关键词8'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='9' keyword={'关键词9'} onPressHandler={this._selectKeyWord}/>
+        <ItemSearchHotWord index='10' keyword={'关键词10'} onPressHandler={this._selectKeyWord}/>
+      </View>
     );
   }
 
@@ -243,6 +269,7 @@ class SettingPage extends React.Component {
                 <View style={styles.hot}>
                     <Text style={{paddingBottom:10,fontSize:15,color:"#aaaaaa"}}>热门搜索</Text>
                     <View style={{height: 1, backgroundColor:'#f0f0f0'}}/>
+                    {this._renderHotWord()}
                 </View>
               </View>
           );
@@ -266,15 +293,18 @@ class SettingPage extends React.Component {
             <View style={{flexDirection:'row',alignItems: 'center',marginTop:0,marginRight:20,paddingLeft:20,backgroundColor:'transparent',borderColor:'#f0f0f0',borderWidth:1,borderRadius: 20}}>
                 <Icon name="md-search" size={20} color='#aaaaaa' />
                 <TextInput
+                ref="myTextInput"
                 style={{width:200,padding:2,fontSize:14,textAlign:'left'}}
                 autoFocus= {true}
                 selectionColor='#228b22'
-                placeholder='请输入关键字'
+                placeholder= '请输入关键字'
                 placeholderTextColor='#aaaaaa'
+                defaultValue={this.state.keywordText}
                 onChangeText={
                     (text) => {
                         resultDatas=[[],[],[]];
-                        this.setState({keywordText:text,results:resultDatas,showResult:false});
+                        keywordText=text;
+                        this.setState({keywordText:keywordText,results:resultDatas,showResult:false});
                     }
                   }
                 underlineColorAndroid='transparent' />
@@ -289,6 +319,7 @@ class SettingPage extends React.Component {
                 />
             </View>
         </View>
+        <View style={{marginBottom:20}}></View>
         {this._renderContent()}
       </View>
     );
