@@ -17,7 +17,6 @@
  */
 import React from 'react';
 import { View,StatusBar } from 'react-native';
-import store from 'react-native-simple-store';
 import { connect } from 'react-redux';
 import CodePush from 'react-native-code-push';
 import { bindActionCreators } from 'redux';

@@ -17,8 +17,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ScrollView, RefreshControl, StyleSheet, View, ListView, Text, TextInput, Keyboard, Alert } from 'react-native';
-import store from 'react-native-simple-store';
+import { StyleSheet, View, ListView, Text, TextInput, Keyboard, Alert } from 'react-native';
 import RequestUtil from '../../../utils/RequestUtil';
 import { formatUrlWithSiteUrl } from '../../../utils/FormatUtil';
 import ItemList from '../../../components/ItemList';

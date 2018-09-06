@@ -40,6 +40,11 @@ class SignInPage extends React.Component{
         BackHandler.removeEventListener('hardwareBackPress', this.handleBack);
     }
 
+    _handleBack() {
+        console.log('*********SignInPage _handleBack***************');
+        return true;
+    }
+
     _signIn() {
         //store.dispatch(signInUpCreators.requestSignIn(true));
         //gSignInUpActions.requestSignIn(this.state.phoneNo,this.state.password);
@@ -56,17 +61,6 @@ class SignInPage extends React.Component{
 
         const { signInUpActions } = this.props;
         signInUpActions.requestSignIn(this.state.phoneNo,this.state.password);
-    }
-    _handleBack() {
-        console.log('*********SignInPage _handleBack***************');
-        return true;
-    }
-
-    _signupCallback(){
-    }
-
-    _forgetPassword(){
-
     }
 
     render(){

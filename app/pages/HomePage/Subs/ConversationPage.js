@@ -17,10 +17,12 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ScrollView, RefreshControl, StyleSheet, View, ListView, Alert } from 'react-native';
+import { StyleSheet, View, ListView, Alert, Text} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import store from 'react-native-simple-store';
 import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
+import Button from '../../../components/Button';
 import { formatUrlWithSiteUrl } from '../../../utils/FormatUtil';
 import ItemList from '../../../components/ItemList';
 import ItemConversation from './ItemConversation';
@@ -45,7 +47,8 @@ class ConversationPage extends React.Component {
 
     componentWillMount() {
         console.log('**************ConversationPage componentWillMount*********');
-        this._getConversations('refresh');
+        if('true'==gUserInfo.isSignIn)
+            this._getConversations('refresh');
     }
 
     componentWillUnmount() {
@@ -54,6 +57,10 @@ class ConversationPage extends React.Component {
             gLastQueryTime.conversation=moment().format('YYYY-MM-DD HH:mm:ss.S');
             store.save('lastQueryTime',gLastQueryTime);
         }
+    }
+
+    _openSignPage(){
+        this.props.navigation.navigate('Misc',{pageType:'sign',isSignIn:'false'});
     }
 
     _getConversationsCallback(ret)
@@ -171,18 +178,37 @@ class ConversationPage extends React.Component {
         <ItemConversation conversation={conversation} onPressHandler={this.onPress}/>
     );
 
-    renderItems = () => {
-        let dataSource=this.state.dataSource.cloneWithRows(this.state.conversations);
-        return (
-            <ItemList
-                dataSource={dataSource}
-                isRefreshing={false}
-                onEndReached={this.onEndReached}
-                onRefresh={this.onRefresh}
-                renderFooter={this._renderFooter}
-                renderItem={this._renderItem}
-            />
-        );
+    _renderContent = () => {
+        if('true'==gUserInfo.isSignIn)
+        {
+            let dataSource=this.state.dataSource.cloneWithRows(this.state.conversations);
+            return (
+                <ItemList
+                    dataSource={dataSource}
+                    isRefreshing={false}
+                    onEndReached={this.onEndReached}
+                    onRefresh={this.onRefresh}
+                    renderFooter={this._renderFooter}
+                    renderItem={this._renderItem}
+                />
+            );
+        }
+        else{
+            return (
+                <View style={styles.hint}>
+                    <Icon name="ios-mail-outline" size={100} color={"#999"}/>
+                    <View style={{margin:5}}></View>
+                    <Text style={styles.hintText}>登录后可以查看我的私信</Text>
+                    <View style={{margin:5}}></View>
+                    <Button
+                        btnStyle={styles.hintToSignInBtn}
+                        textStyle={styles.hintToSignInText}
+                        text="去登录"
+                        onPress={() => this._openSignPage()}
+                    />
+                </View>
+            );
+        }
     };
 
     render() {
@@ -190,7 +216,7 @@ class ConversationPage extends React.Component {
         <View style={styles.container}>
             <View style={styles.content}>
                 <View style={{height: 5, backgroundColor:'#f0f4f4'}}/>
-                {this.renderItems()}
+                {this._renderContent()}
             </View>
         </View>
         );
@@ -206,6 +232,27 @@ const styles = StyleSheet.create({
     content: {
         justifyContent: 'center',
         paddingBottom: 1
+    },
+    hint: {
+        justifyContent:'center',
+        alignItems:'center',
+        margin:100
+    },
+    hintText: {
+        color:'#aaa'
+    },
+    hintToSignInBtn: {
+        paddingLeft:15,
+        paddingRight:15,
+        paddingTop:3,
+        paddingBottom:3,
+        borderColor:'#555',
+        borderWidth:1,
+        borderRadius: 15
+    },
+    hintToSignInText: {
+        fontSize:15,
+        color:'#555'
     },
 });
 ConversationPage.propTypes = propTypes;

@@ -17,16 +17,9 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Image, Text, Modal,TouchableOpacity, View } from 'react-native';
-import store from 'react-native-simple-store';
-import DeviceInfo from 'react-native-device-info';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { StyleSheet, Image, Text,TouchableOpacity, View } from 'react-native';
 import Button from '../../components/Button';
-import ImageButton from '../../components/ImageButtonWithText';
 import ArrowButton from '../../components/ArrowButton';
-import UserInfoPage from '../../pages/WebViewPage/UserInfoPageByWebView';
-import WebViewPage from '../../pages/WebViewPage/WebViewPage';
-
 
 const propTypes = {
 };

@@ -34,14 +34,15 @@ class WritePage extends React.Component{
     componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBack);
     }
+
+    _handleBack() {
+        console.log('*********WritePage _handleBack***************');
+        return true;
+    }
     
     _injectedJavaScript()
     {
         return `$("header").parent().addClass("is-hide");`; 
-    }
-
-    _handleBack() {
-
     }
 
     render(){

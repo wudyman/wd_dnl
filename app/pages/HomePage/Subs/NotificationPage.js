@@ -17,10 +17,12 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ScrollView, RefreshControl, StyleSheet, View, ListView } from 'react-native';
+import { StyleSheet, View, ListView, Text } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import store from 'react-native-simple-store';
 import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
+import Button from '../../../components/Button';
 import ItemList from '../../../components/ItemList';
 import ItemNotification from './ItemNotification';
 import { concatFilterDuplicate } from '../../../utils/ItemsUtil';
@@ -44,11 +46,20 @@ class NotificationPage extends React.Component {
 
     componentWillMount() {
         console.log('**************NotificationPage componentWillMount*********');
+        if('true'==gUserInfo.isSignIn)
+            this._getNotifications('refresh');
+    }
+
+    componentWillUnmount() {
+        console.log('**************NotificationPage componentWillUnmount*********');
         if('true'==gUserInfo.isSignIn){
-            gLastQueryTime.notification=moment().format('YYYY-MM-DD HH:mm:ss.S');
+            gLastQueryTime.conversation=moment().format('YYYY-MM-DD HH:mm:ss.S');
             store.save('lastQueryTime',gLastQueryTime);
         }
-        this._getNotifications('refresh');
+    }
+
+    _openSignPage(){
+        this.props.navigation.navigate('Misc',{pageType:'sign',isSignIn:'false'});
     }
 
     _getNotificationsCallback(ret)
@@ -131,18 +142,36 @@ class NotificationPage extends React.Component {
         <ItemNotification notification={notification} onPressHandler={this.onPress}/>
     );
 
-    renderItems = () => {
-        let dataSource=this.state.dataSource.cloneWithRows(this.state.notifications);
-        return (
-            <ItemList
-                dataSource={dataSource}
-                isRefreshing={false}
-                onEndReached={this.onEndReached}
-                onRefresh={this.onRefresh}
-                renderFooter={this._renderFooter}
-                renderItem={this._renderItem}
-            />
-        );
+    _renderContent = () => {
+        if('true'==gUserInfo.isSignIn){
+            let dataSource=this.state.dataSource.cloneWithRows(this.state.notifications);
+            return (
+                <ItemList
+                    dataSource={dataSource}
+                    isRefreshing={false}
+                    onEndReached={this.onEndReached}
+                    onRefresh={this.onRefresh}
+                    renderFooter={this._renderFooter}
+                    renderItem={this._renderItem}
+                />
+            );
+        }
+        else{
+            return (
+                <View style={styles.hint}>
+                    <Icon name="ios-notifications-outline" size={100} color={"#999"}/>
+                    <View style={{margin:5}}></View>
+                    <Text style={styles.hintText}>登录后可以查看我的消息</Text>
+                    <View style={{margin:5}}></View>
+                    <Button
+                        btnStyle={styles.hintToSignInBtn}
+                        textStyle={styles.hintToSignInText}
+                        text="去登录"
+                        onPress={() => this._openSignPage()}
+                    />
+                </View>
+            );
+        }
     };
 
     render() {
@@ -150,7 +179,7 @@ class NotificationPage extends React.Component {
         <View style={styles.container}>
             <View style={styles.content}>
                 <View style={{height: 5, backgroundColor:'#f0f4f4'}}/>
-                {this.renderItems()}
+                {this._renderContent()}
             </View>
         </View>
         );
@@ -167,6 +196,27 @@ const styles = StyleSheet.create({
         //flex: 1,
         justifyContent: 'center',
         paddingBottom: 1
+    },
+    hint: {
+        justifyContent:'center',
+        alignItems:'center',
+        margin:100
+    },
+    hintText: {
+        color:'#aaa'
+    },
+    hintToSignInBtn: {
+        paddingLeft:15,
+        paddingRight:15,
+        paddingTop:3,
+        paddingBottom:3,
+        borderColor:'#555',
+        borderWidth:1,
+        borderRadius: 15
+    },
+    hintToSignInText: {
+        fontSize:15,
+        color:'#555'
     },
 });
 NotificationPage.propTypes = propTypes;

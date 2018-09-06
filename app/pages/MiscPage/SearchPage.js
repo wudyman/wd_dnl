@@ -30,7 +30,7 @@ import ItemSearchTopic from './ItemSearchTopic';
 import ItemSearchHotWord from './ItemSearchHotWord';
 import ToastUtil from '../../utils/ToastUtil';
 import { formatUrlWithSiteUrl } from '../../utils/FormatUtil';
-import { SITE_URL, SEARCH_URL } from '../../constants/Urls';
+import { SITE_URL, SEARCH_URL, HOTWORD_URL } from '../../constants/Urls';
 import { DATA_STEP_DOUBLE } from '../../constants/Constants';
 
 const propTypes = {
@@ -49,10 +49,11 @@ let resultDatas=[[],[],[]];
 
 let keywordText='';
 
-class SettingPage extends React.Component {
+class SearchPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+        hotwords: [],
         keywordText: '',
         results: [],
         showResult: false,
@@ -144,7 +145,34 @@ class SettingPage extends React.Component {
     this._search(currentDataIndex);
   }
 
+  _getHotWordsCallback(ret)
+  {
+    let hotwords=[];
+    if('fail'!=ret)
+    {
+      ret.map((item)=>{
+        hotwords.push(item);
+      });
+      if(ret.length<10)
+      {
+        for (i=0;i<10-ret.length;i++)
+          hotwords.push(['',0]);
+      }
+    }
+    else{
+      for (i=0;i<10;i++)
+      hotwords.push(['',0]);
+    }
+    this.setState({hotwords:hotwords});
+    console.log(this.state.hotwords);
+  }
+  _getHotWords(){
+    let url=HOTWORD_URL;
+    RequestUtil.requestWithCallback(url,'POST','',this._getHotWordsCallback.bind(this));
+  }
+
   componentWillMount() {
+    this._getHotWords();
   }
 
   onPress = (itemData) => {
@@ -197,20 +225,21 @@ class SettingPage extends React.Component {
   }
 
   _renderHotWord() {
-    return (
-      <View>
-        <ItemSearchHotWord index='1' indexColor={{color:'#ff7243'}} keyword={'大'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='2' indexColor={{color:'#ff923f'}} keyword={'关键词2'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='3' indexColor={{color:'#ffc639'}} keyword={'关键词3'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='4' keyword={'关键词4'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='5' keyword={'关键词5'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='6' keyword={'关键词6'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='7' keyword={'关键词7'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='8' keyword={'关键词8'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='9' keyword={'关键词9'} onPressHandler={this._selectKeyWord}/>
-        <ItemSearchHotWord index='10' keyword={'关键词10'} onPressHandler={this._selectKeyWord}/>
-      </View>
-    );
+    if(this.state.hotwords.length>0)
+      return (
+        <View>
+          <ItemSearchHotWord index='1' indexColor={{color:'#ff7243'}} keyword={this.state.hotwords[0][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='2' indexColor={{color:'#ff923f'}} keyword={this.state.hotwords[1][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='3' indexColor={{color:'#ffc639'}} keyword={this.state.hotwords[2][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='4' keyword={this.state.hotwords[3][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='5' keyword={this.state.hotwords[4][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='6' keyword={this.state.hotwords[5][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='7' keyword={this.state.hotwords[6][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='8' keyword={this.state.hotwords[7][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='9' keyword={this.state.hotwords[8][0]} onPressHandler={this._selectKeyWord}/>
+          <ItemSearchHotWord index='10' keyword={this.state.hotwords[9][0]} onPressHandler={this._selectKeyWord}/>
+        </View>
+      );
   }
 
   _renderContent() {
@@ -349,5 +378,5 @@ const styles = StyleSheet.create({
 
   },
 });
-SettingPage.propTypes = propTypes;
-export default SettingPage;
+SearchPage.propTypes = propTypes;
+export default SearchPage;
