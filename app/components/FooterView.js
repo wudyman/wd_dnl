@@ -19,15 +19,15 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-const Footer = () => (
-  <View style={styles.footerContainer}>
+const FooterView = () => (
+  <View style={styles.container}>
     <ActivityIndicator size="small" color="#228b22" />
     <Text style={styles.footerText}>内容加载中……</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
-  footerContainer: {
+  container: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -41,4 +41,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Footer;
+export default FooterView;

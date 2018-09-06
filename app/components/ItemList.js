@@ -42,8 +42,7 @@ const ItemList = ({
         refreshing={isRefreshing}
         onRefresh={() => onRefresh()}
         title="Loading..."
-        colors={['#228b22cc', '#00ff00ff', '#ffffbb33', '#ffff4444']}
-        //colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
+        colors={['#228b22cc', '#228b22dd', '#228b22ee', '#228b22ff']}
       />
     }
   />

@@ -23,6 +23,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
 import RequestUtil from '../../utils/RequestUtil';
+import FooterView from '../../components/FooterView';
+import NoDataView from '../../components/NoDataView';
 import ItemList from '../../components/ItemList';
 import ItemSearchContent from './ItemSearchContent';
 import ItemSearchPeople from './ItemSearchPeople';
@@ -48,7 +50,7 @@ let currentDataIndex=0;
 let resultDatas=[[],[],[]];
 
 let keywordText='';
-
+let noMoreViewShow=false;
 class SearchPage extends React.Component {
   constructor(props) {
     super(props);
@@ -110,12 +112,13 @@ class SearchPage extends React.Component {
       SEARCH_TYPE[callbackarg][INDEX_DATAINDEX]+=DATA_STEP_DOUBLE;
     }
     else{
-      ToastUtil.showShort('没有更多内容了');
+      noMoreViewShow=true;
     }
     this.setState({results:resultDatas,showResult:true});
   }
 
   _search(start) {
+    noMoreViewShow=false;
     let keyword=keywordText.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,"");
     if(keyword)
     {
@@ -198,7 +201,10 @@ class SearchPage extends React.Component {
   };
 
   _renderFooter = () => {
-    return <View />;
+    if(noMoreViewShow)
+      return <NoDataView />;
+    else
+      return <View />;
   };
 
   _renderItem = resultData => {

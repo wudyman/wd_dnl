@@ -32,9 +32,10 @@ import LoadingView from '../../components/LoadingView';
 import ToastUtil from '../../utils/ToastUtil';
 import { getArticleList } from '../../utils/ItemsUtil';
 import ItemArticle from './ItemArticle';
-import Footer from './Footer';
 import EmptyView from './EmptyView';
 import ItemListArticle from '../../components/ItemListArticle';
+import FooterView from '../../components/FooterView';
+import NoDataView from '../../components/NoDataView';
 import { DATA_STEP } from '../../constants/Constants';
 import { HEAD_TOPIC_ID, ANSWER_TOPIC_ID } from '../../constants/Constants';
 
@@ -53,6 +54,7 @@ let currentTabIndex=0;
 let currentTopicId;
 let initDataIndex=0;
 let dataIndex=0;
+let noMoreViewShow=false;
 
 const lastBackPressed = Date.now();
 
@@ -125,7 +127,7 @@ class Main extends React.Component {
       console.log('@@@@@@@@@@@@@@@recieve finish@@@@@@@@@@@@@@@');
       if (nextProps.read.noMore)
       {
-        ToastUtil.showShort('没有更多内容了');
+        noMoreViewShow=true;
       }
       else
       {
@@ -139,6 +141,7 @@ class Main extends React.Component {
 
   onRefresh = (topicId) => {
     console.log('**************MainPage onRefresh*********');
+    noMoreViewShow=false;
     const { readActions } = this.props;
     dataIndex=0;
     myTopics[currentTabIndex].dataIndex=dataIndex;
@@ -162,6 +165,7 @@ class Main extends React.Component {
   };
 
   onEndReached = (topicId) => {
+    noMoreViewShow=false;
     currentLoadMoreTopicId = topicId;
     const time = Date.parse(new Date()) / 1000;
 
@@ -172,9 +176,15 @@ class Main extends React.Component {
       loadMoreTime = Date.parse(new Date()) / 1000;
     }
   };
+  
   renderFooter = () => {
     const { read } = this.props;
-    return read.isLoadMore ? <Footer /> : <View />;
+    if(noMoreViewShow)
+      return <NoDataView />;
+    if(read.isLoadMore)
+      return <FooterView />; 
+    else
+      return <View />;
   };
 
   renderItem = article => (
