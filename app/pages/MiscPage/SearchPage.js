@@ -23,7 +23,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../../components/Button';
 import ImageButton from '../../components/ImageButtonWithText';
 import RequestUtil from '../../utils/RequestUtil';
-import FooterView from '../../components/FooterView';
 import NoDataView from '../../components/NoDataView';
 import ItemList from '../../components/ItemList';
 import ItemSearchContent from './ItemSearchContent';

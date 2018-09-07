@@ -70,6 +70,7 @@ class WebViewPage extends React.Component {
 
   componentDidMount() {
     console.log('***********WebViewPage componentDidMount***************');
+    isMainPage=false;
     canGoBack = false;
     lastCanGoBack = false;
     this.props.navigation.setParams({ handleShare: this.onActionSelected });
@@ -85,6 +86,7 @@ class WebViewPage extends React.Component {
 
   componentWillUnmount() {
     console.log('***********WebViewPage componentWillUnmount***************');
+    isMainPage=true;
     BackHandler.removeEventListener('hardwareBackPress', this.goBack);
   }
 
