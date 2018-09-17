@@ -11,6 +11,9 @@ import com.facebook.soloader.SoLoader;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.wd_dnl.webview.WebViewReactPackage;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.tencent.bugly.Bugly; 
+//import com.tencent.bugly.beta.Beta;  
+//import com.tencent.tinker.loader.app.DefaultApplicationLike;  
 import com.theweflex.react.WeChatPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.microsoft.codepush.react.CodePush;
@@ -63,8 +66,9 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    if (!BuildConfig.DEBUG) {
-      CrashReport.initCrashReport(getApplicationContext(), "dbbed70da8", false);
-    }
+    //if (!BuildConfig.DEBUG) {
+    //  CrashReport.initCrashReport(getApplicationContext(), "dbbed70da8", false);
+    //}
+    Bugly.init(getApplicationContext(), "dbbed70da8", false);
   }
 }
