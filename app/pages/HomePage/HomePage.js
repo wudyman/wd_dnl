@@ -17,7 +17,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Image, Text,TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Image, Text,  DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import Button from '../../components/Button';
 import ArrowButton from '../../components/ArrowButton';
 
@@ -63,6 +63,15 @@ class HomePage extends React.Component {
   componentWillMount() {
     console.log('**************HomePage componentWillMount***************');
     this.setState({userInfo:gUserInfo});
+    DeviceEventEmitter.addListener('changeUserInfo', (userinfo) => {
+      console.log('**************HomePage componentWillMount changeUserInfo*********');
+      this.setState({userInfo:userinfo});
+    });
+  }
+
+  componentWillUnmount() {
+    console.log('**************HomePage componentWillUnmount***************');
+    DeviceEventEmitter.removeAllListeners('changeUserInfo');
   }
 
 

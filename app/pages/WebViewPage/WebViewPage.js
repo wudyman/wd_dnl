@@ -22,6 +22,7 @@ import {
   Dimensions,
   Text,
   Image,
+  DeviceEventEmitter,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -32,7 +33,7 @@ import * as WeChat from 'react-native-wechat';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ToastUtil from '../../utils/ToastUtil';
 import LoadingView from '../../components/LoadingView';
-import { formatStringWithHtml } from '../../utils/FormatUtil';
+import { formatStringWithHtml,formatUrlWithSiteUrl } from '../../utils/FormatUtil';
 import WebView2 from '../../components/WebView2';
 import { SITE_NAME } from '../../constants/Urls';
 
@@ -124,6 +125,21 @@ class WebViewPage extends React.Component {
         thumbImage:message.payload.thumbImage,
       });
     }
+    else if('user'==message.command)
+    {
+      console.log('id:'+message.payload.id);
+      console.log('name:'+message.payload.name);
+      console.log('avatar:'+message.payload.avatar);
+      console.log('mood:'+message.payload.mood);
+      if(gUserInfo.id==message.payload.id)
+      {
+        gUserInfo.name=message.payload.name;
+        gUserInfo.avatar=formatUrlWithSiteUrl(message.payload.avatar);
+        gUserInfo.mood=message.payload.mood;
+        DeviceEventEmitter.emit('changeUserInfo', gUserInfo);
+      }
+    }
+
   }
 
   goBack = () => {
