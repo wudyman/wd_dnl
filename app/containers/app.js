@@ -35,7 +35,7 @@ const TabContainer = TabNavigator(
     tabBarPosition: 'bottom',
     tabBarOptions: {
       activeTintColor: '#228b22',
-      inactiveTintColor: '#555',
+      inactiveTintColor: '#333',
       showIcon: true,
       style: {
         backgroundColor: '#fff'

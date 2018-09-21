@@ -36,7 +36,7 @@ class MainContainer extends React.Component {
       tabBarIcon: ({ tintColor }) => (
         <Icon name="md-home" size={25} color={tintColor} />
       ),
-      headerLeft: (<Button text='写文章' onPress={()=>navigation.navigate('Misc',{pageType:'write',isSignIn:isSignIn})} btnStyle={{padding:15}} textStyle={{fontSize:16,fontWeight:'100',textAlign: 'center',color:'#555'}}/>),
+      headerLeft: (<Button text='写文章' onPress={()=>navigation.navigate('Misc',{pageType:'write',isSignIn:isSignIn})} btnStyle={{padding:15}} textStyle={{fontSize:16,fontWeight:'100',textAlign: 'center',color:'#333'}}/>),
       headerRight: (<Button text='提问' onPress={()=>navigation.navigate('Misc',{pageType:'ask',isSignIn:isSignIn})} btnStyle={{padding:15}} textStyle={{fontSize:16,fontWeight:'100',textAlign: 'center',color:'#228b22'}}/>),
       headerTitle:(
         <View style={{flex:1,flexDirection:'row',marginLeft:15,marginRight:15,borderColor:'#f0f0f0',borderWidth:1,borderRadius: 20}}>

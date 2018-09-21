@@ -110,14 +110,13 @@ class WebViewPage extends React.Component {
     if('login'==message.command)
     {
       if('false'==message.payload.status)
+      {
+        ToastUtil.showShort("此功能需要先登录");
         this.props.navigation.navigate('Misc',{pageType:'sign',isSignIn:'false'});
+      }
     }
     else if('page'==message.command)
     {
-      console.log('url:'+message.payload.url);
-      console.log('title:'+message.payload.title);
-      console.log('content:'+message.payload.content);
-      console.log('thumbImage:'+message.payload.thumbImage);
       this.setState({
         url:message.payload.url,
         title:message.payload.title,
@@ -127,10 +126,6 @@ class WebViewPage extends React.Component {
     }
     else if('user'==message.command)
     {
-      console.log('id:'+message.payload.id);
-      console.log('name:'+message.payload.name);
-      console.log('avatar:'+message.payload.avatar);
-      console.log('mood:'+message.payload.mood);
       if(gUserInfo.id==message.payload.id)
       {
         gUserInfo.name=message.payload.name;

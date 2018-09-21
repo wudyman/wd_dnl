@@ -264,7 +264,7 @@ class Main extends React.Component {
           tabBarBackgroundColor="#ffffff"
           tabBarUnderlineStyle={styles.tabBarUnderline}
           tabBarActiveTextColor="#228b22"
-          tabBarInactiveTextColor="#888"
+          tabBarInactiveTextColor="#666"
         >
           {content}
         </ScrollableTabView>
