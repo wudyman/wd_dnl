@@ -66,9 +66,9 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    //if (!BuildConfig.DEBUG) {
+    if (!BuildConfig.DEBUG) {
     //  CrashReport.initCrashReport(getApplicationContext(), "dbbed70da8", false);
-    //}
-    Bugly.init(getApplicationContext(), "dbbed70da8", false);
+      Bugly.init(getApplicationContext(), "dbbed70da8", false);
+    }
   }
 }
