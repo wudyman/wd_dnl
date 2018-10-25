@@ -27,11 +27,11 @@ import { HEAD_TOPIC_ID, ANSWER_TOPIC_ID,DATA_STEP } from '../constants/Constants
 import { fetchArticleList, receiveArticleList } from '../actions/read';
 
 function getIndexImg(content){
-  var imgReg=/<img.*?(?:>|\/>)/gi;
-  var arr=content.match(imgReg);
+  let imgReg=/<img.*?(?:>|\/>)/gi;
+  let arr=content.match(imgReg);
   if(arr!=null)
   {
-      var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+      let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
       imgsrc=arr[0].match(srcReg);
       return imgsrc[1];
   }
@@ -40,8 +40,8 @@ function getIndexImg(content){
 }
 
 function removeImg(content){
-  var imgReg=/<img.*?(?:>|\/>)/gi;
-  var temp=content.replace(imgReg,"").replace(/<[^>]+>/g,"");
+  let imgReg=/<img.*?(?:>|\/>)/gi;
+  let temp=content.replace(imgReg,"").replace(/<[^>]+>/g,"");
   return temp;
 }
 
@@ -49,7 +49,7 @@ function convertQuestionList(ret,noAnswer)
 {
   if("fail"==ret)
     return [];
-  var questions=[];
+  let questions=[];
   if(noAnswer)
   {
     ret.map((item)=>{

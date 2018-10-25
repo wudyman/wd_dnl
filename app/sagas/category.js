@@ -26,7 +26,7 @@ import { fetchTopicList, receiveTopicList } from '../actions/category';
 
 function convertTopics(ret)
 {
-  var topics=[];
+  let topics=[];
   ret.map((item)=>{
     let topic={'id':item[0],'name':item[1]};
     //let topic={};

@@ -17,17 +17,19 @@
  */
 import { StackNavigator, TabNavigator } from 'react-navigation';
 import Splash from '../pages/Splash';
-import CategoryContainer from '../containers/CategoryContainer';
 import MainContainer from '../containers/MainContainer';
-import WebViewPage from '../pages/WebViewPage/WebViewPage';
+import CategoryContainer from '../containers/CategoryContainer';
+import BusinessContainer from '../containers/BusinessContainer';
 import HomeContainer from '../containers/HomeContainer';
 import MiscContainer from '../containers/MiscContainer';
 import SubContainer from '../containers/SubContainer';
+import WebViewPage from '../pages/WebViewPage/WebViewPage';
 
 const TabContainer = TabNavigator(
   {
     Main: { screen: MainContainer },
     Category: { screen: CategoryContainer },
+    Business: { screen: BusinessContainer },
     Home: { screen: HomeContainer }
   },
   {
