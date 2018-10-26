@@ -26,7 +26,7 @@ import RequestUtil from '../../utils/RequestUtil';
 import NoDataView from '../../components/NoDataView';
 import ItemList from '../../components/ItemList';
 import ItemBusiness from './ItemBusiness';
-import { concatFilterDuplicate, removeItemById, isNotDuplicateItem } from '../../utils/ItemsUtil';
+import { isNotDuplicateItem } from '../../utils/ItemsUtil';
 import { formatUrlWithSiteUrl } from '../../utils/FormatUtil';
 import { SITE_URL, BUSINESSES_URL } from '../../constants/Urls';
 import { DATA_STEP_DOUBLE } from '../../constants/Constants';
@@ -70,13 +70,17 @@ class Businesses extends React.Component {
     }
   }
 
+  _businessPost(){
+    this.props.navigation.navigate('Misc',{pageType:'businessPost'});
+  }
+
   _getCurrentCity(){
     if('000000'==gProvinceValue)
       return '全国';
     else if('000000'==gCityValue)
       return Provinces[provincesMap[gProvinceValue]].label;
     else
-      return Provinces[provincesMap[gProvinceValue]].label+this.state.Citys[citysMap[gCityValue]].label;
+      return this.state.Citys[citysMap[gCityValue]].label;
   }
 
   _switchCity(){
@@ -100,7 +104,7 @@ class Businesses extends React.Component {
   _renderDistricts(){
     const districtsContent = this.state.Districts.map((district) => {
       const districtItem = (
-      <Button key={district.value} text={district.label} btnStyle={{paddingRight:10}} textStyle={{color:this._getDistrictColor(district.value)}} onPress={() => this._districtSelect(district.value)}/>
+      <Button key={district.value} text={district.label} btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getDistrictColor(district.value)}} onPress={() => this._districtSelect(district.value)}/>
       );
       return districtItem;
     });
@@ -135,7 +139,7 @@ class Businesses extends React.Component {
   _renderCitys(){
     const citysContent = this.state.Citys.map((city) => {
       const cityItem = (
-      <Button key={city.value} text={city.label} btnStyle={{paddingRight:10}} textStyle={{color:this._getCityColor(city.value)}} onPress={() => this._citySelect(city.value)}/>
+      <Button key={city.value} text={city.label} btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getCityColor(city.value)}} onPress={() => this._citySelect(city.value)}/>
       );
       return cityItem;
     });
@@ -170,7 +174,7 @@ class Businesses extends React.Component {
   _renderProvinces(){
     const provincesContent = Provinces.map((province) => {
       const provinceItem = (
-        <Button key={province.value} text={province.label} btnStyle={{paddingRight:10}} textStyle={{color:this._getProvinceColor(province.value)}} onPress={() => this._provinceSelect(province.value)}/>
+        <Button key={province.value} text={province.label} btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getProvinceColor(province.value)}} onPress={() => this._provinceSelect(province.value)}/>
       );
       return provinceItem;
     });
@@ -382,18 +386,24 @@ class Businesses extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.head}>
-          <View style={{flexDirection: 'row',alignItems: 'flex-start'}}>
-              <Text>{this._getCurrentCity()}</Text>
+          <View style={styles.headTop}>
+            <TouchableOpacity onPress={this._switchCity.bind(this)} style={styles.switchCity}>
+              <Text style={styles.switchCityText}>{this._getCurrentCity()}</Text>
               <Button text="[切换城市]" onPress={this._switchCity.bind(this)}/>
-              <Button text="免费发布信息"/>
+            </TouchableOpacity>
+            <Button text="免费发布信息" textStyle={styles.postTextStyle} btnStyle={styles.postBtnStyle} onPress={this._businessPost.bind(this)}/>
           </View>
-          <View style={{flexDirection: 'row',alignItems: 'flex-start',flexWrap:'wrap'}}>
-              <Text style={{paddingRight:10}}>请选择地区：</Text>
-              <Button  text='全部' btnStyle={{paddingRight:10}} textStyle={{color:this._getDistrictColor('000000')}} onPress={() => this._districtSelect('000000')}/>
+          {gCityValue!='000000'?
+          <View style={styles.district}>
+              <Text style={styles.addrPlease}>请选择地区：</Text>
+              <Button  text='全部' btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getDistrictColor('000000')}} onPress={() => this._districtSelect('000000')}/>
               {this._renderDistricts()}
           </View>
-          <View style={{flexDirection:'row',alignItems: 'center',justifyContent: 'space-around'}}>
-            <View style={{flexDirection:'row',alignItems: 'center',marginTop:0,marginRight:20,paddingLeft:20,backgroundColor:'transparent',borderColor:'#f0f0f0',borderWidth:1,borderRadius: 20}}>
+          :
+          <View/>
+          }
+          <View style={{marginTop:10,flexDirection:'row',alignItems: 'center',justifyContent: 'flex-start'}}>
+            <View style={{flexDirection:'row',alignItems: 'center',marginTop:0,paddingLeft:20,backgroundColor:'transparent',borderColor:'#f0f0f0',borderWidth:1}}>
                 <Icon name="md-search" size={20} color='#aaaaaa' />
                 <TextInput
                 ref="myTextInput"
@@ -414,8 +424,8 @@ class Businesses extends React.Component {
             </View>
             <View style={{}}>
                 <Button
-                    btnStyle={{padding:10}}
-                    textStyle={{color:'black',fontSize:16}}
+                    btnStyle={{paddingLeft:10,paddingRight:10,paddingTop:6,paddingBottom:6,backgroundColor:'#228b22'}}
+                    textStyle={{color:'white',fontSize:16}}
                     text='搜索'
                     onPress={this._pressSearch.bind(this)}
                     activeOpacity={0.2}
@@ -423,7 +433,7 @@ class Businesses extends React.Component {
             </View>
           </View>
         </View>
-        <View style={{marginBottom:20}}></View>
+        <View style={{marginTop:10,marginBottom:10,height: 3, backgroundColor:'#f0f4f4'}}/>
           {this._renderContent()}
         <Modal
           visible={this.state.isSwitchCityModal}
@@ -433,14 +443,14 @@ class Businesses extends React.Component {
             });
           }}
         >
-          <View style={{flexDirection: 'row',alignItems: 'flex-start',flexWrap:'wrap'}}>
-              <Text style={{paddingRight:10}}>请选择省份：</Text>
-              <Button  text='全国' btnStyle={{paddingRight:10}} textStyle={{color:this._getProvinceColor('000000')}} onPress={() => this._provinceSelect('000000')}/>
+          <View style={styles.province}>
+              <Text style={styles.addrPlease}>请选择省份：</Text>
+              <Button  text='全国' btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getProvinceColor('000000')}} onPress={() => this._provinceSelect('000000')}/>
               {this._renderProvinces()}
           </View>
-          <View style={{flexDirection: 'row',alignItems: 'flex-start',flexWrap:'wrap'}}>
-              <Text style={{paddingRight:10}}>请选择城市：</Text>
-              <Button  text='全部' btnStyle={{paddingRight:10}} textStyle={{color:this._getCityColor('000000')}} onPress={() => this._citySelect('000000')}/>
+          <View style={styles.city}>
+              <Text style={styles.addrPlease}>请选择城市：</Text>
+              <Button  text='全部' btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getCityColor('000000')}} onPress={() => this._citySelect('000000')}/>
               {this._renderCitys()}
           </View>
         </Modal>
@@ -456,12 +466,61 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   head: {
-    //flex: 1,
     justifyContent: 'center',
-    paddingBottom: 10
+    padding: 10
   },
+  headTop: {
+    marginTop:10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems:'center',
+  },
+  switchCity: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems:'center'
+  },
+  switchCityText: {
+    fontSize:18,
+    fontWeight:'700',
+    color:'#228b22'
+  },
+  postBtnStyle: {
+    padding:5,
+    borderColor:'#228b22',
+    borderWidth:1
+  },
+  postTextStyle: {
+    color:'#228b22'
+  },
+  province: {
+    margin:10,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap:'wrap'
+  },
+  city: {
+    margin:10,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap:'wrap'
+  },
+  district: {
+    marginTop:10,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap:'wrap'
+  },
+  addrPlease: {
+    fontSize:16,
+    padding:5
+  },
+  addrSelectBtnStyle: {
+    padding:5
+  },
+
   tabBarUnderline: {
-    backgroundColor: 'transparent',
+    backgroundColor: '#228b22',//'transparent',
   }
 });
 Businesses.propTypes = propTypes;

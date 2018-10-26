@@ -24,6 +24,7 @@ import SignPage from '../pages/MiscPage/SignPage';
 import WritePage from '../pages/WebViewPage/WritePageByWebView';
 import AskPage from '../pages/WebViewPage/AskPageByWebView';
 import SearchPage from '../pages/MiscPage/SearchPage';
+import BusinessPostPage from '../pages/MiscPage/BusinessPostPage';
 import UserInfoPage from '../pages/WebViewPage/UserInfoPageByWebView';
 
 import ToastUtil from '../utils/ToastUtil';
@@ -64,6 +65,8 @@ class MiscContainer extends React.Component {
       return <AskPage closePage={()=>this._closePage()} pageUrl={ASK_URL}/>;
     else if(params.pageType=='write')
       return <WritePage closePage={()=>this._closePage()} pageUrl={WRITE_URL}/>;
+    else if(params.pageType=='businessPost')
+      return <BusinessPostPage closePage={()=>this._closePage()} {...this.props}/>;
   }
 }
 
