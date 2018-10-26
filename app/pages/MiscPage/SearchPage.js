@@ -44,7 +44,7 @@ const INDEX_NAME =2;
 const INDEX_DATAINDEX =3;
 
 let currentTabIndex=0;
-let currentSearchType=SEARCH_TYPE[0][INDEX_NAME];
+let currentSearchType=SEARCH_TYPE[0][INDEX_TYPE];
 let currentDataIndex=0;
 let resultDatas=[[],[],[]];
 

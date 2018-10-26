@@ -46,3 +46,16 @@ export const concatFilterDuplicate = (list1, list2) => {
   return list1.concat(filterList2);
 }
 
+/**
+ * filter duplicate data when loading more.
+*/
+export const isNotDuplicateItem = (list, item) => {
+  const set = new Set(list.map(item => item.id));
+  if (set.has(item.id)) {
+    return false;
+  }
+  else{
+    return true;
+  }
+}
+

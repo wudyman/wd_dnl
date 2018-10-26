@@ -17,10 +17,19 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Image, Text,  DeviceEventEmitter, TouchableOpacity, View, Modal } from 'react-native';
+import { StyleSheet, Image, Text, TextInput, DeviceEventEmitter, TouchableOpacity, View, ListView, Modal } from 'react-native';
+import ScrollableTabView, { ScrollableTabBar, DefaultTabBar } from 'react-native-scrollable-tab-view';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { Provinces } from '../../constants/Provinces';
 import Button from '../../components/Button';
-import ArrowButton from '../../components/ArrowButton';
+import RequestUtil from '../../utils/RequestUtil';
+import NoDataView from '../../components/NoDataView';
+import ItemList from '../../components/ItemList';
+import ItemBusiness from './ItemBusiness';
+import { concatFilterDuplicate, removeItemById, isNotDuplicateItem } from '../../utils/ItemsUtil';
+import { formatUrlWithSiteUrl } from '../../utils/FormatUtil';
+import { SITE_URL, BUSINESSES_URL } from '../../constants/Urls';
+import { DATA_STEP_DOUBLE } from '../../constants/Constants';
 
 const propTypes = {
 };
@@ -31,6 +40,20 @@ let citysMap={};
 let districtsMap={};
 //let Citys=[];
 
+const BUSINESS_TYPE = [['0','all','全部',0],['1','sell','出售',0],['2','buy','求购',0]];
+const INDEX_ID =0;
+const INDEX_TYPE =1;
+const INDEX_NAME =2;
+const INDEX_DATAINDEX =3;
+
+let currentTabIndex=0;
+let currentBusinessType=BUSINESS_TYPE[currentTabIndex][INDEX_TYPE];
+let currentDataIndex=0;
+let resultDatas=[[],[],[]];
+
+let keywordText='';
+let noMoreViewShow=false;
+
 class Businesses extends React.Component {
   constructor(props) {
     super(props);
@@ -39,7 +62,11 @@ class Businesses extends React.Component {
         Citys:[],
         Districts:[],
         districtValue:gDistrictValue,
-        userInfo: {}
+        keywordText: '',
+        results: [],
+        dataSource: new ListView.DataSource({
+          rowHasChanged: (row1, row2) => row1 !== row2
+        }),
     }
   }
 
@@ -56,15 +83,6 @@ class Businesses extends React.Component {
     this.setState({
         isSwitchCityModal: true
     });
-  }
-
-  _openSignPage(){
-    this.props.navigation.navigate('Misc',{pageType:'sign',isSignIn:'false'});
-  }
-
-  _openUserInfoPage(){
-    let itemData={'url':this.state.userInfo.url,'title':this.state.userInfo.name,'content':this.state.userInfo.mood,'thumbImage':this.state.userInfo.avatar};
-    this.props.navigation.navigate('Web',{itemData});
   }
 
   _districtSelect(value){
@@ -159,32 +177,211 @@ class Businesses extends React.Component {
     return provincesContent;
   }
 
+
+  _searchCallback(ret,callbackarg){
+    let businessInfos=resultDatas[callbackarg];
+    if('fail'!=ret)
+    {
+      console.log(ret);
+      ret.map((item)=>{
+        let businessInfo={};
+        businessInfo.id=item[0];
+        businessInfo.title=item[1];
+        businessInfo.detail=item[2];
+        businessInfo.type=item[3];
+        businessInfo.addr=item[4];
+        businessInfo.addr_value=item[5];
+        businessInfo.contact=item[6];
+        businessInfo.pictures=item[7];
+        businessInfo.update_date=item[8];
+
+        businessInfo.url=SITE_URL+"/business/"+businessInfo.id+"/";
+        businessInfo.pictures_array=[];
+        if(""!=businessInfo.pictures)
+        {
+            let pictures=businessInfo.pictures;
+            let array=pictures.split(";");
+            for (let i in array)
+            {
+                let picture=array[i];
+                if(picture)
+                {
+                  businessInfo.pictures_array.push(formatUrlWithSiteUrl(picture));
+                }
+            }
+        }
+        else{
+          businessInfo.pictures_array.push(formatUrlWithSiteUrl('/static/common/img/business_no_picture.jpg'));
+        }
+        console.log(businessInfo);
+        if(isNotDuplicateItem(businessInfos,businessInfo))
+          businessInfos.push(businessInfo);
+      });
+      BUSINESS_TYPE[callbackarg][INDEX_DATAINDEX]+=DATA_STEP_DOUBLE;
+    }
+    else{
+      noMoreViewShow=true;
+      console.log(ret);
+    }
+    this.setState({results:resultDatas});
+  }
+
+
+  _search(start){
+    noMoreViewShow=false;
+    let addr='';
+    let addr_value='000000';
+    if("000000"==gProvinceValue)
+    {
+        addr_value="000000";
+        addr="";
+    }
+    else if("000000"==gCityValue)
+    {
+        addr_value=gProvinceValue;
+        addr=Provinces[provincesMap[gProvinceValue]].label;
+    }
+    else if("000000"==gDistrictValue)
+    {
+        addr_value=gProvinceValue+gCityValue;
+        addr=Provinces[provincesMap[gProvinceValue]].label+this.state.Citys[citysMap[gCityValue]].label;
+    }
+    else
+    {
+        addr_value=gProvinceValue+gCityValue+gDistrictValue;
+        addr=Provinces[provincesMap[gProvinceValue]].label+this.state.Citys[citysMap[gCityValue]].label+this.state.Districts[districtsMap[gDistrictValue]].label;
+    }
+    let keyword=keywordText.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,"");
+    let type=currentBusinessType;
+    let order=1;
+    let end=start+DATA_STEP_DOUBLE;
+    let url=BUSINESSES_URL+type+'/'+order+'/'+start+'/'+end+'/';
+    let formData=new FormData();
+    formData.append("addr",addr);
+    formData.append("addr_value",addr_value);
+    formData.append("keyword",keyword);
+    RequestUtil.requestWithCallback(url,'POST',formData,this._searchCallback.bind(this),callbackarg=currentTabIndex);
+  }
+
+  _pressSearch() {
+    currentDataIndex=0;
+    resultDatas=[[],[],[]];
+    BUSINESS_TYPE[0][INDEX_DATAINDEX]=0;
+    BUSINESS_TYPE[1][INDEX_DATAINDEX]=0;
+    BUSINESS_TYPE[2][INDEX_DATAINDEX]=0;
+    this.setState({keywordText:keywordText,results:resultDatas});
+    this._search(currentDataIndex);
+  }
+
+
+
   componentWillMount() {
     console.log('**************HomePage componentWillMount***************');
-    this.setState({userInfo:gUserInfo});
-    DeviceEventEmitter.addListener('changeUserInfo', (userinfo) => {
-      console.log('**************HomePage componentWillMount changeUserInfo*********');
-      this.setState({userInfo:userinfo});
-    });
-
     for (i in Provinces)
     {
         let province=Provinces[i];
         let value=province.value;     
         provincesMap[value]=i;    
     } 
+    this._pressSearch();
   }
 
   componentWillUnmount() {
     console.log('**************HomePage componentWillUnmount***************');
-    DeviceEventEmitter.removeAllListeners('changeUserInfo');
   }
 
+  onPress = (itemData) => {
+    const { navigate } = this.props.navigation;
+    navigate('Web', { itemData });
+  };
+  
+  onRefresh = () => {
+    console.log('**************onRefresh*********');
+    this._pressSearch();
+  };
+
+  onEndReached = () => {
+    console.log('**************onEndReached*********');
+    currentDataIndex=BUSINESS_TYPE[currentTabIndex][INDEX_DATAINDEX];
+    this._search(currentDataIndex);
+  };
+
+
+  _renderFooter = () => {
+    if(noMoreViewShow)
+      return <NoDataView />;
+    else
+      return <View />;
+  };
+
+  _renderItem = resultData => {
+      return <ItemBusiness resultData={resultData} onPressHandler={this.onPress}/>
+  };
+
+  _renderResult(typeId) {
+    let dataSource=this.state.dataSource.cloneWithRows(this.state.results[parseInt(typeId)]);
+    return (
+        <ItemList
+            dataSource={dataSource}
+            isRefreshing={false}
+            onEndReached={this.onEndReached}
+            onRefresh={this.onRefresh}
+            renderFooter={this._renderFooter}
+            renderItem={this._renderItem}
+        />
+    );
+  }
+
+  _renderContent(){
+    const content = BUSINESS_TYPE.map((type) => {
+      const typeView = (
+        <View key={type[INDEX_ID]} tabLabel={type[INDEX_NAME]} style={styles.base}>
+          {(currentBusinessType==type[INDEX_TYPE])? 
+            this._renderResult(
+              type[INDEX_ID]
+          )
+          :
+          <View/>
+          }
+        </View>
+      );
+      return typeView;
+    });
+    return (      
+      <ScrollableTabView
+        ref="myScrollableTabView"
+        renderTabBar={() => (
+          <DefaultTabBar
+            style={{borderWidth:1,borderColor:'#f8f8f8'}}
+            tabStyle={styles.tab}
+            textStyle={styles.tabText}
+          />
+        )}
+        initialPage={0}
+        locked={false}
+        scrollWithoutAnimation={false}
+        onChangeTab={(obj) => {
+            console.log('**************searchPage onChangeTab*********');
+            currentTabIndex=obj.i;
+            currentBusinessType=BUSINESS_TYPE[currentTabIndex][INDEX_TYPE];
+            currentDataIndex=BUSINESS_TYPE[currentTabIndex][INDEX_DATAINDEX];
+            this._search(currentDataIndex);
+          }
+        }
+        tabBarBackgroundColor="#ffffff"
+        tabBarUnderlineStyle={styles.tabBarUnderline}
+        tabBarActiveTextColor="#228b22"
+        tabBarInactiveTextColor="#888"
+      >
+        {content}
+      </ScrollableTabView>
+      );
+  }
 
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.content}>
+        <View style={styles.head}>
           <View style={{flexDirection: 'row',alignItems: 'flex-start'}}>
               <Text>{this._getCurrentCity()}</Text>
               <Button text="[切换城市]" onPress={this._switchCity.bind(this)}/>
@@ -195,7 +392,39 @@ class Businesses extends React.Component {
               <Button  text='全部' btnStyle={{paddingRight:10}} textStyle={{color:this._getDistrictColor('000000')}} onPress={() => this._districtSelect('000000')}/>
               {this._renderDistricts()}
           </View>
+          <View style={{flexDirection:'row',alignItems: 'center',justifyContent: 'space-around'}}>
+            <View style={{flexDirection:'row',alignItems: 'center',marginTop:0,marginRight:20,paddingLeft:20,backgroundColor:'transparent',borderColor:'#f0f0f0',borderWidth:1,borderRadius: 20}}>
+                <Icon name="md-search" size={20} color='#aaaaaa' />
+                <TextInput
+                ref="myTextInput"
+                style={{width:200,padding:2,fontSize:14,textAlign:'left'}}
+                autoFocus= {true}
+                selectionColor='#228b22'
+                placeholder= '请输入关键字'
+                placeholderTextColor='#aaaaaa'
+                defaultValue={this.state.keywordText}
+                onChangeText={
+                    (text) => {
+                        //resultDatas=[[],[],[]];
+                        keywordText=text;
+                        //this.setState({keywordText:keywordText,results:resultDatas});
+                    }
+                  }
+                underlineColorAndroid='transparent' />
+            </View>
+            <View style={{}}>
+                <Button
+                    btnStyle={{padding:10}}
+                    textStyle={{color:'black',fontSize:16}}
+                    text='搜索'
+                    onPress={this._pressSearch.bind(this)}
+                    activeOpacity={0.2}
+                />
+            </View>
+          </View>
         </View>
+        <View style={{marginBottom:20}}></View>
+          {this._renderContent()}
         <Modal
           visible={this.state.isSwitchCityModal}
           onRequestClose={() => {
@@ -226,77 +455,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#fff'
   },
-  content: {
+  head: {
     //flex: 1,
     justifyContent: 'center',
     paddingBottom: 10
   },
-  login: {
-    //flex: 1,
-    padding:10,
-    alignItems: 'center'
-  },
-  loginButton: {
-    margin: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderRadius: 50,
-    backgroundColor: '#228b22'
-  },
-  logo: {
-    width: 110,
-    height: 110,
-    marginTop: 50
-  },
-  userInfo: {
-    alignItems: 'center'
-  },
-  userInfoAvatar: {
-    width: 70,
-    height: 70,
-    borderRadius:35
-  },
-  userInfoName: {
-    fontSize:20,
-    fontWeight: 'bold',
-    alignItems: 'center'
-  },
-  userInfoMood: {
-    alignItems: 'center'
-  },
-  version: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#aaaaaa',
-    marginTop: 5
-  },
-  title: {
-    fontSize: 28,
-    textAlign: 'center',
-    color: '#313131',
-    marginTop: 10
-  },
-  subtitle: {
-    fontSize: 18,
-    textAlign: 'center',
-    color: '#4e4e4e'
-  },
-  midContainer: {
-    //alignItems: 'flex-start'
-    padding:20
-  },
-  midContent: {
-    //flexDirection: 'column'
-  },
-  arrowButtonTextStyle: {
-    fontSize: 16,
-    color:'#555',
-    textAlign: 'left'
-  },
-  arrowButtonTipsStyle: {
-    fontSize: 14,
-    color:'#aaa',
-    marginRight:5
+  tabBarUnderline: {
+    backgroundColor: 'transparent',
   }
 });
 Businesses.propTypes = propTypes;
