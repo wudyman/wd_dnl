@@ -18,6 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Platform, StyleSheet, View, Picker, Text, TextInput, Image } from 'react-native';
+import { Provinces } from '../../constants/Provinces';
 import Button from '../../components/Button';
 import  ImagePicker from 'react-native-image-picker';
 import store from 'react-native-simple-store';
@@ -28,6 +29,12 @@ const propTypes = {
   signInUpActions: PropTypes.object,
   signinup: PropTypes.object.isRequired
 };
+
+let provinceValue=cityValue=districtValue='000000';
+let provincesMap2={};
+let citysMap2={};
+let districtsMap2={};
+let citys2=districts2=[];
 
 let imageOptions = {
   //底部弹出框选项
@@ -49,21 +56,22 @@ class BusinessPostPage extends React.Component {
     super(props);
     this.state = {
         type:'sell',
-        provinceValue:'000000',
-        cityValue:'000000',
-        districtValue:'000000',
+        provinceValue:provinceValue,
+        cityValue:cityValue,
+        districtValue:districtValue,
         title:'',
         detail:'',
         pictures:'',
         contact:'',
-        imageSource:''
+        imageSource:'',
+        initDone:false,
     }
   }
 
   _onFileUpload(){
 
   }
-  
+
   _selectImage = () =>{
       ImagePicker.showImagePicker(imageOptions,(response) =>{
           console.log('response'+response);
@@ -96,8 +104,112 @@ class BusinessPostPage extends React.Component {
  }
 
   componentWillMount() {
-    console.log('***************SignPage componentWillMount**************');
-    this.setState({userInfo:gUserInfo});
+    console.log('***************BusinessPostPage componentWillMount**************');
+    store.get('addrValue').then((values)=>{
+      if(null!=values){
+        provinceValue=values[0];
+        cityValue=values[1];
+        districtValue=values[2];
+      }
+      else{
+        provinceValue=cityValue=districtValue='000000';
+      }
+      for (i in Provinces)
+      {
+          let province=Provinces[i];
+          let value=province.value;     
+          provincesMap2[value]=i;    
+      } 
+      this._provinceSelect(provinceValue,true);
+      this._citySelect(cityValue,true);
+      this._districtSelect(districtValue,true);
+      this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue,initDone:true});
+    });
+  }  
+  
+  _districtSelect(value,init=false){
+    districtValue=value;
+    this.setState({districtValue:districtValue});
+    if(false==init){
+      this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue});
+    }
+  }
+
+  
+
+  _renderDistricts(){
+    const districtsContent = districts2.map((district) => {
+      const districtItem = (
+        <Picker.Item key={district.value} label={district.label} value={district.value} />
+      );
+      return districtItem;
+    });
+    return districtsContent;
+  }
+
+  _citySelect(value,init=false){
+    cityValue=value;
+    districts2=[];
+    if('000000'==cityValue){
+      districts2=[];
+    }
+    else
+    {
+      districts2=citys2[citysMap2[cityValue]].children;
+      for (i in districts2)
+      {
+          let district=districts2[i];
+          let value=district.value;
+          districtsMap2[value]=i;
+      }
+    }
+    if(false==init){
+      districtValue='000000';
+      this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue});
+    }
+  }
+
+  _renderCitys(){
+    const citysContent = citys2.map((city) => {
+      const cityItem = (
+        <Picker.Item key={city.value} label={city.label} value={city.value} />
+      );
+      return cityItem;
+    });
+    return citysContent;
+  }
+
+  _provinceSelect(value,init=false){
+    provinceValue=value;
+    citys2=districts2=[];
+    if('000000'==provinceValue)
+    {
+      citys2=districts2=[];
+    }
+    else
+    {
+      citys2=Provinces[provincesMap2[provinceValue]].children;
+      for (i in citys2)
+      {
+          let city=citys2[i];
+          let value=city.value;
+          citysMap2[value]=i;
+      }
+    }
+    if(false==init){
+      cityValue=districtValue='000000';
+      this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue});
+    }
+  }
+
+  _renderProvinces(){
+    const provincesContent = Provinces.map((province) => {
+      const provinceItem = (
+        <Picker.Item key={province.value} label={province.label} value={province.value} />
+      );
+      return provinceItem;
+    });
+    return provincesContent;
   }
 
   render() {
@@ -111,8 +223,8 @@ class BusinessPostPage extends React.Component {
               selectedValue={this.state.type}
               style={{ height: 40, marginLeft:10 }}
               onValueChange={(itemValue, itemIndex) => this.setState({type: itemValue})}>
-              <Picker.Item label="出售" value="sell" />
-              <Picker.Item label="求购" value="buy" />
+              <Picker.Item label="出售" value="sell"/>
+              <Picker.Item label="求购" value="buy"/>
             </Picker>
           </View>
           <View>
@@ -121,25 +233,25 @@ class BusinessPostPage extends React.Component {
               mode='dropdown'
               selectedValue={this.state.provinceValue}
               style={{ height: 40,marginLeft:10 }}
-              onValueChange={(itemValue, itemIndex) => this.setState({provinceValue: itemValue})}>
-              <Picker.Item label="北京" value="11" />
-              <Picker.Item label="天津" value="33" />
+              onValueChange={(itemValue, itemIndex) => this._provinceSelect(itemValue)}>
+              <Picker.Item key='000000' label='全国' value='000000' />
+              {this._renderProvinces()}
             </Picker>
             <Picker
               mode='dropdown'
               selectedValue={this.state.cityValue}
               style={{ height: 40,marginLeft:10 }}
-              onValueChange={(itemValue, itemIndex) => this.setState({cityValue: itemValue})}>
-              <Picker.Item label="出售" value="sell" />
-              <Picker.Item label="求购" value="buy" />
+              onValueChange={(itemValue, itemIndex) => this._citySelect(itemValue)}>
+              <Picker.Item key='000000' label='全部' value='000000' />
+              {this._renderCitys()}
             </Picker>
             <Picker
             mode='dropdown'
             selectedValue={this.state.districtValue}
             style={{ height: 40, marginLeft:10 }}
-            onValueChange={(itemValue, itemIndex) => this.setState({districtValue: itemValue})}>
-            <Picker.Item label="出售" value="sell" />
-            <Picker.Item label="求购" value="buy" />
+            onValueChange={(itemValue, itemIndex) => this._districtSelect(itemValue)}>
+            <Picker.Item key='000000' label='全部' value='000000' />
+            {this._renderDistricts()}
             </Picker>
           </View>
         </View>

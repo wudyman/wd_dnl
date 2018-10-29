@@ -19,6 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, Image, Text, TextInput, DeviceEventEmitter, TouchableOpacity, View, ListView, Modal } from 'react-native';
 import ScrollableTabView, { ScrollableTabBar, DefaultTabBar } from 'react-native-scrollable-tab-view';
+import store from 'react-native-simple-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Provinces } from '../../constants/Provinces';
 import Button from '../../components/Button';
@@ -38,7 +39,7 @@ let gProvinceValue=gCityValue=gDistrictValue='000000';
 let provincesMap={};
 let citysMap={};
 let districtsMap={};
-//let Citys=[];
+let citys=districts=[];
 
 const BUSINESS_TYPE = [['0','all','全部',0],['1','sell','出售',0],['2','buy','求购',0]];
 const INDEX_ID =0;
@@ -59,14 +60,15 @@ class Businesses extends React.Component {
     super(props);
     this.state = {
         isSwitchCityModal: false,
-        Citys:[],
-        Districts:[],
+        Citys:citys,
+        Districts:districts,
         districtValue:gDistrictValue,
         keywordText: '',
         results: [],
         dataSource: new ListView.DataSource({
           rowHasChanged: (row1, row2) => row1 !== row2
         }),
+        initDone:false
     }
   }
 
@@ -80,7 +82,7 @@ class Businesses extends React.Component {
     else if('000000'==gCityValue)
       return Provinces[provincesMap[gProvinceValue]].label;
     else
-      return this.state.Citys[citysMap[gCityValue]].label;
+      return citys[citysMap[gCityValue]].label;
   }
 
   _switchCity(){
@@ -89,9 +91,13 @@ class Businesses extends React.Component {
     });
   }
 
-  _districtSelect(value){
+  _districtSelect(value,init=false){
     gDistrictValue=value;
     this.setState({districtValue:gDistrictValue});
+    if(false==init){
+      store.save('addrValue',[gProvinceValue,gCityValue,gDistrictValue]);
+      this._pressSearch();
+    }
   }
 
   _getDistrictColor(value){
@@ -102,7 +108,7 @@ class Businesses extends React.Component {
   }
 
   _renderDistricts(){
-    const districtsContent = this.state.Districts.map((district) => {
+    const districtsContent = districts.map((district) => {
       const districtItem = (
       <Button key={district.value} text={district.label} btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getDistrictColor(district.value)}} onPress={() => this._districtSelect(district.value)}/>
       );
@@ -111,13 +117,13 @@ class Businesses extends React.Component {
     return districtsContent;
   }
 
-  _citySelect(value){
+  _citySelect(value,init=false){
     gCityValue=value;
     if('000000'==gCityValue)
       this.setState({Districts:[],isSwitchCityModal:false});
     else
     {
-      let districts=this.state.Citys[citysMap[gCityValue]].children;
+      districts=citys[citysMap[gCityValue]].children;
       for (i in districts)
       {
           let district=districts[i];
@@ -126,7 +132,11 @@ class Businesses extends React.Component {
       }
       this.setState({Districts:districts,isSwitchCityModal:false});
     }
-    gDistrictValue='000000';
+    if(false==init){
+      gDistrictValue='000000';
+      store.save('addrValue',[gProvinceValue,gCityValue,gDistrictValue]);
+      this._pressSearch();
+    }
   }
 
   _getCityColor(value){
@@ -137,7 +147,7 @@ class Businesses extends React.Component {
   }
 
   _renderCitys(){
-    const citysContent = this.state.Citys.map((city) => {
+    const citysContent = citys.map((city) => {
       const cityItem = (
       <Button key={city.value} text={city.label} btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getCityColor(city.value)}} onPress={() => this._citySelect(city.value)}/>
       );
@@ -146,13 +156,19 @@ class Businesses extends React.Component {
     return citysContent;
   }
 
-  _provinceSelect(value){
+  _provinceSelect(value,init=false){
     gProvinceValue=value;
     if('000000'==gProvinceValue)
-      this.setState({Citys:[],isSwitchCityModal:false});
+    {
+      if(false==init)
+      {
+        this.setState({Citys:[],isSwitchCityModal:false});
+        this._pressSearch();
+      }
+    }
     else
     {
-      let citys=Provinces[provincesMap[gProvinceValue]].children;
+      citys=Provinces[provincesMap[gProvinceValue]].children;
       for (i in citys)
       {
           let city=citys[i];
@@ -161,7 +177,10 @@ class Businesses extends React.Component {
       }
       this.setState({Citys:citys});
     }
-    gCityValue='000000';
+    if(false==init){
+      gCityValue=gDistrictValue='000000';
+      store.save('addrValue',[gProvinceValue,gCityValue,gDistrictValue]);
+    }
   }
 
   _getProvinceColor(value){
@@ -186,7 +205,6 @@ class Businesses extends React.Component {
     let businessInfos=resultDatas[callbackarg];
     if('fail'!=ret)
     {
-      console.log(ret);
       ret.map((item)=>{
         let businessInfo={};
         businessInfo.id=item[0];
@@ -217,7 +235,6 @@ class Businesses extends React.Component {
         else{
           businessInfo.pictures_array.push(formatUrlWithSiteUrl('/static/common/img/business_no_picture.jpg'));
         }
-        console.log(businessInfo);
         if(isNotDuplicateItem(businessInfos,businessInfo))
           businessInfos.push(businessInfo);
       });
@@ -248,12 +265,12 @@ class Businesses extends React.Component {
     else if("000000"==gDistrictValue)
     {
         addr_value=gProvinceValue+gCityValue;
-        addr=Provinces[provincesMap[gProvinceValue]].label+this.state.Citys[citysMap[gCityValue]].label;
+        addr=Provinces[provincesMap[gProvinceValue]].label+citys[citysMap[gCityValue]].label;
     }
     else
     {
         addr_value=gProvinceValue+gCityValue+gDistrictValue;
-        addr=Provinces[provincesMap[gProvinceValue]].label+this.state.Citys[citysMap[gCityValue]].label+this.state.Districts[districtsMap[gDistrictValue]].label;
+        addr=Provinces[provincesMap[gProvinceValue]].label+citys[citysMap[gCityValue]].label+districts[districtsMap[gDistrictValue]].label;
     }
     let keyword=keywordText.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,"");
     let type=currentBusinessType;
@@ -280,18 +297,32 @@ class Businesses extends React.Component {
 
 
   componentWillMount() {
-    console.log('**************HomePage componentWillMount***************');
-    for (i in Provinces)
-    {
-        let province=Provinces[i];
-        let value=province.value;     
-        provincesMap[value]=i;    
-    } 
-    this._pressSearch();
+    console.log('**************BusinessesPage componentWillMount***************');
+    store.get('addrValue').then((values)=>{
+      if(null!=values){
+        gProvinceValue=values[0];
+        gCityValue=values[1];
+        gDistrictValue=values[2];
+      }
+      else{
+        gProvinceValue=gCityValue=gDistrictValue='000000';
+      }
+      for (i in Provinces)
+      {
+          let province=Provinces[i];
+          let value=province.value;     
+          provincesMap[value]=i;    
+      } 
+      this._provinceSelect(gProvinceValue,true);
+      this._citySelect(gCityValue,true);
+      this._districtSelect(gDistrictValue,true);
+      this._pressSearch();
+      this.setState({initDone:true});
+    });
   }
 
   componentWillUnmount() {
-    console.log('**************HomePage componentWillUnmount***************');
+    console.log('**************BusinessesPage componentWillUnmount***************');
   }
 
   onPress = (itemData) => {
@@ -337,6 +368,8 @@ class Businesses extends React.Component {
   }
 
   _renderContent(){
+    if(false==this.state.initDone)
+      return;
     const content = BUSINESS_TYPE.map((type) => {
       const typeView = (
         <View key={type[INDEX_ID]} tabLabel={type[INDEX_NAME]} style={styles.base}>
@@ -385,6 +418,7 @@ class Businesses extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+      
         <View style={styles.head}>
           <View style={styles.headTop}>
             <TouchableOpacity onPress={this._switchCity.bind(this)} style={styles.switchCity}>
@@ -395,7 +429,7 @@ class Businesses extends React.Component {
           </View>
           {gCityValue!='000000'?
           <View style={styles.district}>
-              <Text style={styles.addrPlease}>请选择地区：</Text>
+              <Text style={styles.addrPlease}>请选择区县：</Text>
               <Button  text='全部' btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getDistrictColor('000000')}} onPress={() => this._districtSelect('000000')}/>
               {this._renderDistricts()}
           </View>
@@ -433,8 +467,10 @@ class Businesses extends React.Component {
             </View>
           </View>
         </View>
+              
         <View style={{marginTop:10,marginBottom:10,height: 3, backgroundColor:'#f0f4f4'}}/>
           {this._renderContent()}
+          
         <Modal
           visible={this.state.isSwitchCityModal}
           onRequestClose={() => {
@@ -448,11 +484,15 @@ class Businesses extends React.Component {
               <Button  text='全国' btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getProvinceColor('000000')}} onPress={() => this._provinceSelect('000000')}/>
               {this._renderProvinces()}
           </View>
+          {gProvinceValue!='000000'?
           <View style={styles.city}>
               <Text style={styles.addrPlease}>请选择城市：</Text>
               <Button  text='全部' btnStyle={styles.addrSelectBtnStyle} textStyle={{fontSize:16,color:this._getCityColor('000000')}} onPress={() => this._citySelect('000000')}/>
               {this._renderCitys()}
           </View>
+          :
+          <View/>
+          }
         </Modal>
       </View>
     );
