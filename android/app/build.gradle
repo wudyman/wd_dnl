@@ -167,7 +167,8 @@ dependencies {
     compile project(':react-native-code-push')
     compile project(':RNDeviceInfo')
     compile project(':react-native-vector-icons')
-    compile project(':react-native-exceptions-manager') 
+    compile project(':react-native-exceptions-manager')
+    compile project(':react-native-image-picker')
 }
 
 // Run this once to be able to run the application with BUCK
