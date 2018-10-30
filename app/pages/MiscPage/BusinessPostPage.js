@@ -17,7 +17,8 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Platform, StyleSheet, View, Picker, Text, TextInput, Image } from 'react-native';
+import { Platform, StyleSheet, View, ScrollView, Picker, Text, TextInput, Image, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { Provinces } from '../../constants/Provinces';
 import Button from '../../components/Button';
 import  ImagePicker from 'react-native-image-picker';
@@ -214,14 +215,14 @@ class BusinessPostPage extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={{padding:10}}>
+      <ScrollView style={styles.container}>
+        <View style={styles.content}>
           <View>
             <Text>信息类别：</Text>
             <Picker
               mode='dropdown'
               selectedValue={this.state.type}
-              style={{ height: 40, marginLeft:10 }}
+              style={styles.picker}
               onValueChange={(itemValue, itemIndex) => this.setState({type: itemValue})}>
               <Picker.Item label="出售" value="sell"/>
               <Picker.Item label="求购" value="buy"/>
@@ -232,36 +233,63 @@ class BusinessPostPage extends React.Component {
             <Picker
               mode='dropdown'
               selectedValue={this.state.provinceValue}
-              style={{ height: 40,marginLeft:10 }}
+              style={styles.picker}
               onValueChange={(itemValue, itemIndex) => this._provinceSelect(itemValue)}>
-              <Picker.Item key='000000' label='全国' value='000000' />
+              <Picker.Item key='000000' label='请选择省份（必选）' value='000000' />
               {this._renderProvinces()}
             </Picker>
             <Picker
               mode='dropdown'
               selectedValue={this.state.cityValue}
-              style={{ height: 40,marginLeft:10 }}
+              style={styles.picker}
               onValueChange={(itemValue, itemIndex) => this._citySelect(itemValue)}>
-              <Picker.Item key='000000' label='全部' value='000000' />
+              <Picker.Item key='000000' label='请选择城市（全部）' value='000000' />
               {this._renderCitys()}
             </Picker>
             <Picker
             mode='dropdown'
             selectedValue={this.state.districtValue}
-            style={{ height: 40, marginLeft:10 }}
+            style={styles.picker}
             onValueChange={(itemValue, itemIndex) => this._districtSelect(itemValue)}>
-            <Picker.Item key='000000' label='全部' value='000000' />
+            <Picker.Item key='000000' label='请选择区县（全部）' value='000000' />
             {this._renderDistricts()}
             </Picker>
+            <View>
+              {'000000'!=districtValue?
+              <TextInput
+                style={styles.town}
+                placeholder="乡镇或街道（可选填）"
+                placeholderTextColor="#888"
+                underlineColorAndroid="transparent"
+                onChangeText={(text) => {
+                  this.setState({title:text});
+                }}
+              />
+              :
+              <View/>
+              }
+            </View>
+          </View>
+          <View>
+            <Text>联系方式：</Text>
+            <TextInput
+              style={styles.contact}
+              placeholder="名字，电话等（必填）"
+              placeholderTextColor="#888"
+              underlineColorAndroid="transparent"
+              onChangeText={(text) => {
+                this.setState({title:text});
+              }}
+            />
           </View>
         </View>
-        <View style={{height: 1, backgroundColor:'#f0f0f0'}}/>
-        <View>
+        <View style={{marginBottom:10,height: 1, backgroundColor:'#f4f4f4'}}/>
+        <View style={styles.content}>
           <View>
             <TextInput
-              style={styles.edit}
-              placeholder="标题"
-              placeholderTextColor="#c4c4c4"
+              style={styles.title}
+              placeholder="标题（必填）"
+              placeholderTextColor="#888"
               underlineColorAndroid="transparent"
               onChangeText={(text) => {
                 this.setState({title:text});
@@ -270,22 +298,35 @@ class BusinessPostPage extends React.Component {
           </View>
           <View>
             <TextInput
-              style={styles.textInput}
-              placeholder='商品信息详细介绍 (可选)'
-              placeholderTextColor="#c4c4c4"
+              style={styles.detail}
+              placeholder='商品信息详细介绍 (可选填)'
+              placeholderTextColor="#888"
               underlineColorAndroid="transparent"
               multiline
+              numberOfLines={5}
               onChangeText={(text) => {
                 detail = text;
               }}
             />
           </View>
-          <View>
-            <Button text='添加图片' onPress={() => this._selectImage()}></Button>
-            <Image style={{width:100,height:100}} source={this.state.imageSource} />
+          <View style={styles.picture}>
+            <TouchableOpacity style={styles.pictureSelect} onPress={() => this._selectImage()}>
+              <Text>添加图片(不多于4张,可选填)</Text>
+              <Icon name="md-images" size={25} color={'#666'} /> 
+            </TouchableOpacity>
+            <View style={styles.pictureAdded}>
+              <Image style={{width:100,height:100}} source={this.state.imageSource} />
+              <Image style={{width:100,height:100}} source={this.state.imageSource} />
+              <Image style={{width:100,height:100}} source={this.state.imageSource} />
+              <Image style={{width:100,height:100}} source={this.state.imageSource} />
+              <Image style={{width:100,height:100}} source={this.state.imageSource} />
+            </View>
+          </View>
+          <View style={styles.post}>
+            <Button text="发布" btnStyle={styles.postBtn} textStyle={styles.postText}></Button>
           </View>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -296,79 +337,71 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#fff'
   },
-  edit:{
-    fontSize: 20,
-    backgroundColor: '#fff'
-  },
-  textInput: {
-    fontSize: 20,
-    backgroundColor: '#fff'
-  },
   content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingBottom: 10
+    margin:10,
   },
-  login: {
-    flex: 1,
-    padding:10,
-    alignItems: 'center'
+  picker: {
+    height: 40, 
+    marginLeft:10
   },
-  loginButton: {
-    margin: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderRadius: 50,
-    backgroundColor: '#228b22'
+  town:{
+    marginTop:10,
+    marginBottom:10,
+    marginLeft:15,
+    marginRight:15, 
+    fontSize: 15,
+    backgroundColor: '#f0f0f0'
   },
-  logo: {
-    width: 110,
-    height: 110,
-    marginTop: 50
-  },
-  userInfo: {
-    alignItems: 'center'
-  },
-  userInfoAvatar: {
-    width: 70,
-    height: 70,
-    borderRadius:35
-  },
-  userInfoName: {
-    fontSize:20,
-    fontWeight: 'bold',
-    alignItems: 'center'
-  },
-  userInfoMood: {
-    alignItems: 'center'
-  },
-  version: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#aaaaaa',
-    marginTop: 5
+  contact:{
+    marginTop:10,
+    marginBottom:10,
+    marginLeft:15,
+    marginRight:15,
+    fontSize: 15,
+    backgroundColor: '#f0f0f0'
   },
   title: {
-    fontSize: 28,
-    textAlign: 'center',
-    color: '#313131',
-    marginTop: 10
+    marginBottom:10,
+    fontSize: 16,
+    backgroundColor: '#f0f0f0'
   },
-  subtitle: {
-    fontSize: 18,
-    textAlign: 'center',
-    color: '#4e4e4e'
+  detail: {
+    marginBottom:10,
+    fontSize: 15,
+    backgroundColor: '#f0f0f0',
+    textAlignVertical: 'top'
   },
-  disclaimerContent: {
-    flexDirection: 'column'
+  picture: {
+    marginBottom:10,
+    paddingTop:10,
+    paddingBottom:10,
+    paddingLeft:3,
+    paddingRight:3,
+    borderColor:'#f4f4f4',
+    borderWidth:1
   },
-  disclaimer: {
-    fontSize: 18,
-    textAlign: 'left'
+  pictureSelect: {
+    flexDirection: 'row',
+    justifyContent:'space-between'
   },
-  bottomContainer: {
-    alignItems: 'flex-start'
+  pictureAdded: {
+
+  },
+  post: {
+    marginLeft:60,
+    marginRight:60,
+    marginTop:20,
+    marginBottom:60,
+  },
+  postBtn: {
+    padding:10,
+    backgroundColor:'#228b22'
+  },
+  postText: {
+    color:'white',
+    textAlign:'center'
   }
+
 });
 BusinessPostPage.propTypes = propTypes;
 export default BusinessPostPage;
