@@ -36,6 +36,16 @@ let provincesMap2={};
 let citysMap2={};
 let districtsMap2={};
 let citys2=districts2=[];
+let town='';
+let pictures=['file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
+'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
+'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
+'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
+'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
+'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
+'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
+'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg'
+];
 
 let imageOptions = {
   //底部弹出框选项
@@ -48,7 +58,6 @@ let imageOptions = {
   noData:false,
   storageOptions: {
       skipBackup: true,
-      path:'images'
   }
 }
 
@@ -62,15 +71,36 @@ class BusinessPostPage extends React.Component {
         districtValue:districtValue,
         title:'',
         detail:'',
-        pictures:'',
+        pictures:pictures,
         contact:'',
-        imageSource:'',
         initDone:false,
     }
   }
 
-  _onFileUpload(){
+  _post(){
+    console.log(this.state.type);
+    console.log(this.state.provinceValue);
+    console.log(this.state.title);
+    console.log(this.state.detail);
+    console.log(this.state.contact);
+    console.log(this.state.pictures);
+  }
 
+  _checkPostInvalid(){
+    if(
+      ''!=this.state.type &&
+      '000000'!=this.state.provinceValue &&
+      ''!=this.state.title &&
+      ''!=this.state.detail &&
+      ''!=this.state.contact
+    )
+      return false;
+    else
+      return true;
+  }
+
+  _onFileUpload(){
+    return true;
   }
 
   _selectImage = () =>{
@@ -95,13 +125,20 @@ class BusinessPostPage extends React.Component {
             console.log(file);
             // You can also display the image using data:
             // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-            this.setState({
-              imageSource: source
-            });
+            pictures.push(file);
+            this.setState({pictures: pictures});
 
             this._onFileUpload(file,response.fileName||'unkown.jpg');
           }
       })
+ }
+
+ _deletePicture(index){
+   console.log('*************delete picture*********************'+index);
+   console.log(pictures);
+   pictures.splice(index,1);
+   console.log(pictures);
+   this.setState({pictures:pictures});
  }
 
   componentWillMount() {
@@ -213,12 +250,26 @@ class BusinessPostPage extends React.Component {
     return provincesContent;
   }
 
+  _renderPicturesAdded(){
+    const picturesView = this.state.pictures.map((picture,index) => {
+      const pictureItem = (
+        <View key={index} style={{flexDirection:'row',justifyContent:'flex-start',margin:2}}>
+          <Image style={{width:80,height:80}} source={{uri:picture}} />
+          <Icon style={{position:'absolute'}} name="md-close-circle" size={35}  onPress={() => this._deletePicture(index)}/>
+        </View>
+      );
+      console.log(pictureItem);
+      return pictureItem;
+    });
+    return picturesView;
+  }
+
   render() {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.content}>
           <View>
-            <Text>信息类别：</Text>
+            <Text>选择类别：</Text>
             <Picker
               mode='dropdown'
               selectedValue={this.state.type}
@@ -258,11 +309,13 @@ class BusinessPostPage extends React.Component {
               {'000000'!=districtValue?
               <TextInput
                 style={styles.town}
+                maxLength={20}
                 placeholder="乡镇或街道（可选填）"
                 placeholderTextColor="#888"
                 underlineColorAndroid="transparent"
+                multiline
                 onChangeText={(text) => {
-                  this.setState({title:text});
+                  town=text;
                 }}
               />
               :
@@ -274,56 +327,53 @@ class BusinessPostPage extends React.Component {
             <Text>联系方式：</Text>
             <TextInput
               style={styles.contact}
+              maxLength={50}
               placeholder="名字，电话等（必填）"
               placeholderTextColor="#888"
               underlineColorAndroid="transparent"
+              multiline
               onChangeText={(text) => {
-                this.setState({title:text});
+                this.setState({contact:text});
               }}
             />
           </View>
-        </View>
-        <View style={{marginBottom:10,height: 1, backgroundColor:'#f4f4f4'}}/>
-        <View style={styles.content}>
           <View>
+            <Text>信息内容：</Text>
             <TextInput
               style={styles.title}
+              maxLength={50}
               placeholder="标题（必填）"
               placeholderTextColor="#888"
               underlineColorAndroid="transparent"
+              multiline
               onChangeText={(text) => {
                 this.setState({title:text});
               }}
             />
-          </View>
-          <View>
             <TextInput
               style={styles.detail}
-              placeholder='商品信息详细介绍 (可选填)'
+              maxLength={500}
+              placeholder='商品信息详细介绍 (必填)'
               placeholderTextColor="#888"
               underlineColorAndroid="transparent"
               multiline
               numberOfLines={5}
               onChangeText={(text) => {
-                detail = text;
+                this.setState({detail:text});
               }}
             />
-          </View>
-          <View style={styles.picture}>
-            <TouchableOpacity style={styles.pictureSelect} onPress={() => this._selectImage()}>
-              <Text>添加图片(不多于4张,可选填)</Text>
-              <Icon name="md-images" size={25} color={'#666'} /> 
-            </TouchableOpacity>
-            <View style={styles.pictureAdded}>
-              <Image style={{width:100,height:100}} source={this.state.imageSource} />
-              <Image style={{width:100,height:100}} source={this.state.imageSource} />
-              <Image style={{width:100,height:100}} source={this.state.imageSource} />
-              <Image style={{width:100,height:100}} source={this.state.imageSource} />
-              <Image style={{width:100,height:100}} source={this.state.imageSource} />
+            <View style={styles.picture}>
+              <TouchableOpacity style={styles.pictureSelect} onPress={() => this._selectImage()}>
+                <Text>添加图片(不多于4张,可选填)</Text>
+                <Icon name="md-images" size={25} color={'#555'} /> 
+              </TouchableOpacity>
+              <View style={styles.pictureAdded}>
+                {this._renderPicturesAdded()}
+              </View>
             </View>
-          </View>
-          <View style={styles.post}>
-            <Button text="发布" btnStyle={styles.postBtn} textStyle={styles.postText}></Button>
+            <View style={styles.post}>
+              <Button text="发布" btnStyle={{padding:10,backgroundColor:this._checkPostInvalid()?'#ccc':'#228b22'}} textStyle={styles.postText} disabled={this._checkPostInvalid()} onPress={() => this._post()}></Button>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -361,18 +411,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0'
   },
   title: {
-    marginBottom:10,
+    margin:10,
     fontSize: 16,
     backgroundColor: '#f0f0f0'
   },
   detail: {
-    marginBottom:10,
+    margin:10,
     fontSize: 15,
     backgroundColor: '#f0f0f0',
     textAlignVertical: 'top'
   },
   picture: {
-    marginBottom:10,
+    margin:10,
     paddingTop:10,
     paddingBottom:10,
     paddingLeft:3,
@@ -381,11 +431,15 @@ const styles = StyleSheet.create({
     borderWidth:1
   },
   pictureSelect: {
+    marginBottom:10,
     flexDirection: 'row',
     justifyContent:'space-between'
   },
   pictureAdded: {
-
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+    flexWrap:'wrap'
   },
   post: {
     marginLeft:60,

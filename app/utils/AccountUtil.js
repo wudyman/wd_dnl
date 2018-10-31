@@ -35,7 +35,7 @@
 
   export const checkNickNameFormat =(nickName)=>{
     let valid=true;
-    if(nickName.length>=30)
+    if(nickName.length>50)
         valid=false;
     return valid;
   };

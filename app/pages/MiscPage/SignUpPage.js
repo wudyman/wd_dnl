@@ -140,7 +140,8 @@ export default class SignUpPage extends React.Component {
                             style={styles.edit}
                             keyboardType='numeric'
                             underlineColorAndroid="transparent"
-                            placeholder="手机号"
+                            placeholder="手机号(11位)"
+                            maxLength={11}
                             onChangeText={
                                 (text) => {
                                   this.setState({phoneNo:text});
@@ -156,6 +157,7 @@ export default class SignUpPage extends React.Component {
                                 keyboardType='numeric'
                                 underlineColorAndroid="transparent"
                                 placeholder="请输入短信验证码"
+                                maxLength={6}
                                 onChangeText={
                                     (text) => {
                                       this.setState({smsCode:text});
@@ -174,6 +176,7 @@ export default class SignUpPage extends React.Component {
                             style={styles.edit}
                             underlineColorAndroid="transparent"
                             placeholder="昵称"
+                            maxLength={50}
                             onChangeText={
                                 (text) => {
                                   this.setState({nickName:text});
@@ -186,7 +189,8 @@ export default class SignUpPage extends React.Component {
                         <TextInput
                             style={styles.edit}
                             underlineColorAndroid="transparent"
-                            placeholder="密码"
+                            placeholder="密码(6~18位)"
+                            maxLength={18}
                             onChangeText={
                                 (text) => {
                                   this.setState({password:text});

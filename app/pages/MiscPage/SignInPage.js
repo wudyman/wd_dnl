@@ -85,7 +85,8 @@ class SignInPage extends React.Component{
                             style={styles.edit}
                             keyboardType='numeric'
                             underlineColorAndroid="transparent"
-                            placeholder="手机号"
+                            placeholder="手机号(11位)"
+                            maxLength={11}
                             onChangeText={
                                 (text) => {
                                   this.setState({phoneNo:text});
@@ -99,7 +100,8 @@ class SignInPage extends React.Component{
                             style={styles.edit}
                             secureTextEntry={true}
                             underlineColorAndroid="transparent"
-                            placeholder="密码"
+                            placeholder="密码(6~18位)"
+                            maxLength={18}
                             onChangeText={
                                 (text) => {
                                   this.setState({password:text});
