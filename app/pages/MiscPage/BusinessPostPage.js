@@ -21,7 +21,8 @@ import { Platform, StyleSheet, View, ScrollView, Picker, Text, TextInput, Image,
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Provinces } from '../../constants/Provinces';
 import Button from '../../components/Button';
-import  ImagePicker from 'react-native-image-picker';
+//import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import store from 'react-native-simple-store';
 import NavigationUtil from '../../utils/NavigationUtil';
 
@@ -37,15 +38,7 @@ let citysMap2={};
 let districtsMap2={};
 let citys2=districts2=[];
 let town='';
-let pictures=['file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
-'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
-'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
-'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
-'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
-'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
-'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg',
-'file:///storage/emulated/0/Pictures/images/image-c76b075f-0192-40c2-8f37-490f307b1419.jpg'
-];
+let pictures=[];
 
 let imageOptions = {
   //底部弹出框选项
@@ -80,6 +73,7 @@ class BusinessPostPage extends React.Component {
   _post(){
     console.log(this.state.type);
     console.log(this.state.provinceValue);
+    console.log(town);
     console.log(this.state.title);
     console.log(this.state.detail);
     console.log(this.state.contact);
@@ -103,7 +97,7 @@ class BusinessPostPage extends React.Component {
     return true;
   }
 
-  _selectImage = () =>{
+  _selectImageOld = () =>{
       ImagePicker.showImagePicker(imageOptions,(response) =>{
           console.log('response'+response);
           if (response.didCancel){
@@ -132,12 +126,39 @@ class BusinessPostPage extends React.Component {
           }
       })
  }
+ _selectImage = () =>{
+  ImagePicker.openPicker({  
+    //width: 720,  
+    //height: 720,
+    //compressImageMaxWidth: 720,
+    //compressImageMaxHeight: 720,
+    //cropping: false,
+    compressImageQuality: 0.5,
+    mediaType: 'photo',
+    //showCropGuidelines: false,
+    //hideBottomControls: true,   
+  }).then(images => {  
+    console.log(images);
+    let source,file;
+    if (Platform.OS === 'android') {
+      source = {uri: images.path};
+      file = images.path; 
+    }
+    else{
+      source = {uri: images.path.replace('file://', ''), isStatic: true}
+      file = images.path.replace('file://', '');
+    }
+    console.log(source);
+    console.log(file);
+    pictures.push(file);
+    this.setState({pictures: pictures});
+  }).catch(error=>{
+    console.log(error);
+  });  
+ }
 
  _deletePicture(index){
-   console.log('*************delete picture*********************'+index);
-   console.log(pictures);
    pictures.splice(index,1);
-   console.log(pictures);
    this.setState({pictures:pictures});
  }
 
@@ -167,7 +188,6 @@ class BusinessPostPage extends React.Component {
   
   _districtSelect(value,init=false){
     districtValue=value;
-    this.setState({districtValue:districtValue});
     if(false==init){
       this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue});
     }
@@ -258,7 +278,6 @@ class BusinessPostPage extends React.Component {
           <Icon style={{position:'absolute'}} name="md-close-circle" size={35}  onPress={() => this._deletePicture(index)}/>
         </View>
       );
-      console.log(pictureItem);
       return pictureItem;
     });
     return picturesView;

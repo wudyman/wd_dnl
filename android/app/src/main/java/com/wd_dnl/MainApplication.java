@@ -19,7 +19,7 @@ import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.microsoft.codepush.react.CodePush;
 import com.oblador.vectoricons.VectorIconsPackage;
 import javax.annotation.Nullable;
-import com.imagepicker.ImagePickerPackage;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +43,7 @@ public class MainApplication extends Application implements ReactApplication {
           new CodePush(BuildConfig.CODEPUSH_KEY, MainApplication.this, BuildConfig.DEBUG),
           new RNDeviceInfo(),
           new VectorIconsPackage(),
-          new ImagePickerPackage()
+          new PickerPackage()
       );
     }
 

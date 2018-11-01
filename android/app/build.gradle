@@ -107,6 +107,7 @@ android {
         applicationId "com.wd_dnl"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        vectorDrawables.useSupportLibrary = true
         versionCode 5
         versionName "1.0.5"
         ndk {
@@ -168,7 +169,7 @@ dependencies {
     compile project(':RNDeviceInfo')
     compile project(':react-native-vector-icons')
     compile project(':react-native-exceptions-manager')
-    compile project(':react-native-image-picker')
+    compile project(':react-native-image-crop-picker')
 }
 
 // Run this once to be able to run the application with BUCK
