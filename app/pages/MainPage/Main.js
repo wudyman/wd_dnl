@@ -63,6 +63,7 @@ class Main extends React.Component {
     super(props);
     this.state = {
       tabIndex:0,
+      initDone:false,
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2
       }),
@@ -115,6 +116,7 @@ class Main extends React.Component {
         currentTabIndex=0;
         dataIndex=myTopics[0].dataIndex;
         readActions.requestArticleList(currentTopicId, currentTabIndex, dataIndex, false, true);
+        this.setState({initDone:true});
       });
     });
   }
@@ -221,7 +223,7 @@ class Main extends React.Component {
   render() {
     const content = myTopics.map((topic) => {
       const typeView = (
-        <View key={topic.id} tabLabel={topic.name} style={styles.base}>
+        <View key={topic.id} tabLabel={topic.name}>
           {(currentTopicId==topic.id)? 
             this.renderContent(
             topic
@@ -233,8 +235,12 @@ class Main extends React.Component {
       );
       return typeView;
     });
+    //console.log(content);
+    //const content1=[<View tabLabel='tab1'></View>,<View tabLabel='tab2'></View>,<View tabLabel='tab3'></View>];
+    //console.log(content1);
     return (
       <View style={styles.container}>
+      {this.state.initDone?
         <ScrollableTabView
           ref="myScrollableTabView"
           renderTabBar={() => (
@@ -268,15 +274,15 @@ class Main extends React.Component {
         >
           {content}
         </ScrollableTabView>
+        :
+        <View/>
+      }
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  base: {
-    flex: 1
-  },
   container: {
     flex: 1,
     flexDirection: 'column',
