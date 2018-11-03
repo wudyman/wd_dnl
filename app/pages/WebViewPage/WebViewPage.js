@@ -106,7 +106,6 @@ class WebViewPage extends React.Component {
 
   onMessage = (event) => {
     const message = JSON.parse(event.nativeEvent.data);
-    console.log('message:'+message);
     if('login'==message.command)
     {
       if('false'==message.payload.status)

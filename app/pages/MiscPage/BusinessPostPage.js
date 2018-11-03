@@ -25,6 +25,8 @@ import Button from '../../components/Button';
 import ImagePicker from 'react-native-image-crop-picker';
 import store from 'react-native-simple-store';
 import NavigationUtil from '../../utils/NavigationUtil';
+import { SITE_URL, UPLOAD_IMG_URL, BUSINESS_POST_URL } from '../../constants/Urls';
+import RequestUtil from '../../utils/RequestUtil';
 
 
 const propTypes = {
@@ -32,13 +34,14 @@ const propTypes = {
   signinup: PropTypes.object.isRequired
 };
 
-let provinceValue=cityValue=districtValue='000000';
+let provinceValue2=cityValue2=districtValue2='000000';
 let provincesMap2={};
 let citysMap2={};
 let districtsMap2={};
 let citys2=districts2=[];
 let town='';
 let pictures=[];
+let pictureIndex=0;
 
 let imageOptions = {
   //底部弹出框选项
@@ -59,9 +62,9 @@ class BusinessPostPage extends React.Component {
     super(props);
     this.state = {
         type:'sell',
-        provinceValue:provinceValue,
-        cityValue:cityValue,
-        districtValue:districtValue,
+        provinceValue2:provinceValue2,
+        cityValue2:cityValue2,
+        districtValue2:districtValue2,
         title:'',
         detail:'',
         pictures:pictures,
@@ -70,20 +73,70 @@ class BusinessPostPage extends React.Component {
     }
   }
 
+  _postCallback(ret){
+    if('fail'!=ret){
+      pictures=[];
+      pictureIndex=0;
+      this.textInputTitle.clear();
+      this.textInputDetail.clear();
+      this.setState({title:'',detail:'',pictures:pictures});
+
+      let itemData={};
+      itemData.url=SITE_URL+'/business/'+ret+'/';
+      const { navigate } = this.props.navigation;
+      navigate('Web', { itemData });
+
+    }
+  }
+
   _post(){
-    console.log(this.state.type);
-    console.log(this.state.provinceValue);
-    console.log(town);
-    console.log(this.state.title);
-    console.log(this.state.detail);
-    console.log(this.state.contact);
-    console.log(this.state.pictures);
+    let addr_value=addr="";
+    if("000000"==provinceValue2)
+    {
+        addr_value="000000";
+        addr="";
+    }
+    else if("000000"==cityValue2)
+    {
+        addr_value=provinceValue2;
+        addr=Provinces[provincesMap2[provinceValue2]].label;
+    }
+    else if("000000"==districtValue2)
+    {
+        addr_value=provinceValue2+cityValue2;
+        addr=Provinces[provincesMap2[provinceValue2]].label+citys2[citysMap2[cityValue2]].label;
+    }
+    else
+    {
+        addr_value=provinceValue2+cityValue2+districtValue2;
+        addr=Provinces[provincesMap2[provinceValue2]].label+citys2[citysMap2[cityValue2]].label+districts2[districtsMap2[districtValue2]].label;
+        if(town)
+            addr+=town;
+    }
+
+    let pictures_str='';
+    pictures.map((picture)=>{
+      if(picture.webUrl){
+        pictures_str+=picture.webUrl+';';
+      }
+    });
+
+    let formData=new FormData();
+    formData.append("title",this.state.title);
+    formData.append("detail",this.state.detail);
+    formData.append("type",this.state.type);
+    formData.append("addr",addr);
+    formData.append("addr_value",addr_value);
+    formData.append("contact",this.state.contact);
+    formData.append("pictures",pictures_str);
+    let url=BUSINESS_POST_URL;
+    RequestUtil.requestWithCallback(url,'POST',formData,this._postCallback.bind(this));
   }
 
   _checkPostInvalid(){
     if(
       ''!=this.state.type &&
-      '000000'!=this.state.provinceValue &&
+      '000000'!=this.state.provinceValue2 &&
       ''!=this.state.title &&
       ''!=this.state.detail &&
       ''!=this.state.contact
@@ -93,10 +146,28 @@ class BusinessPostPage extends React.Component {
       return true;
   }
 
-  _onFileUpload(){
-    return true;
+  _onFileUploadCallback(ret,callbackarg){
+    let index=callbackarg;
+    if('fail'!=ret){
+      pictures.map((picture)=>{
+        if(index==picture.index){
+          picture.loading=false;
+          picture.webUrl=ret;
+        }
+      });
+      this.setState({pictures:pictures});
+    }
   }
 
+  _onFileUpload(file,index){
+    let url=UPLOAD_IMG_URL;
+    let fileData = {uri: file, type: 'multipart/form-data', name: 'image.jpg'};
+    let formData=new FormData();
+    formData.append("imgfile",fileData);
+    RequestUtil.requestWithCallback(url,'POST',formData,this._onFileUploadCallback.bind(this),callbackarg=index);
+    return true;
+  }
+/*
   _selectImageOld = () =>{
       ImagePicker.showImagePicker(imageOptions,(response) =>{
           console.log('response'+response);
@@ -126,19 +197,19 @@ class BusinessPostPage extends React.Component {
           }
       })
  }
+ */
  _selectImage = () =>{
   ImagePicker.openPicker({  
     //width: 720,  
     //height: 720,
-    //compressImageMaxWidth: 720,
-    //compressImageMaxHeight: 720,
+    compressImageMaxWidth: 480,
+    compressImageMaxHeight: 480,
     //cropping: false,
     compressImageQuality: 0.5,
     mediaType: 'photo',
     //showCropGuidelines: false,
     //hideBottomControls: true,   
   }).then(images => {  
-    console.log(images);
     let source,file;
     if (Platform.OS === 'android') {
       source = {uri: images.path};
@@ -148,9 +219,16 @@ class BusinessPostPage extends React.Component {
       source = {uri: images.path.replace('file://', ''), isStatic: true}
       file = images.path.replace('file://', '');
     }
-    console.log(source);
-    console.log(file);
-    pictures.push(file);
+    let index=pictureIndex;
+    pictureIndex+=1;
+    this._onFileUpload(file,index);
+    let picture={};
+    picture.index=index;
+    picture.uri=file;
+    picture.loading=true;
+    picture.webUrl='';
+
+    pictures.push(picture);
     this.setState({pictures: pictures});
   }).catch(error=>{
     console.log(error);
@@ -166,12 +244,12 @@ class BusinessPostPage extends React.Component {
     console.log('***************BusinessPostPage componentWillMount**************');
     store.get('addrValue').then((values)=>{
       if(null!=values){
-        provinceValue=values[0];
-        cityValue=values[1];
-        districtValue=values[2];
+        provinceValue2=values[0];
+        cityValue2=values[1];
+        districtValue2=values[2];
       }
       else{
-        provinceValue=cityValue=districtValue='000000';
+        provinceValue2=cityValue2=districtValue2='000000';
       }
       for (i in Provinces)
       {
@@ -179,17 +257,17 @@ class BusinessPostPage extends React.Component {
           let value=province.value;     
           provincesMap2[value]=i;    
       } 
-      this._provinceSelect(provinceValue,true);
-      this._citySelect(cityValue,true);
-      this._districtSelect(districtValue,true);
-      this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue,initDone:true});
+      this._provinceSelect(provinceValue2,true);
+      this._citySelect(cityValue2,true);
+      this._districtSelect(districtValue2,true);
+      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2,initDone:true});
     });
   }  
   
   _districtSelect(value,init=false){
-    districtValue=value;
+    districtValue2=value;
     if(false==init){
-      this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue});
+      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2});
     }
   }
 
@@ -206,14 +284,14 @@ class BusinessPostPage extends React.Component {
   }
 
   _citySelect(value,init=false){
-    cityValue=value;
+    cityValue2=value;
     districts2=[];
-    if('000000'==cityValue){
+    if('000000'==cityValue2){
       districts2=[];
     }
     else
     {
-      districts2=citys2[citysMap2[cityValue]].children;
+      districts2=citys2[citysMap2[cityValue2]].children;
       for (i in districts2)
       {
           let district=districts2[i];
@@ -222,8 +300,8 @@ class BusinessPostPage extends React.Component {
       }
     }
     if(false==init){
-      districtValue='000000';
-      this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue});
+      districtValue2='000000';
+      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2});
     }
   }
 
@@ -238,15 +316,15 @@ class BusinessPostPage extends React.Component {
   }
 
   _provinceSelect(value,init=false){
-    provinceValue=value;
+    provinceValue2=value;
     citys2=districts2=[];
-    if('000000'==provinceValue)
+    if('000000'==provinceValue2)
     {
       citys2=districts2=[];
     }
     else
     {
-      citys2=Provinces[provincesMap2[provinceValue]].children;
+      citys2=Provinces[provincesMap2[provinceValue2]].children;
       for (i in citys2)
       {
           let city=citys2[i];
@@ -255,8 +333,8 @@ class BusinessPostPage extends React.Component {
       }
     }
     if(false==init){
-      cityValue=districtValue='000000';
-      this.setState({provinceValue:provinceValue,cityValue:cityValue,districtValue:districtValue});
+      cityValue2=districtValue2='000000';
+      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2});
     }
   }
 
@@ -274,8 +352,14 @@ class BusinessPostPage extends React.Component {
     const picturesView = this.state.pictures.map((picture,index) => {
       const pictureItem = (
         <View key={index} style={{flexDirection:'row',justifyContent:'flex-start',margin:2}}>
-          <Image style={{width:80,height:80}} source={{uri:picture}} />
+          <Image style={{width:80,height:80}} source={{uri:picture.uri}} />
+          {picture.loading?
+          <View style={{position:'absolute',width:80,height:80,backgroundColor:'black',opacity:0.5}}>
+            <Text style={{color:'white'}}>上传中...</Text>
+          </View>
+          :
           <Icon style={{position:'absolute'}} name="md-close-circle" size={35}  onPress={() => this._deletePicture(index)}/>
+          }
         </View>
       );
       return pictureItem;
@@ -302,7 +386,7 @@ class BusinessPostPage extends React.Component {
             <Text>选择区域：</Text>
             <Picker
               mode='dropdown'
-              selectedValue={this.state.provinceValue}
+              selectedValue={this.state.provinceValue2}
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => this._provinceSelect(itemValue)}>
               <Picker.Item key='000000' label='请选择省份（必选）' value='000000' />
@@ -310,7 +394,7 @@ class BusinessPostPage extends React.Component {
             </Picker>
             <Picker
               mode='dropdown'
-              selectedValue={this.state.cityValue}
+              selectedValue={this.state.cityValue2}
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => this._citySelect(itemValue)}>
               <Picker.Item key='000000' label='请选择城市（全部）' value='000000' />
@@ -318,14 +402,14 @@ class BusinessPostPage extends React.Component {
             </Picker>
             <Picker
             mode='dropdown'
-            selectedValue={this.state.districtValue}
+            selectedValue={this.state.districtValue2}
             style={styles.picker}
             onValueChange={(itemValue, itemIndex) => this._districtSelect(itemValue)}>
             <Picker.Item key='000000' label='请选择区县（全部）' value='000000' />
             {this._renderDistricts()}
             </Picker>
             <View>
-              {'000000'!=districtValue?
+              {'000000'!=districtValue2?
               <TextInput
                 style={styles.town}
                 maxLength={20}
@@ -359,6 +443,9 @@ class BusinessPostPage extends React.Component {
           <View>
             <Text>信息内容：</Text>
             <TextInput
+              ref={(ref) => {
+                this.textInputTitle = ref;
+              }}
               style={styles.title}
               maxLength={50}
               placeholder="标题（必填）"
@@ -370,6 +457,9 @@ class BusinessPostPage extends React.Component {
               }}
             />
             <TextInput
+              ref={(ref) => {
+                this.textInputDetail = ref;
+              }}
               style={styles.detail}
               maxLength={500}
               placeholder='商品信息详细介绍 (必填)'

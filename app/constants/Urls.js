@@ -43,3 +43,5 @@ export const DELETE_MESSAGE_URL= SITE_URL+'/ajax/delete_conversation_message/';
 export const SEARCH_URL= SITE_URL+'/ajax/search/';
 export const HOTWORD_URL= SITE_URL+'/ajax/hotwords/';
 export const BUSINESSES_URL= SITE_URL+'/ajax/businesses/';
+export const BUSINESS_POST_URL= SITE_URL+'/ajax/app_business_post/';
+export const UPLOAD_IMG_URL= SITE_URL+'/ajax/upload/img/';
