@@ -54,6 +54,7 @@ let resultDatas=[[],[],[]];
 
 let keywordText='';
 let noMoreViewShow=false;
+let dataRequesting=false;
 
 class Businesses extends React.Component {
   constructor(props) {
@@ -245,10 +246,14 @@ class Businesses extends React.Component {
       console.log(ret);
     }
     this.setState({results:resultDatas});
+    dataRequesting=false;
   }
 
 
   _search(start){
+    if(dataRequesting)
+      return;
+    dataRequesting=true;
     noMoreViewShow=false;
     let addr='';
     let addr_value='000000';
