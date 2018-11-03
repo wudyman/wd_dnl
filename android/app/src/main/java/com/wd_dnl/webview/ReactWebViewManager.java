@@ -496,18 +496,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> implements A
                 }
                 break;
             default:
-                if (resultCode == RESULT_OK) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        mUploadMessage.onReceiveValue(new Uri[]{data.getData()});
-                    } else {
-                        mUploadMessage.onReceiveValue(data.getData());
-                    }
-                    mUploadMessage = null;
-                } else {
-                    mUploadMessage.onReceiveValue(null);
-                    mUploadMessage = null;
-                    return;
-                }
                 break;
         }
     }
