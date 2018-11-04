@@ -216,7 +216,10 @@ class Businesses extends React.Component {
         businessInfo.addr_value=item[5];
         businessInfo.contact=item[6];
         businessInfo.pictures=item[7];
-        businessInfo.update_date=item[8];
+        businessInfo.pub_date=item[8];
+        businessInfo.update_date=item[9];
+        businessInfo.poster_id=item[10];
+        businessInfo.poster_name=item[11];
 
         businessInfo.url=SITE_URL+"/business/"+businessInfo.id+"/";
         businessInfo.pictures_array=[];
@@ -332,7 +335,8 @@ class Businesses extends React.Component {
 
   onPress = (itemData) => {
     const { navigate } = this.props.navigation;
-    navigate('Web', { itemData });
+    //navigate('Web', { itemData });
+    navigate('BusinessInfo',{itemData});
   };
   
   onRefresh = () => {

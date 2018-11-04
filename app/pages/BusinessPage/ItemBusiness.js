@@ -26,13 +26,13 @@ const ItemBusiness= ({ resultData, onPressHandler }) => (
         <View style={styles.item}>
             <Image style={styles.picture} source={{ uri: resultData.pictures_array[0] }} />
             <View style={styles.itemRight}>
-                <Text numberOfLines={1} style={styles.titleText}>{formatStringWithHtml(resultData.title)}</Text>
+                <Text numberOfLines={2} style={styles.titleText}>{formatStringWithHtml(resultData.title)}</Text>
                 <Text numberOfLines={1} style={styles.detailText}>{formatStringWithHtml(resultData.detail)}</Text>
-                <View style={styles.itemRightBottom}>
-                    <Text numberOfLines={1} style={styles.addrText}>{formatStringWithHtml(resultData.addr)}</Text>
-                    <Text numberOfLines={1} style={styles.timeText}>{moment(resultData.update_date).fromNow()}</Text>
-                </View>
+                <Text numberOfLines={1} style={styles.addrText}>{formatStringWithHtml(resultData.addr)}</Text>
             </View>
+        </View>
+        <View style={styles.itemBottom}>
+            <Text style={styles.timeText}>{moment(resultData.update_date).fromNow()}</Text>
         </View>
     </TouchableOpacity>
   </View>
@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#ffffff',
         padding: 10,
+        paddingBottom:5,
         borderBottomColor: '#f8f8f8',
         borderBottomWidth: 1
     },
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     picture: {
-        height: 60,
+        height: 70,
         width: 80
     },
     itemRight: {
@@ -68,17 +69,16 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginBottom:5,
     },
-    itemRightBottom: {
+    itemBottom: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
+        justifyContent: 'flex-end',
     },
     addrText: {
         fontSize: 13,
         color: '#a0b0a0',
     },
     timeText: {
-        fontSize: 13,
+        fontSize: 12,
         color: '#a0b0a0',
     },
 });

@@ -23,6 +23,7 @@ import BusinessContainer from '../containers/BusinessContainer';
 import HomeContainer from '../containers/HomeContainer';
 import MiscContainer from '../containers/MiscContainer';
 import SubContainer from '../containers/SubContainer';
+import BusinessInfoPage from '../pages/BusinessPage/BusinessInfoPage';
 import WebViewPage from '../pages/WebViewPage/WebViewPage';
 
 const TabContainer = TabNavigator(
@@ -82,6 +83,12 @@ const App = StackNavigator(
         //header: null,
         headerStyle: {borderBottomWidth: 1,borderColor:'#f8f8f8',elevation: 0,shadowOpacity: 0},
       }
+    },
+    BusinessInfo: { 
+      screen: BusinessInfoPage,
+      navigationOptions: {
+        headerStyle: {borderBottomWidth: 1,borderColor:'#f8f8f8',elevation: 0,shadowOpacity: 0},
+      } 
     },
     Web: { 
       screen: WebViewPage,
