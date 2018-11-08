@@ -33,16 +33,15 @@ import {
 import * as WeChat from 'react-native-wechat';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ToastUtil from '../../utils/ToastUtil';
-import LoadingView from '../../components/LoadingView';
 import { formatStringWithHtml,formatUrlWithSiteUrl } from '../../utils/FormatUtil';
-import WebView2 from '../../components/WebView2';
-import { SITE_NAME } from '../../constants/Urls';
+import { SITE_URL, SITE_NAME } from '../../constants/Urls';
+import moment from 'moment';
 
 let canGoBack = false;
 let lastCanGoBack = false;
 const shareIconWechat = require('../../img/share_icon_wechat.png');
 const shareIconMoments = require('../../img/share_icon_moments.png');
-let itemData={};
+let businessInfoData={};
 
 class BusinessInfoPage extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -61,37 +60,106 @@ class BusinessInfoPage extends React.Component {
     super(props);
     this.state = {
       isShareModal: false,
-      url:'',
-      title:'',
-      content:'',
-      thumbImage:''
     };
   }
 
-  componentDidMount() {
-    console.log('***********WebViewPage componentDidMount***************');
+  componentWillMount() {
+    console.log('***********BusinessInfoPage componentWillMount***************');
     const { params } = this.props.navigation.state;
-    //itemData=params.itemData;
-    this.setState({
-      url:params.itemData.id,
-      title:params.itemData.title,
-      content:params.itemData.detail,
-      thumbImage:params.itemData.pictures
-    });
+    businessInfoData.id=params.itemData.id;
+    businessInfoData.title=params.itemData.title;
+    businessInfoData.detail=params.itemData.detail;
+    businessInfoData.addr=params.itemData.addr;
+    businessInfoData.contact=params.itemData.contact;
+    businessInfoData.pictures=params.itemData.pictures;
+    businessInfoData.pub_date=params.itemData.pub_date;
+    businessInfoData.update_date=params.itemData.update_date;
+    businessInfoData.poster_id=params.itemData.poster_id;
+    businessInfoData.poster_name=params.itemData.poster_name;
+
+    businessInfoData.url=params.itemData.url;
+    businessInfoData.pictures_array=params.itemData.pictures_array;
+
   }
+
+  componentDidMount() {
+    console.log('***********BusinessInfoPage componentDidMount***************');
+  }
+
 
   componentWillUnmount() {
-    console.log('***********WebViewPage componentWillUnmount***************');
+    console.log('***********BusinessInfoPage componentWillUnmount***************');
   }
 
+  _openHomePage(){
+    const { navigate } = this.props.navigation;
+    let itemData={};
+    itemData.url=SITE_URL+"/er/"+businessInfoData.poster_id+"/";;
+    itemData.title=businessInfoData.poster_name;
+    navigate('Web', { itemData });
+  }
 
+  _renderPictures(){
+    console.log('***********BusinessInfoPage _renderPictures***************');
+    
+    const picturesContent = businessInfoData.pictures_array.map((picture,index) => {
+      const pictureItem = (
+        <View key={index} style={{padding:3}}>
+          <Image  style={styles.picture} source={{ uri: picture }} />
+        </View>
+      );
+      return pictureItem;
+    });
+    return picturesContent;
+    
+  }
 
   render() {
+    console.log('***********BusinessInfoPage render***************');
     //const { params } = this.props.navigation.state;
     return (
       <ScrollView style={styles.container}>
-        <View>
-          <Text>{this.state.title}</Text>
+        <View style={styles.title}>
+          <Text style={styles.titleText}>{formatStringWithHtml(businessInfoData.title)}</Text>
+        </View>
+        <View style={styles.time}>
+          <View style={{flexDirection:'row'}}>
+            <Text style={styles.timeText}>发布时间  </Text>
+            <Text style={styles.timeText}>{moment(businessInfoData.pub_date).fromNow()}</Text>
+          </View>
+            <View style={{flexDirection:'row'}}>
+            <Text style={styles.timeText}>更新时间  </Text>
+            <Text style={styles.timeText}>{moment(businessInfoData.update_date).fromNow()}</Text>
+          </View>
+        </View>
+        <View style={{height: 10, backgroundColor:'#f4f4f4'}}/>
+        <View style={styles.addr}>
+          <View style={{flexDirection:'row'}}>
+            <Text style={styles.addrTint}>地        点  </Text>
+            <Text style={styles.addrText}>{formatStringWithHtml(businessInfoData.addr)}</Text>
+          </View>
+          <View style={{height: 1, backgroundColor:'#f4f4f4',marginVertical:10}}/>
+          <View style={{flexDirection:'row'}}>
+            <Text style={styles.addrTint}>发  布  者  </Text>
+            <TouchableOpacity onPress={() => this._openHomePage()}>
+            <Text style={{fontSize:15,color: '#609060'}}>{formatStringWithHtml(businessInfoData.poster_name)}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{height: 1, backgroundColor:'#f4f4f4',marginVertical:10}}/>
+          <View style={{flexDirection:'row'}}>
+            <Text style={styles.addrTint}>联系方式  </Text>
+            <Text style={styles.addrText}>{formatStringWithHtml(businessInfoData.contact)}</Text>
+          </View>
+        </View>
+        <View style={{height: 10, backgroundColor:'#f4f4f4'}}/>
+        <View style={styles.detail}>
+          <Text style={styles.detailTint}>详细信息</Text>
+          <View style={{height: 1, backgroundColor:'#f4f4f4',marginVertical:10}}/>
+          <Text style={styles.detailText}>{formatStringWithHtml(businessInfoData.detail)}</Text>
+          {this._renderPictures()}
+          <Text style={{color:'red'}}>联系我时，请说是在大农令上看到的，谢谢！</Text>
+        </View>
+        <View style={styles.bottom}>
         </View>
       </ScrollView>
     );
@@ -102,7 +170,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#FFF'
+    backgroundColor: '#FFF',
+  },
+  title: {
+    //alignItems:'center',
+    //paddingHorizontal:10,
+    padding:10,
+  },
+  titleText: {
+    fontSize: 18,
+    color: '#1a1a1a',
+    fontWeight:'700',
+  },
+  time: {
+    flexDirection:'row',
+    justifyContent:'space-between',
+    paddingHorizontal:10,
+    paddingBottom:20
+  },
+  timeText: {
+    fontSize: 13,
+    color: '#aaa'
+  },
+  addr: {
+    padding:10
+  },
+  addrTint: {
+    fontSize: 15,
+    color:'#aaa'
+  },
+  addrText: {
+    fontSize: 15,
+    color:'#333'
+  },
+  detail: {
+    padding:10
+  },
+  detailTint: {
+    color:'#333',
+    fontSize: 15,
+  },
+  detailText: {
+    fontSize: 15,
+  },
+  picture: {
+    width: Dimensions.get('window').width-30,
+    height: (Dimensions.get('window').width-30),
+    resizeMode:'contain'
+  },
+  bottom: {
+    marginBottom:30,
   },
   spinner: {
     flex: 1,
