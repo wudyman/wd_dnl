@@ -66,7 +66,7 @@ class MiscContainer extends React.Component {
     else if(params.pageType=='write')
       return <WritePage closePage={()=>this._closePage()} pageUrl={WRITE_URL}/>;
     else if(params.pageType=='businessPost')
-      return <BusinessPostPage closePage={()=>this._closePage()} {...this.props}/>;
+      return <BusinessPostPage closePage={()=>this._closePage()} isRevise={params.isRevise} businessInfoData={params.businessInfoData} {...this.props}/>;
   }
 }
 

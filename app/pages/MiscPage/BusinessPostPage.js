@@ -27,6 +27,7 @@ import store from 'react-native-simple-store';
 import NavigationUtil from '../../utils/NavigationUtil';
 import { SITE_URL, UPLOAD_IMG_URL, BUSINESS_POST_URL } from '../../constants/Urls';
 import RequestUtil from '../../utils/RequestUtil';
+import { formatUrlWithSiteUrl } from '../../utils/FormatUtil';
 
 
 const propTypes = {
@@ -39,7 +40,6 @@ let provincesMap2={};
 let citysMap2={};
 let districtsMap2={};
 let citys2=districts2=[];
-let town='';
 let pictures=[];
 let pictureIndex=0;
 
@@ -61,6 +61,7 @@ class BusinessPostPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+        isRevise:false,
         type:'sell',
         provinceValue2:provinceValue2,
         cityValue2:cityValue2,
@@ -69,6 +70,7 @@ class BusinessPostPage extends React.Component {
         detail:'',
         pictures:pictures,
         contact:'',
+        town:'',
         initDone:false,
     }
   }
@@ -110,8 +112,8 @@ class BusinessPostPage extends React.Component {
     {
         addr_value=provinceValue2+cityValue2+districtValue2;
         addr=Provinces[provincesMap2[provinceValue2]].label+citys2[citysMap2[cityValue2]].label+districts2[districtsMap2[districtValue2]].label;
-        if(town)
-            addr+=town;
+        if(this.state.town)
+            addr+=this.state.town;
     }
 
     let pictures_str='';
@@ -242,15 +244,20 @@ class BusinessPostPage extends React.Component {
 
   componentWillMount() {
     console.log('***************BusinessPostPage componentWillMount**************');
-    store.get('addrValue').then((values)=>{
-      if(null!=values){
-        provinceValue2=values[0];
-        cityValue2=values[1];
-        districtValue2=values[2];
-      }
-      else{
-        provinceValue2=cityValue2=districtValue2='000000';
-      }
+    let isRevise=this.props.isRevise;
+    if(isRevise){
+      let businessInfoData=this.props.businessInfoData;
+      let addr_value=businessInfoData.addr_value;
+      provinceValue2=addr_value.substr(0,6);
+      cityValue2=addr_value.substr(6,6);
+      districtValue2=addr_value.substr(12,6);
+      if(!provinceValue2)
+        provinceValue2='000000';
+      if(!cityValue2)
+        cityValue2='000000';
+      if(!districtValue2)
+        districtValue2='000000';
+
       for (i in Provinces)
       {
           let province=Provinces[i];
@@ -260,8 +267,63 @@ class BusinessPostPage extends React.Component {
       this._provinceSelect(provinceValue2,true);
       this._citySelect(cityValue2,true);
       this._districtSelect(districtValue2,true);
-      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2,initDone:true});
-    });
+
+      let town='';
+      if(districtValue2!='000000'){
+        let addr=businessInfoData.addr;
+        let addr_temp=Provinces[provincesMap2[provinceValue2]].label+citys2[citysMap2[cityValue2]].label+districts2[districtsMap2[districtValue2]].label;
+        if(addr_temp!=addr)
+        {
+          town=addr.substring(addr_temp.length,addr.length);
+        }
+      }
+
+      let pictures=[];
+      let pictures_str=businessInfoData.pictures;
+      if(pictures_str){
+        let array=pictures_str.split(';');
+        for (let i in array)
+        {
+            let picture_url=array[i];
+            if(picture_url)
+            {
+                let picture={};
+                picture.index=i;
+                picture.uri=formatUrlWithSiteUrl(picture_url);
+                picture.loading=false;
+                picture.webUrl=picture_url;          
+                pictures.push(picture);
+            }
+        }
+      }
+
+      this.setState({isRevise:true,title:businessInfoData.title,detail:businessInfoData.detail,contact:businessInfoData.contact,
+        type:businessInfoData.type,town:town,pictures:pictures,
+        provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2,initDone:true});
+
+    }
+    else{
+      store.get('addrValue').then((values)=>{
+        if(null!=values){
+          provinceValue2=values[0];
+          cityValue2=values[1];
+          districtValue2=values[2];
+        }
+        else{
+          provinceValue2=cityValue2=districtValue2='000000';
+        }
+        for (i in Provinces)
+        {
+            let province=Provinces[i];
+            let value=province.value;     
+            provincesMap2[value]=i;    
+        } 
+        this._provinceSelect(provinceValue2,true);
+        this._citySelect(cityValue2,true);
+        this._districtSelect(districtValue2,true);
+        this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2,initDone:true});
+      });
+    }
   }  
   
   _districtSelect(value,init=false){
@@ -417,8 +479,9 @@ class BusinessPostPage extends React.Component {
                 placeholderTextColor="#888"
                 underlineColorAndroid="transparent"
                 multiline
+                defaultValue={this.state.town}
                 onChangeText={(text) => {
-                  town=text;
+                  this.setState({town:text});
                 }}
               />
               :
@@ -435,6 +498,7 @@ class BusinessPostPage extends React.Component {
               placeholderTextColor="#888"
               underlineColorAndroid="transparent"
               multiline
+              defaultValue={this.state.contact}
               onChangeText={(text) => {
                 this.setState({contact:text});
               }}
@@ -452,6 +516,7 @@ class BusinessPostPage extends React.Component {
               placeholderTextColor="#888"
               underlineColorAndroid="transparent"
               multiline
+              defaultValue={this.state.title}
               onChangeText={(text) => {
                 this.setState({title:text});
               }}
@@ -467,6 +532,7 @@ class BusinessPostPage extends React.Component {
               underlineColorAndroid="transparent"
               multiline
               numberOfLines={5}
+              defaultValue={this.state.detail}
               onChangeText={(text) => {
                 this.setState({detail:text});
               }}
@@ -481,7 +547,7 @@ class BusinessPostPage extends React.Component {
               </View>
             </View>
             <View style={styles.post}>
-              <Button text="发布" btnStyle={{padding:10,backgroundColor:this._checkPostInvalid()?'#ccc':'#228b22'}} textStyle={styles.postText} disabled={this._checkPostInvalid()} onPress={() => this._post()}></Button>
+              <Button text={this.state.isRevise?"修改信息":"发布信息"} btnStyle={{padding:10,backgroundColor:this._checkPostInvalid()?'#ccc':'#228b22'}} textStyle={styles.postText} disabled={this._checkPostInvalid()} onPress={() => this._post()}></Button>
             </View>
           </View>
         </View>

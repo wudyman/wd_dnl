@@ -33,6 +33,7 @@ import {
 import * as WeChat from 'react-native-wechat';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ToastUtil from '../../utils/ToastUtil';
+import Button from '../../components/Button';
 import { formatStringWithHtml,formatUrlWithSiteUrl } from '../../utils/FormatUtil';
 import { SITE_URL, SITE_NAME } from '../../constants/Urls';
 import moment from 'moment';
@@ -59,6 +60,7 @@ class BusinessInfoPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      showRevise:false,
       isShareModal: false,
     };
   }
@@ -67,9 +69,11 @@ class BusinessInfoPage extends React.Component {
     console.log('***********BusinessInfoPage componentWillMount***************');
     const { params } = this.props.navigation.state;
     businessInfoData.id=params.itemData.id;
+    businessInfoData.type=params.itemData.type;
     businessInfoData.title=params.itemData.title;
     businessInfoData.detail=params.itemData.detail;
     businessInfoData.addr=params.itemData.addr;
+    businessInfoData.addr_value=params.itemData.addr_value;
     businessInfoData.contact=params.itemData.contact;
     businessInfoData.pictures=params.itemData.pictures;
     businessInfoData.pub_date=params.itemData.pub_date;
@@ -79,6 +83,9 @@ class BusinessInfoPage extends React.Component {
 
     businessInfoData.url=params.itemData.url;
     businessInfoData.pictures_array=params.itemData.pictures_array;
+
+    if(businessInfoData.poster_id==gUserInfo.id)
+      this.setState({showRevise:true})
 
   }
 
@@ -91,6 +98,14 @@ class BusinessInfoPage extends React.Component {
     console.log('***********BusinessInfoPage componentWillUnmount***************');
   }
 
+  _updateTime(){
+
+  }
+
+  _reviseBusiness(){
+    this.props.navigation.navigate('Misc',{pageType:'businessPost',isRevise:true,businessInfoData:businessInfoData});
+  }
+
   _openHomePage(){
     const { navigate } = this.props.navigation;
     let itemData={};
@@ -101,17 +116,17 @@ class BusinessInfoPage extends React.Component {
 
   _renderPictures(){
     console.log('***********BusinessInfoPage _renderPictures***************');
-    
-    const picturesContent = businessInfoData.pictures_array.map((picture,index) => {
-      const pictureItem = (
-        <View key={index} style={{padding:3}}>
-          <Image  style={styles.picture} source={{ uri: picture }} />
-        </View>
-      );
-      return pictureItem;
-    });
-    return picturesContent;
-    
+    if(businessInfoData.pictures){
+      const picturesContent = businessInfoData.pictures_array.map((picture,index) => {
+        const pictureItem = (
+          <View key={index} style={{padding:3}}>
+            <Image  style={styles.picture} source={{ uri: picture }} />
+          </View>
+        );
+        return pictureItem;
+      });
+      return picturesContent;
+    }
   }
 
   render() {
@@ -132,6 +147,14 @@ class BusinessInfoPage extends React.Component {
             <Text style={styles.timeText}>{moment(businessInfoData.update_date).fromNow()}</Text>
           </View>
         </View>
+        {this.state.showRevise?
+        <View style={styles.revise}>
+          <Button text="更新时间" btnStyle={styles.updateBtnStyle} textStyle={{color:'#228b22'}} onPress={() => this._updateTime()}></Button>
+          <Button text="修改信息" btnStyle={styles.reviseBtnStyle} textStyle={{color:'white'}} onPress={() => this._reviseBusiness()}></Button>
+        </View>
+        :
+        <View/>
+        }
         <View style={{height: 10, backgroundColor:'#f4f4f4'}}/>
         <View style={styles.addr}>
           <View style={{flexDirection:'row'}}>
@@ -157,7 +180,7 @@ class BusinessInfoPage extends React.Component {
           <View style={{height: 1, backgroundColor:'#f4f4f4',marginVertical:10}}/>
           <Text style={styles.detailText}>{formatStringWithHtml(businessInfoData.detail)}</Text>
           {this._renderPictures()}
-          <Text style={{color:'red'}}>联系我时，请说是在大农令上看到的，谢谢！</Text>
+          <Text style={{color:'red',marginTop:10}}>联系我时，请说是在大农令上看到的，谢谢！</Text>
         </View>
         <View style={styles.bottom}>
         </View>
@@ -191,6 +214,23 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 13,
     color: '#aaa'
+  },
+  revise: {
+    flexDirection:'row',
+    justifyContent:'space-between',
+    paddingHorizontal:10,
+    paddingBottom:20
+  },
+  updateBtnStyle: {
+    paddingVertical:5,
+    paddingHorizontal:20,
+    borderColor:'#228b22',
+    borderWidth:1
+  },
+  reviseBtnStyle: {
+    paddingVertical:5,
+    paddingHorizontal:20,
+    backgroundColor:'#228b22'
   },
   addr: {
     padding:10
