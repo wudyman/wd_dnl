@@ -25,9 +25,10 @@ import Button from '../../components/Button';
 import ImagePicker from 'react-native-image-crop-picker';
 import store from 'react-native-simple-store';
 import NavigationUtil from '../../utils/NavigationUtil';
-import { SITE_URL, UPLOAD_IMG_URL, BUSINESS_POST_URL } from '../../constants/Urls';
+import { SITE_URL, UPLOAD_IMG_URL, BUSINESS_POST_URL, UPDATE_BUSINESS_URL } from '../../constants/Urls';
 import RequestUtil from '../../utils/RequestUtil';
 import { formatUrlWithSiteUrl } from '../../utils/FormatUtil';
+import ToastUtil from '../../utils/ToastUtil';
 
 
 const propTypes = {
@@ -62,6 +63,7 @@ class BusinessPostPage extends React.Component {
     super(props);
     this.state = {
         isRevise:false,
+        id:0,  //for revise
         type:'sell',
         provinceValue2:provinceValue2,
         cityValue2:cityValue2,
@@ -84,9 +86,41 @@ class BusinessPostPage extends React.Component {
       this.setState({title:'',detail:'',pictures:pictures});
 
       let itemData={};
-      itemData.url=SITE_URL+'/business/'+ret+'/';
+      itemData.id=ret[0];
+      itemData.title=ret[1];
+      itemData.detail=ret[2];
+      itemData.type=ret[3];
+      itemData.addr=ret[4];
+      itemData.addr_value=ret[5];
+      itemData.contact=ret[6];
+      itemData.pictures=ret[7];
+      itemData.pub_date=ret[8];
+      itemData.update_date=ret[9];
+      itemData.poster_id=ret[10];
+      itemData.poster_name=ret[11];
+
+      itemData.url=SITE_URL+"/business/"+itemData.id+"/";
+      itemData.pictures_array=[];
+      if(""!=itemData.pictures)
+      {
+          let pictures=itemData.pictures;
+          let array=pictures.split(";");
+          for (let i in array)
+          {
+              let picture=array[i];
+              if(picture)
+              {
+                itemData.pictures_array.push(formatUrlWithSiteUrl(picture));
+              }
+          }
+      }
+      else{
+        itemData.pictures_array.push(formatUrlWithSiteUrl('/static/common/img/business_no_picture.jpg'));
+      }
+
       const { navigate } = this.props.navigation;
-      navigate('Web', { itemData });
+      //navigate('Web', { itemData });
+      navigate('BusinessInfo',{itemData});
 
     }
   }
@@ -132,6 +166,10 @@ class BusinessPostPage extends React.Component {
     formData.append("contact",this.state.contact);
     formData.append("pictures",pictures_str);
     let url=BUSINESS_POST_URL;
+    if(this.state.isRevise){
+      formData.append("business_id",this.state.id);
+      url=UPDATE_BUSINESS_URL+'all/';
+    }
     RequestUtil.requestWithCallback(url,'POST',formData,this._postCallback.bind(this));
   }
 
@@ -201,6 +239,10 @@ class BusinessPostPage extends React.Component {
  }
  */
  _selectImage = () =>{
+  if(pictures.length>=8){
+    ToastUtil.showShort("不能超过8张!");
+    return;
+  }
   ImagePicker.openPicker({  
     //width: 720,  
     //height: 720,
@@ -278,7 +320,7 @@ class BusinessPostPage extends React.Component {
         }
       }
 
-      let pictures=[];
+      pictures=[];
       let pictures_str=businessInfoData.pictures;
       if(pictures_str){
         let array=pictures_str.split(';');
@@ -293,11 +335,12 @@ class BusinessPostPage extends React.Component {
                 picture.loading=false;
                 picture.webUrl=picture_url;          
                 pictures.push(picture);
+                pictureIndex+=1;
             }
         }
       }
 
-      this.setState({isRevise:true,title:businessInfoData.title,detail:businessInfoData.detail,contact:businessInfoData.contact,
+      this.setState({isRevise:true,id:businessInfoData.id,title:businessInfoData.title,detail:businessInfoData.detail,contact:businessInfoData.contact,
         type:businessInfoData.type,town:town,pictures:pictures,
         provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2,initDone:true});
 
@@ -329,7 +372,7 @@ class BusinessPostPage extends React.Component {
   _districtSelect(value,init=false){
     districtValue2=value;
     if(false==init){
-      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2});
+      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2,town:''});
     }
   }
 
@@ -363,7 +406,7 @@ class BusinessPostPage extends React.Component {
     }
     if(false==init){
       districtValue2='000000';
-      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2});
+      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2,town:''});
     }
   }
 
@@ -396,7 +439,7 @@ class BusinessPostPage extends React.Component {
     }
     if(false==init){
       cityValue2=districtValue2='000000';
-      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2});
+      this.setState({provinceValue2:provinceValue2,cityValue2:cityValue2,districtValue2:districtValue2,town:''});
     }
   }
 
@@ -539,7 +582,7 @@ class BusinessPostPage extends React.Component {
             />
             <View style={styles.picture}>
               <TouchableOpacity style={styles.pictureSelect} onPress={() => this._selectImage()}>
-                <Text>添加图片(不多于4张,可选填)</Text>
+                <Text>添加图片(不超过8张,可选填)</Text>
                 <Icon name="md-images" size={25} color={'#555'} /> 
               </TouchableOpacity>
               <View style={styles.pictureAdded}>

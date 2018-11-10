@@ -29,8 +29,8 @@ import WebViewPage from '../pages/WebViewPage/WebViewPage';
 const TabContainer = TabNavigator(
   {
     Main: { screen: MainContainer },
-    Category: { screen: CategoryContainer },
     Business: { screen: BusinessContainer },
+    Category: { screen: CategoryContainer },
     Home: { screen: HomeContainer }
   },
   {

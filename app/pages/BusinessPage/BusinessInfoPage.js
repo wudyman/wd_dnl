@@ -32,10 +32,11 @@ import {
 
 import * as WeChat from 'react-native-wechat';
 import Icon from 'react-native-vector-icons/Ionicons';
+import RequestUtil from '../../utils/RequestUtil';
 import ToastUtil from '../../utils/ToastUtil';
 import Button from '../../components/Button';
 import { formatStringWithHtml,formatUrlWithSiteUrl } from '../../utils/FormatUtil';
-import { SITE_URL, SITE_NAME } from '../../constants/Urls';
+import { SITE_URL, SITE_NAME, UPDATE_BUSINESS_URL } from '../../constants/Urls';
 import moment from 'moment';
 
 let canGoBack = false;
@@ -60,6 +61,7 @@ class BusinessInfoPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      haveUpdate:false,
       showRevise:false,
       isShareModal: false,
     };
@@ -98,12 +100,23 @@ class BusinessInfoPage extends React.Component {
     console.log('***********BusinessInfoPage componentWillUnmount***************');
   }
 
+  _updateTimeCallback(ret){
+    if('fail'!=ret){
+      businessInfoData.update_date=ret;
+      this.setState({haveUpdate:true});
+    }
+  }
+
   _updateTime(){
 
+    let url=UPDATE_BUSINESS_URL+'time/';
+    let formData=new FormData();
+    formData.append("business_id",businessInfoData.id);
+    RequestUtil.requestWithCallback(url,'POST',formData,this._updateTimeCallback.bind(this));
   }
 
   _reviseBusiness(){
-    this.props.navigation.navigate('Misc',{pageType:'businessPost',isRevise:true,businessInfoData:businessInfoData});
+    this.props.navigation.navigate('Misc',{pageType:'businessPost',isSignIn:gUserInfo.isSignIn,isRevise:true,businessInfoData:businessInfoData});
   }
 
   _openHomePage(){
@@ -149,7 +162,7 @@ class BusinessInfoPage extends React.Component {
         </View>
         {this.state.showRevise?
         <View style={styles.revise}>
-          <Button text="更新时间" btnStyle={styles.updateBtnStyle} textStyle={{color:'#228b22'}} onPress={() => this._updateTime()}></Button>
+          <Button text={this.state.haveUpdate?"已更新":"更新时间"} btnStyle={styles.updateBtnStyle} textStyle={{color:'#228b22'}} onPress={() => this._updateTime()}></Button>
           <Button text="修改信息" btnStyle={styles.reviseBtnStyle} textStyle={{color:'white'}} onPress={() => this._reviseBusiness()}></Button>
         </View>
         :

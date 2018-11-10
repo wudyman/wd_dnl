@@ -74,7 +74,7 @@ class Businesses extends React.Component {
   }
 
   _businessPost(){
-    this.props.navigation.navigate('Misc',{pageType:'businessPost'});
+    this.props.navigation.navigate('Misc',{pageType:'businessPost',isSignIn:gUserInfo.isSignIn});
   }
 
   _getCurrentCity(){
