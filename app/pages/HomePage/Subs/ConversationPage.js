@@ -23,6 +23,7 @@ import store from 'react-native-simple-store';
 import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
 import Button from '../../../components/Button';
+import NoDataView from '../../../components/NoDataView';
 import { formatUrlWithSiteUrl } from '../../../utils/FormatUtil';
 import ItemList from '../../../components/ItemList';
 import ItemConversation from './ItemConversation';
@@ -33,6 +34,8 @@ import { DATA_STEP_DOUBLE } from '../../../constants/Constants';
 const propTypes = {
 };
 
+let noMoreViewShow=false;
+let dataRequesting=false;
 let start=0;
 class ConversationPage extends React.Component {
     constructor(props) {
@@ -104,10 +107,18 @@ class ConversationPage extends React.Component {
             });
             start+=DATA_STEP_DOUBLE;
         }
-        this.setState({conversations:concatFilterDuplicate(this.state.conversations,conversations)});       
+        else{
+            noMoreViewShow=true;
+        }
+        this.setState({conversations:concatFilterDuplicate(this.state.conversations,conversations)}); 
+        dataRequesting=false;      
     }
 
     _getConversations(type){
+        if(dataRequesting)
+            return;
+        dataRequesting=true;
+        noMoreViewShow=false;
         if('refresh'==type)
         {
             start=0;
@@ -164,12 +175,16 @@ class ConversationPage extends React.Component {
 
     onEndReached = () => {
         console.log('**************ConversationPage onEndReached*********');
-        this._getConversations('more');
+        if(!noMoreViewShow)
+            this._getConversations('more');
     };
 
     _renderFooter = () => {
         console.log('**************ConversationPage _renderFooter*********');
-        return <View />;
+        if(noMoreViewShow)
+            return <NoDataView />;
+        else
+            return <View />;
     };
 
 

@@ -43,7 +43,8 @@ class HomePage extends React.Component {
     this.props.navigation.navigate('Web',{itemData});
   }
 
-  _doNothing(){
+  _openMyBusinessPage(){
+    this.props.navigation.navigate('Sub',{subPage:'MyBusiness'});
   }
 
   _openSettingPage(){
@@ -113,6 +114,14 @@ class HomePage extends React.Component {
               iconSize={14}
               iconColor='#aaa'
               onPress={() => this._openConversationPage()}
+              />
+              <View style={{height: 1, backgroundColor:'#f0f4f4'}}/>
+              <ArrowButton text="我的买卖" textStyle={styles.arrowButtonTextStyle}
+              newNotice={this.state.newMessages}
+              icon='ios-arrow-forward-outline'
+              iconSize={14}
+              iconColor='#aaa'
+              onPress={() => this._openMyBusinessPage()}
               />
               <View style={{height: 1, backgroundColor:'#f0f4f4'}}/>
               <ArrowButton text="设置" textStyle={styles.arrowButtonTextStyle}

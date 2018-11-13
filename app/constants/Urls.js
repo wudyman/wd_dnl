@@ -26,6 +26,7 @@ export const AJAX_TOPICS_URL = SITE_URL+'/ajax/topics/1/0/0/';
 export const SIGN_IN_URL = SITE_URL+'/ajax/app_signin/';
 export const SIGN_UP_URL = SITE_URL+'/ajax/app_signup/';
 export const REQUEST_USER_INFO_URL = SITE_URL+'/ajax/app_user_data/';
+export const REQUEST_MY_DATA_URL = SITE_URL+'/ajax/app_my_data/';
 export const GET_SMS_URL= SITE_URL+'/ajax/send_sms/';
 export const CHECK_SMS_URL= SITE_URL+'/ajax/check_sms/';
 export const RESET_PWD_URL= SITE_URL+'/ajax/reset_pwd/';

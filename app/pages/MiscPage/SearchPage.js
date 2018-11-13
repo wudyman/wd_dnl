@@ -189,8 +189,10 @@ class SearchPage extends React.Component {
 
   onEndReached = () => {
     console.log('**************onEndReached*********');
-    currentDataIndex=SEARCH_TYPE[currentTabIndex][INDEX_DATAINDEX];
-    this._search(currentDataIndex);
+    if(!noMoreViewShow){
+      currentDataIndex=SEARCH_TYPE[currentTabIndex][INDEX_DATAINDEX];
+      this._search(currentDataIndex);
+    }
   };
 
   _selectKeyWord = (keyword) => {

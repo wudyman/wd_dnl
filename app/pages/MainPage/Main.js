@@ -52,8 +52,8 @@ let loadMoreTime = 0;
 let currentLoadMoreTopicId;
 let currentTabIndex=0;
 let currentTopicId;
-let initDataIndex=0;
 let dataIndex=0;
+let dataIndexAdded=false;
 let noMoreViewShow=false;
 
 const lastBackPressed = Date.now();
@@ -115,6 +115,7 @@ class Main extends React.Component {
         currentTopicId=myTopics[0].id;
         currentTabIndex=0;
         dataIndex=myTopics[0].dataIndex;
+        dataIndexAdded=false;
         readActions.requestArticleList(currentTopicId, currentTabIndex, dataIndex, false, true);
         this.setState({initDone:true});
       });
@@ -123,7 +124,6 @@ class Main extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { read } = this.props;
-
     if((read.loading && !nextProps.read.loading)||(read.isRefreshing && !nextProps.read.isRefreshing)||(read.isLoadMore && !nextProps.read.isLoadMore))
     {
       console.log('@@@@@@@@@@@@@@@recieve finish@@@@@@@@@@@@@@@');
@@ -133,10 +133,13 @@ class Main extends React.Component {
       }
       else
       {
-        console.log('@@@@@@@@@@@@@@@  dataIndex+DATA_STEP @@@@@@@@@@@@@@@');
-        dataIndex=myTopics[currentTabIndex].dataIndex;
-        dataIndex=dataIndex+DATA_STEP;
-        myTopics[currentTabIndex].dataIndex=dataIndex;
+        if(!dataIndexAdded){
+          console.log('@@@@@@@@@@@@@@@  dataIndex+DATA_STEP @@@@@@@@@@@@@@@');
+          dataIndex=myTopics[currentTabIndex].dataIndex;
+          dataIndex=dataIndex+DATA_STEP;
+          myTopics[currentTabIndex].dataIndex=dataIndex;
+          dataIndexAdded=true;
+        }
       }
     }
   }
@@ -147,6 +150,7 @@ class Main extends React.Component {
     const { readActions } = this.props;
     dataIndex=0;
     myTopics[currentTabIndex].dataIndex=dataIndex;
+    dataIndexAdded=false;
     readActions.requestArticleList(topicId, currentTabIndex, dataIndex, true, false);
   };
 
@@ -174,6 +178,7 @@ class Main extends React.Component {
     if (time - loadMoreTime > 1) {
       const { readActions } = this.props;
       console.log('**************MainPage onEndReached*********');
+      dataIndexAdded=false;
       readActions.requestArticleList(currentTopicId, currentTabIndex, dataIndex, false, false, true);
       loadMoreTime = Date.parse(new Date()) / 1000;
     }
@@ -263,6 +268,7 @@ class Main extends React.Component {
               {
                 console.log('**************MainPage onChangeTab need refresh*********');
                 const { readActions } = this.props;
+                dataIndexAdded=false;
                 readActions.requestArticleList(currentTopicId, currentTabIndex, dataIndex, true, false);
               }
             }

@@ -31,6 +31,7 @@ import { DATA_STEP_DOUBLE } from '../../../constants/Constants';
 const propTypes = {
 };
 
+let dataRequesting=false;
 let start=0;
 let conversationId=0;
 let letterToId;
@@ -111,10 +112,14 @@ class ConversationMessagePage extends React.Component {
             this.setState({messages:concatFilterDuplicate(this.state.messages,messages)});
         else
             this.setState({messages:concatFilterDuplicate(messages,this.state.messages)});
+        dataRequesting=false; 
     }
 
     _getMessagesTimer(){
         console.log('**************ConversationMessagePage _getMessagesTimer*********');
+        if(dataRequesting)
+            return;
+        dataRequesting=true;
         let tmpStart=0;
         let end=tmpStart+DATA_STEP_DOUBLE;
         let url=CONVERSATION_MESSAGES_URL+this.props.conversationId+'/1/'+tmpStart+'/'+end+'/';
@@ -123,6 +128,9 @@ class ConversationMessagePage extends React.Component {
 
 
     _getMessages(type){
+        if(dataRequesting)
+            return;
+        dataRequesting=true;
         if('refresh'==type)
         {
             start=0;

@@ -346,8 +346,10 @@ class Businesses extends React.Component {
 
   onEndReached = () => {
     console.log('**************onEndReached*********');
-    currentDataIndex=BUSINESS_TYPE[currentTabIndex][INDEX_DATAINDEX];
-    this._search(currentDataIndex);
+    if(!noMoreViewShow){
+      currentDataIndex=BUSINESS_TYPE[currentTabIndex][INDEX_DATAINDEX];
+      this._search(currentDataIndex);
+    }
   };
 
 

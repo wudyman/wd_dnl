@@ -19,6 +19,7 @@ import React from 'react';
 import NotificationPage from '../pages/HomePage/Subs/NotificationPage';
 import ConversationPage from '../pages/HomePage/Subs/ConversationPage';
 import ConversationMessagePage from '../pages/HomePage/Subs/ConversationMessagePage';
+import MyBusinessPage from '../pages/HomePage/Subs/MyBusinessPage';
 import SettingPage from '../pages/HomePage/Subs/SettingPage';
 import AboutPage from '../pages/HomePage/Subs/AboutPage';
 import FeedbackPage from '../pages/HomePage/Subs/FeedbackPage';
@@ -43,6 +44,8 @@ class SubContainer extends React.Component {
       return <ConversationPage closePage={()=>this._closePage()} {...this.props}/>;
     else if(params.subPage=='ConversationMessage')
       return <ConversationMessagePage conversationId={params.conversationId} closePage={()=>this._closePage()} {...this.props}/>;
+    else if(params.subPage=='MyBusiness')
+      return <MyBusinessPage closePage={()=>this._closePage()} {...this.props}/>;
     else if(params.subPage=='Setting')
         return <SettingPage closePage={()=>this._closePage()} {...this.props}/>;
     else if(params.subPage=='about')

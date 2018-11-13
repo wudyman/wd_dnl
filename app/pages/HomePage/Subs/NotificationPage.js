@@ -23,6 +23,7 @@ import store from 'react-native-simple-store';
 import moment from 'moment';
 import RequestUtil from '../../../utils/RequestUtil';
 import Button from '../../../components/Button';
+import NoDataView from '../../../components/NoDataView';
 import ItemList from '../../../components/ItemList';
 import ItemNotification from './ItemNotification';
 import { concatFilterDuplicate } from '../../../utils/ItemsUtil';
@@ -32,6 +33,8 @@ import { DATA_STEP_DOUBLE } from '../../../constants/Constants';
 const propTypes = {
 };
 
+let noMoreViewShow=false;
+let dataRequesting=false;
 let start=0;
 class NotificationPage extends React.Component {
     constructor(props) {
@@ -91,10 +94,18 @@ class NotificationPage extends React.Component {
             });
             start+=DATA_STEP_DOUBLE;
         }
+        else{
+            noMoreViewShow=true;
+        }
         this.setState({notifications:concatFilterDuplicate(this.state.notifications,notifications)});
+        dataRequesting=false;
     }
 
     _getNotifications(type){
+        if(dataRequesting)
+            return;
+        dataRequesting=true;
+        noMoreViewShow=false;
         if('refresh'==type)
         {
             start=0;
@@ -128,12 +139,16 @@ class NotificationPage extends React.Component {
 
     onEndReached = () => {
         console.log('**************NotificationPage onEndReached*********');
-        this._getNotifications('more');
+        if(!noMoreViewShow)
+            this._getNotifications('more');
     };
 
     _renderFooter = () => {
         console.log('**************NotificationPage _renderFooter*********');
-        return <View />;
+        if(noMoreViewShow)
+            return <NoDataView />;
+        else
+            return <View />;
     };
 
 
