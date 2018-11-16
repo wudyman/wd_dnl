@@ -54,6 +54,9 @@ class BusinessInfoPage extends React.Component {
         underlayColor="transparent"
         color="#555"
         activeOpacity={0.8}
+        onPress={() => {
+          navigation.state.params.handleShare();
+        }}
       />
     )
   });
@@ -64,11 +67,16 @@ class BusinessInfoPage extends React.Component {
       haveUpdate:false,
       showRevise:false,
       isShareModal: false,
+      url:'',
+      title:'',
+      content:'',
+      thumbImage:''
     };
   }
 
   componentWillMount() {
     console.log('***********BusinessInfoPage componentWillMount***************');
+    isMainPage=true;
     const { params } = this.props.navigation.state;
     businessInfoData.id=params.itemData.id;
     businessInfoData.type=params.itemData.type;
@@ -93,12 +101,28 @@ class BusinessInfoPage extends React.Component {
 
   componentDidMount() {
     console.log('***********BusinessInfoPage componentDidMount***************');
+    this.props.navigation.setParams({ handleShare: this.onActionSelected });
+    //BackHandler.addEventListener('hardwareBackPress', this.goBack);
+    const { params } = this.props.navigation.state;
+    this.setState({
+      url:businessInfoData.url,
+      title:businessInfoData.title,
+      content:businessInfoData.detail,
+      thumbImage:businessInfoData.pictures_array[0]
+    });
   }
 
 
   componentWillUnmount() {
     console.log('***********BusinessInfoPage componentWillUnmount***************');
+    isMainPage=true;
   }
+
+  onActionSelected = () => {
+    this.setState({
+      isShareModal: true
+    });
+  };
 
   _updateTimeCallback(ret){
     if('fail'!=ret){
@@ -142,11 +166,98 @@ class BusinessInfoPage extends React.Component {
     }
   }
 
+  renderSpinner = () => {
+    //const { params } = this.props.navigation.state;
+    return (
+      <TouchableWithoutFeedback
+        onPress={() => {
+          this.setState({
+            isShareModal: false
+          });
+        }}
+      >
+        <View key="spinner" style={styles.spinner}>
+          <View style={styles.spinnerContent}>
+            <Text
+              style={[styles.spinnerTitle, { fontSize: 20, color: 'black' }]}
+            >
+              分享到
+            </Text>
+            <View style={styles.shareParent}>
+              <TouchableOpacity
+                style={styles.base}
+                onPress={() => {
+                  WeChat.isWXAppInstalled().then((isInstalled) => {
+                    if (isInstalled) {
+                      WeChat.shareToSession({
+                        title: formatStringWithHtml(this.state.title),
+                        description: formatStringWithHtml(this.state.content),
+                        thumbImage: this.state.thumbImage,
+                        type: 'news',
+                        webpageUrl: this.state.url
+                      }).catch((error) => {
+                        ToastUtil.showShort(error.message, true);
+                      });
+                    } else {
+                      ToastUtil.showShort('没有安装微信软件，请您安装微信之后再试', true);
+                    }
+                  });
+                }}
+              >
+                <View style={styles.shareContent}>
+                  <Image style={styles.shareIcon} source={shareIconWechat} />
+                  <Text style={styles.spinnerTitle}>微信</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.base}
+                onPress={() => {
+                  WeChat.isWXAppInstalled().then((isInstalled) => {
+                    if (isInstalled) {
+                      WeChat.shareToTimeline({
+                        title: formatStringWithHtml(`[@${SITE_NAME}]${this.state.title}`),
+                        description: formatStringWithHtml(this.state.content),
+                        thumbImage: this.state.thumbImage,
+                        type: 'news',
+                        webpageUrl: this.state.url
+                      }).catch((error) => {
+                        ToastUtil.showShort(error.message, true);
+                      });
+                    } else {
+                      ToastUtil.showShort('没有安装微信软件，请您安装微信之后再试', true);
+                    }
+                  });
+                }}
+              >
+                <View style={styles.shareContent}>
+                  <Image style={styles.shareIcon} source={shareIconMoments} />
+                  <Text style={styles.spinnerTitle}>朋友圈</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
+
   render() {
     console.log('***********BusinessInfoPage render***************');
     //const { params } = this.props.navigation.state;
     return (
       <ScrollView style={styles.container}>
+        <Modal
+          animationType="fade"
+          visible={this.state.isShareModal}
+          transparent
+          onRequestClose={() => {
+            this.setState({
+              isShareModal: false
+            });
+          }}
+        >
+          {this.renderSpinner()}
+        </Modal>
         <View style={styles.title}>
           <Text style={styles.titleText}>{formatStringWithHtml(businessInfoData.title)}</Text>
         </View>
@@ -273,6 +384,9 @@ const styles = StyleSheet.create({
   },
   bottom: {
     marginBottom:30,
+  },
+  base: {
+    flex: 1
   },
   spinner: {
     flex: 1,

@@ -37,7 +37,7 @@ const ItemCell = ({ article, onPressHandler }) => (
         <Image style={styles.authorAvatar} source={{ uri: article.author_avatar }} />
         <Text style={styles.authorName}>{formatStringWithHtml(article.author_name)}</Text>
       </TouchableOpacity>
-      <Text style={styles.timeAgo}>{moment(article.pub_date).fromNow()}</Text>
+      {/*<Text style={styles.timeAgo}>{moment(article.pub_date).fromNow()}</Text>*/}
     </View>
   </View>
 );

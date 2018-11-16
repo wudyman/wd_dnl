@@ -33,6 +33,12 @@ class SubContainer extends React.Component {
 
   componentWillMount() {
     console.log('*******SubContainer componentWillMount*******');
+    isMainPage=false;
+  }
+
+  componentWillUnmount() {
+    console.log('**************SubContainer componentWillUnmount*********');
+    isMainPage=true;
   }
 
 
