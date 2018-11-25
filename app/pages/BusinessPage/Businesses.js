@@ -41,7 +41,9 @@ let citysMap={};
 let districtsMap={};
 let citys=districts=[];
 
-const BUSINESS_TYPE = [['0','all','全部',0],['1','sell','出售',0],['2','buy','求购',0]];
+const BUSINESS_TYPE = [['0','all','全部',0],['1','sell','出售',0],['2','buy','求购',0],['3','lease','租赁',0]];
+let resultDatas=[[],[],[],[]];
+let initDatas=[[],[],[],[]];
 const INDEX_ID =0;
 const INDEX_TYPE =1;
 const INDEX_NAME =2;
@@ -50,7 +52,6 @@ const INDEX_DATAINDEX =3;
 let currentTabIndex=0;
 let currentBusinessType=BUSINESS_TYPE[currentTabIndex][INDEX_TYPE];
 let currentDataIndex=0;
-let resultDatas=[[],[],[]];
 
 let keywordText='';
 let noMoreViewShow=false;
@@ -294,7 +295,7 @@ class Businesses extends React.Component {
 
   _pressSearch() {
     currentDataIndex=0;
-    resultDatas=[[],[],[]];
+    resultDatas=initDatas;
     BUSINESS_TYPE[0][INDEX_DATAINDEX]=0;
     BUSINESS_TYPE[1][INDEX_DATAINDEX]=0;
     BUSINESS_TYPE[2][INDEX_DATAINDEX]=0;

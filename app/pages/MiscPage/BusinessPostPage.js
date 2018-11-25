@@ -485,6 +485,7 @@ class BusinessPostPage extends React.Component {
               onValueChange={(itemValue, itemIndex) => this.setState({type: itemValue})}>
               <Picker.Item label="出售" value="sell"/>
               <Picker.Item label="求购" value="buy"/>
+              <Picker.Item label="租赁" value="lease"/>
             </Picker>
           </View>
           <View>
